@@ -53,6 +53,12 @@ extern char *strerror ();
 #include "error.h"
 #include "pipeline.h"
 
+extern int debug;
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to build individual commands. */
+
 command *command_new (const char *name)
 {
 	command *cmd = xmalloc (sizeof *cmd);
@@ -292,6 +298,10 @@ void command_free (command *cmd)
 	free (cmd);
 }
 
+/* ---------------------------------------------------------------------- */
+
+/* Functions to build pipelines. */
+
 pipeline *pipeline_new (void)
 {
 	pipeline *p = xmalloc (sizeof *p);
@@ -299,6 +309,7 @@ pipeline *pipeline_new (void)
 	p->commands_max = 4;
 	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
 	p->pids = NULL;
+	p->statuses = NULL;
 	p->want_in = p->want_out = 0;
 	p->infd = p->outfd = -1;
 	p->infile = p->outfile = NULL;
@@ -332,11 +343,14 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 
 	assert (!p1->pids);
 	assert (!p2->pids);
+	assert (!p1->statuses);
+	assert (!p2->statuses);
 
 	p->ncommands = p1->ncommands + p2->ncommands;
 	p->commands_max = p1->ncommands + p2->ncommands;
 	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
 	p->pids = NULL;
+	p->statuses = NULL;
 	p->want_in = p1->want_in;
 	p->want_out = p2->want_out;
 	p->infd = p1->infd;
@@ -401,6 +415,7 @@ void pipeline_commands (pipeline *p, ...)
 FILE *pipeline_get_infile (pipeline *p)
 {
 	assert (p->pids);	/* pipeline started */
+	assert (p->statuses);
 	if (p->infile)
 		return p->infile;
 	else if (p->infd == -1) {
@@ -413,6 +428,7 @@ FILE *pipeline_get_infile (pipeline *p)
 FILE *pipeline_get_outfile (pipeline *p)
 {
 	assert (p->pids);	/* pipeline started */
+	assert (p->statuses);
 	if (p->outfile)
 		return p->outfile;
 	else if (p->outfd == -1) {
@@ -457,6 +473,27 @@ char *pipeline_tostring (pipeline *p)
 	return out;
 }
 
+void pipeline_free (pipeline *p)
+{
+	int i;
+
+	for (i = 0; i < p->ncommands; ++i)
+		command_free (p->commands[i]);
+	free (p->commands);
+	if (p->pids)
+		free (p->pids);
+	if (p->statuses)
+		free (p->statuses);
+	free (p);
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to run pipelines and handle signals. */
+
+static pipeline **active_pipelines = NULL;
+static int n_active_pipelines = 0, max_active_pipelines = 0;
+
 /* Children exit with this status if execvp fails. */
 #define EXEC_FAILED_EXIT_STATUS 0xff
 
@@ -465,9 +502,51 @@ void pipeline_start (pipeline *p)
 	int i;
 	int last_input = -1;
 	int infd[2];
+	sigset_t set, oset;
 
 	assert (!p->pids);	/* pipeline not started already */
+	assert (!p->statuses);
+
+	/* Add to the table of active pipelines, so that signal handlers
+	 * know what to do with exit statuses. Block SIGCHLD so that we can
+	 * do this safely.
+	 */
+	sigemptyset (&set);
+	sigaddset (&set, SIGCHLD);
+	sigemptyset (&oset);
+	while (sigprocmask (SIG_BLOCK, &set, &oset) == -1 && errno == EINTR)
+		;
+
+	/* Grow the table if necessary. */
+	if (n_active_pipelines >= max_active_pipelines) {
+		int filled = max_active_pipelines;
+		if (max_active_pipelines)
+			max_active_pipelines *= 2;
+		else
+			max_active_pipelines = 4;
+		/* reduces to xmalloc (...) if active_pipelines == NULL */
+		active_pipelines = xrealloc
+			(active_pipelines,
+			 max_active_pipelines * sizeof *active_pipelines);
+		memset (active_pipelines + filled, 0,
+			(max_active_pipelines - filled) *
+				sizeof *active_pipelines);
+	}
+
+	for (i = 0; i < max_active_pipelines; ++i)
+		if (!active_pipelines[i]) {
+			active_pipelines[i] = p;
+			break;
+		}
+	assert (i < max_active_pipelines);
+	++n_active_pipelines;
+
+	/* Unblock SIGCHLD. */
+	while (sigprocmask (SIG_SETMASK, &oset, NULL) == -1 && errno == EINTR)
+		;
+
 	p->pids = xmalloc (p->ncommands * sizeof *p->pids);
+	p->statuses = xmalloc (p->ncommands * sizeof *p->statuses);
 
 	if (p->want_in < 0) {
 		if (pipe (infd) < 0)
@@ -481,6 +560,7 @@ void pipeline_start (pipeline *p)
 		int pdes[2];
 		pid_t pid;
 		int output_read = -1, output_write = -1;
+		sigset_t set, oset;
 
 		if (i != p->ncommands - 1 || p->want_out < 0) {
 			if (pipe (pdes) < 0)
@@ -491,6 +571,16 @@ void pipeline_start (pipeline *p)
 			output_write = pdes[1];
 		} else if (i == p->ncommands - 1 && p->want_out > 0)
 			output_write = p->want_out;
+
+		/* Block SIGCHLD so that the signal handler doesn't collect
+		 * the exit status before we've filled in the pids array.
+		 */
+		sigemptyset (&set);
+		sigaddset (&set, SIGCHLD);
+		sigemptyset (&oset);
+		while (sigprocmask (SIG_BLOCK, &set, &oset) == -1 &&
+		       errno == EINTR)
+			;
 
 		pid = fork ();
 		if (pid < 0)
@@ -552,36 +642,82 @@ void pipeline_start (pipeline *p)
 		if (output_read != -1)
 			last_input = output_read;
 		p->pids[i] = pid;
+		p->statuses[i] = -1;
+
+		/* Unblock SIGCHLD. */
+		while (sigprocmask (SIG_SETMASK, &oset, NULL) == -1 &&
+		       errno == EINTR)
+			;
+
+		if (debug)
+			fprintf (stderr, "Started \"%s\", pid %d\n",
+				 p->commands[i]->name, pid);
 	}
 }
 
-/* TODO: Perhaps it would be useful to wait on multiple pipelines
- * simultaneously? Then you could do:
- *
- *   p1->want_out = -1;
- *   p2->want_in = -1;
- *   p3->want_in = -1;
- *   pipeline_start (p1);
- *   pipeline_start (p2);
- *   pipeline_start (p3);
- *   ... select() on p1's output, p2's input, and p3's input, and glue them
- *       together ...
- *   pipeline_wait (p1, p2, p3);
- *
- * ... and have processes exit as their input is closed by other processes
- * exiting, etc.
- *
- * This function is kind of broken if multiple pipelines exist, anyway, or
- * even if there are other child processes not created by the pipeline
- * library. Unfortunately, spinning and polling non-blocking waitpid() is
- * going to suck. Perhaps ignoring the second case is OK.
- */
+static int sigchld = 0;
+static int queue_sigchld = 0;
+
+static int reap_children (int block)
+{
+	pid_t pid;
+	int status;
+	int collected = 0;
+
+	do {
+		int i;
+
+		if (sigchld) {
+			/* Deal with a SIGCHLD delivery. */
+			pid = waitpid (-1, &status, WNOHANG);
+			--sigchld;
+		} else
+			pid = waitpid (-1, &status, block ? 0 : WNOHANG);
+
+		if (pid < 0 && errno == EINTR) {
+			/* Try again. */
+			pid = 0;
+			continue;
+		}
+
+		if (pid <= 0)
+			/* We've run out of children to reap. */
+			break;
+
+		++collected;
+
+		/* Deliver the command status if possible. */
+		for (i = 0; i < n_active_pipelines; ++i) {
+			pipeline *p = active_pipelines[i];
+			int j;
+
+			if (!p || !p->pids || !p->statuses)
+				continue;
+
+			for (j = 0; j < p->ncommands; ++j) {
+				if (p->pids[j] == pid) {
+					p->statuses[j] = status;
+					i = n_active_pipelines;
+					break;
+				}
+			}
+		}
+	} while ((sigchld || block == 0) && pid >= 0);
+
+	if (collected)
+		return collected;
+	else
+		return -1;
+}
+
 int pipeline_wait (pipeline *p)
 {
 	int ret = 0;
 	int proc_count = p->ncommands;
+	int i;
 
 	assert (p->pids);	/* pipeline started */
+	assert (p->statuses);
 
 	if (p->infile) {
 		if (fclose (p->infile))
@@ -596,15 +732,27 @@ int pipeline_wait (pipeline *p)
 	}
 
 	while (proc_count > 0) {
-		int i;
-		int status;
+		int r;
 
-		pid_t pid = wait (&status);
+		if (debug)
+			fprintf (stderr, "Active processes (%d):\n",
+				 proc_count);
 
-		if (pid < 0)
-			error (FATAL, errno, _("wait failed"));
-		for (i = 0; i < p->ncommands; i++)
-			if (p->pids[i] == pid) {
+		/* Check for any statuses already collected by SIGCHLD
+		 * handlers or the previous iteration before calling
+		 * reap_children() again.
+		 */
+		for (i = 0; i < p->ncommands; ++i) {
+			if (p->pids[i] == -1)
+				continue;	/* already collected */
+
+			if (debug)
+				fprintf (stderr, "  \"%s\" (%d) -> %d\n",
+					 p->commands[i]->name, p->pids[i],
+					 p->statuses[i]);
+
+			if (p->statuses[i] != -1) {
+				int status = p->statuses[i];
 				p->pids[i] = -1;
 				--proc_count;
 				if (WIFSIGNALED (status)) {
@@ -624,9 +772,23 @@ int pipeline_wait (pipeline *p)
 
 				if (i == p->ncommands - 1)
 					ret = status;
-
-				break;
 			}
+		}
+
+		assert (proc_count >= 0);
+		if (proc_count == 0)
+			break;
+
+		/* Tell the SIGCHLD handler not to get in our way. */
+		queue_sigchld = 1;
+		r = reap_children (1);
+		queue_sigchld = 0;
+
+		if (r == -1 && errno == ECHILD)
+			/* Eh? The pipeline was allegedly still running, so
+			 * we shouldn't have got ECHILD.
+			 */
+			error (FATAL, errno, _("waitpid failed"));
 	}
 
 	if (p->outfile) {
@@ -641,20 +803,52 @@ int pipeline_wait (pipeline *p)
 		p->outfd = -1;
 	}
 
+	for (i = 0; i < n_active_pipelines; ++i)
+		if (active_pipelines[i] == p)
+			active_pipelines[i] = NULL;
+
 	free (p->pids);
 	p->pids = NULL;
+	free (p->statuses);
+	p->statuses = NULL;
 
 	return ret;
 }
 
-void pipeline_free (pipeline *p)
+static void pipeline_sigchld (int signum)
 {
-	int i;
+	int save_errno = errno;
 
-	for (i = 0; i < p->ncommands; ++i)
-		command_free (p->commands[i]);
-	free (p->commands);
-	if (p->pids)
-		free (p->pids);
-	free (p);
+	assert (signum == SIGCHLD);
+
+	++sigchld;
+	if (!queue_sigchld)
+		reap_children (0);
+
+	errno = save_errno;
+}
+
+void pipeline_install_sigchld (void)
+{
+	struct sigaction act;
+
+	memset (&act, 0, sizeof act);
+	act.sa_handler = &pipeline_sigchld;
+	sigemptyset (&act.sa_mask);
+	sigaddset (&act.sa_mask, SIGINT);
+	sigaddset (&act.sa_mask, SIGTERM);
+	sigaddset (&act.sa_mask, SIGHUP);
+	sigaddset (&act.sa_mask, SIGCHLD);
+	act.sa_flags = 0;
+#ifdef SA_NOCLDSTOP
+	act.sa_flags |= SA_NOCLDSTOP;
+#endif
+#ifdef SA_RESTART
+	act.sa_flags |= SA_RESTART;
+#endif
+	while (sigaction (SIGCHLD, &act, NULL) == -1) {
+		if (errno == EINTR)
+			continue;
+		error (FATAL, errno, _("can't install SIGCHLD handler"));
+	}
 }

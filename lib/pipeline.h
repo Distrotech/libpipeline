@@ -41,6 +41,7 @@ typedef struct pipeline {
 	int commands_max;	/* size of allocated array */
 	command **commands;
 	pid_t *pids;
+	int *statuses;		/* -1 until command exits */
 
 	/* To be set by the caller. If positive, these contain
 	 * caller-supplied file descriptors for the input and output of the
@@ -59,6 +60,10 @@ typedef struct pipeline {
 	 */
 	FILE *infile, *outfile;
 } pipeline;
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to build individual commands. */
 
 /* Construct a new command. */
 command *command_new (const char *name);
@@ -99,6 +104,10 @@ void command_argstr (command *cmd, const char *argstr);
 
 /* Destroy a command. */
 void command_free (command *cmd);
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to build pipelines. */
 
 /* Construct a new pipeline. */
 pipeline *pipeline_new (void);
@@ -144,13 +153,23 @@ void pipeline_dump (pipeline *p, FILE *stream);
 /* Return a string representation of p. The caller should free the result. */
 char *pipeline_tostring (pipeline *p);
 
+/* Destroy a pipeline and all its commands. */
+void pipeline_free (pipeline *p);
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to run pipelines and handle signals. */
+
 /* Start the processes in a pipeline. Calls error(FATAL) on error. */
 void pipeline_start (pipeline *p);
 
 /* Wait for a pipeline to complete and return the exit status. */
 int pipeline_wait (pipeline *p);
 
-/* Destroy a pipeline and all its commands. */
-void pipeline_free (pipeline *p);
+/* Install a SIGCHLD handler that reaps exit statuses from child processes
+ * in pipelines. This should be called once per program before calling
+ * pipeline_start().
+ */
+void pipeline_install_sigchld (void);
 
 #endif /* PIPELINE_H */
