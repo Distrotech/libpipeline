@@ -747,6 +747,18 @@ int pipeline_wait (pipeline *p)
 		p->infd = -1;
 	}
 
+	if (p->outfile) {
+		if (fclose (p->outfile))
+			error (0, errno,
+			       _("closing pipeline output stream failed"));
+		p->outfile = NULL;
+		p->outfd = -1;
+	} else if (p->outfd != -1) {
+		if (close (p->outfd))
+			error (0, errno, _("closing pipeline output failed"));
+		p->outfd = -1;
+	}
+
 	while (proc_count > 0) {
 		int r;
 
@@ -815,18 +827,6 @@ int pipeline_wait (pipeline *p)
 			 * we shouldn't have got ECHILD.
 			 */
 			error (FATAL, errno, _("waitpid failed"));
-	}
-
-	if (p->outfile) {
-		if (fclose (p->outfile))
-			error (0, errno,
-			       _("closing pipeline output stream failed"));
-		p->outfile = NULL;
-		p->outfd = -1;
-	} else if (p->outfd != -1) {
-		if (close (p->outfd))
-			error (0, errno, _("closing pipeline output failed"));
-		p->outfd = -1;
 	}
 
 	for (i = 0; i < n_active_pipelines; ++i)
