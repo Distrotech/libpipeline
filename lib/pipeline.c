@@ -631,7 +631,7 @@ void pipeline_start (pipeline *p)
 
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
-			       _("couldn't exec %s"), p->commands[i]->name);
+			       _("can't execute %s"), p->commands[i]->name);
 		}
 
 		/* in the parent */
@@ -747,36 +747,46 @@ int pipeline_wait (pipeline *p)
 		 * reap_children() again.
 		 */
 		for (i = 0; i < p->ncommands; ++i) {
-			if (p->pids[i] == -1)
-				continue;	/* already collected */
+			int status;
+
+			if (p->pids[i] == -1 || p->statuses[i] == -1)
+				continue;
 
 			if (debug)
 				fprintf (stderr, "  \"%s\" (%d) -> %d\n",
 					 p->commands[i]->name, p->pids[i],
 					 p->statuses[i]);
 
-			if (p->statuses[i] != -1) {
-				int status = p->statuses[i];
-				p->pids[i] = -1;
-				--proc_count;
-				if (WIFSIGNALED (status)) {
-					int sig = WTERMSIG (status);
-#ifdef SIGPIPE
-					if (sig != SIGPIPE)
-#endif /* SIGPIPE */
-						error (0, 0, _("%s: %s%s"),
-						       p->commands[i]->name,
-						       xstrsignal (sig),
-						       WCOREDUMP (status) ?
-							 " (core dumped)" :
-							 "");
-				} else if (!WIFEXITED (status))
-					error (0, 0, "unexpected status %d",
-					       status);
+			if (p->statuses[i] == -1)
+				continue;
 
-				if (i == p->ncommands - 1)
-					ret = status;
-			}
+			status = p->statuses[i];
+			p->pids[i] = -1;
+			--proc_count;
+			if (WIFSIGNALED (status)) {
+				int sig = WTERMSIG (status);
+#ifdef SIGPIPE
+				if (sig != SIGPIPE) {
+#endif /* SIGPIPE */
+					if (WCOREDUMP (status))
+						error (0, 0,
+						       _("%s: %s "
+							 "(core dumped)"),
+						       p->commands[i]->name,
+						       xstrsignal (sig));
+					else
+						error (0, 0, _("%s: %s"),
+						       p->commands[i]->name,
+						       xstrsignal (sig));
+#ifdef SIGPIPE
+				}
+#endif /* SIGPIPE */
+			} else if (!WIFEXITED (status))
+				error (0, 0, "unexpected status %d",
+				       status);
+
+			if (i == p->ncommands - 1)
+				ret = status;
 		}
 
 		assert (proc_count >= 0);
