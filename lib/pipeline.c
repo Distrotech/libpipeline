@@ -228,10 +228,12 @@ command *command_dup (command *cmd)
 	newcmd->name = xstrdup (cmd->name);
 	newcmd->argc = cmd->argc;
 	newcmd->argv_max = cmd->argv_max;
+	assert (newcmd->argc < newcmd->argv_max);
 	newcmd->argv = xmalloc (newcmd->argv_max * sizeof *newcmd->argv);
 
 	for (i = 0; i < cmd->argc; ++i)
 		newcmd->argv[i] = xstrdup (cmd->argv[i]);
+	newcmd->argv[cmd->argc] = NULL;
 
 	return newcmd;
 }
@@ -245,6 +247,7 @@ void command_arg (command *cmd, const char *arg)
 	}
 
 	cmd->argv[cmd->argc++] = xstrdup (arg);
+	assert (cmd->argc < cmd->argv_max);
 	cmd->argv[cmd->argc] = NULL;
 }
 
