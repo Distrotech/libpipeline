@@ -137,6 +137,7 @@ static char *argstr_get_word (const char **argstr)
 		if (litstart < *argstr) {
 			char *tmp = xstrndup (litstart, *argstr - litstart);
 			out = strappend (out, tmp, NULL);
+			free (tmp);
 		}
 
 		switch (**argstr) {
@@ -166,9 +167,12 @@ static char *argstr_get_word (const char **argstr)
 
 			case '\\':
 				backslashed[0] = *++*argstr;
-				if (!backslashed[0])
+				if (!backslashed[0]) {
 					/* Unterminated quoting; give up. */
+					if (out)
+						free (out);
 					return NULL;
+				}
 				backslashed[1] = '\0';
 				out = strappend (out, backslashed, NULL);
 				litstart = ++*argstr;
@@ -179,9 +183,12 @@ static char *argstr_get_word (const char **argstr)
 		}
 	}
 
-	if (quotemode)
+	if (quotemode) {
 		/* Unterminated quoting; give up. */
+		if (out)
+			free (out);
 		return NULL;
+	}
 
 	/* Copy any accumulated literal characters. */
 	if (litstart < *argstr) {
