@@ -2,7 +2,7 @@
  * Free Software Foundation, Inc.
  * Copyright (C) 2003 Colin Watson.
  *   Written for groff by James Clark (jjc@jclark.com)
- *   Adapted for man-db by Colin Watson.
+ *   Heavily adapted and extended for man-db by Colin Watson.
  *
  * This file is part of man-db.
  *
@@ -89,6 +89,128 @@ command *command_new_args (const char *name, ...)
 	return cmd;
 }
 
+/* As suggested in the header file, this function (for command_new_argstr()
+ * and command_argstr()) is really a wart. If we didn't have to worry about
+ * old configuration files then it wouldn't be necessary. Worse, the
+ * definition for tr in man_db.conf currently contains single-quoting, and
+ * people probably took that as a licence to do similar things, so we're
+ * obliged to worry about quoting as well!
+ *
+ * However, we can mitigate this; shell quoting alone is safe though
+ * sometimes confusing, but it's other shell constructs that tend to cause
+ * real security holes. Therefore, rather than punting to 'sh -c' or
+ * whatever, we parse a safe subset manually. Environment variables are not
+ * currently handled because of tricky word splitting issues, but in
+ * principle they could be if there's demand for it.
+ */
+static char *argstr_get_word (const char **argstr)
+{
+	char *out = NULL;
+	const char *litstart = *argstr;
+	int quotemode = 0;
+
+	while (**argstr) {
+		char backslashed[2];
+
+		/* If it's just a literal character, go round again. */
+		if ((quotemode == 0 && !strchr (" \t'\"\\", **argstr)) ||
+		    /* nothing is special in '; terminated by ' */
+		    (quotemode == 1 && **argstr != '\'') ||
+		    /* \ is special in "; terminated by " */
+		    (quotemode == 2 && !strchr ("\"\\", **argstr))) {
+			++*argstr;
+			continue;
+		}
+
+		/* Within "", \ is only special when followed by $, `, ", or
+		 * \ (or <newline> in a real shell, but we don't do that).
+		 */
+		if (quotemode == 2 && **argstr == '\\' &&
+		    !strchr ("$`\"\\", *(*argstr + 1))) {
+			++*argstr;
+			continue;
+		}
+
+		/* Copy any accumulated literal characters. */
+		if (litstart < *argstr) {
+			char *tmp = xstrndup (litstart, *argstr - litstart);
+			out = strappend (out, tmp, NULL);
+		}
+
+		switch (**argstr) {
+			case ' ':
+			case '\t':
+				/* End of word; skip over extra whitespace. */
+				while (*++*argstr)
+					if (!strchr (" \t", **argstr))
+						break;
+				return out;
+
+			case '\'':
+				if (quotemode)
+					quotemode = 0;
+				else
+					quotemode = 1;
+				litstart = ++*argstr;
+				break;
+
+			case '"':
+				if (quotemode)
+					quotemode = 0;
+				else
+					quotemode = 2;
+				litstart = ++*argstr;
+				break;
+
+			case '\\':
+				backslashed[0] = *++*argstr;
+				if (!backslashed[0])
+					/* Unterminated quoting; give up. */
+					return NULL;
+				backslashed[1] = '\0';
+				out = strappend (out, backslashed, NULL);
+				litstart = ++*argstr;
+				break;
+
+			default:
+				assert (!"unexpected state parsing argstr");
+		}
+	}
+
+	if (quotemode)
+		/* Unterminated quoting; give up. */
+		return NULL;
+
+	/* Copy any accumulated literal characters. */
+	if (litstart < *argstr) {
+		char *tmp = xstrndup (litstart, *argstr - litstart);
+		out = strappend (out, tmp, NULL);
+	}
+
+	return out;
+}
+
+command *command_new_argstr (const char *argstr)
+{
+	command *cmd;
+	char *arg;
+
+	arg = argstr_get_word (&argstr);
+	if (!arg)
+		error (FATAL, 0,
+		       _("badly formed configuration directive: '%s'"),
+		       argstr);
+	cmd = command_new (arg);
+	free (arg);
+
+	while ((arg = argstr_get_word (&argstr))) {
+		command_arg (cmd, arg);
+		free (arg);
+	}
+
+	return cmd;
+}
+
 command *command_dup (command *cmd)
 {
 	command *newcmd = xmalloc (sizeof *newcmd);
@@ -134,6 +256,16 @@ void command_args (command *cmd, ...)
 	va_start (argv, cmd);
 	command_argv (cmd, argv);
 	va_end (argv);
+}
+
+void command_argstr (command *cmd, const char *argstr)
+{
+	char *arg;
+
+	while ((arg = argstr_get_word (&argstr))) {
+		command_arg (cmd, arg);
+		free (arg);
+	}
 }
 
 void command_free (command *cmd)
@@ -224,6 +356,11 @@ void pipeline_command_args (pipeline *p, const char *name, ...)
 	cmd = command_new_argv (name, argv);
 	va_end (argv);
 	pipeline_command (p, cmd);
+}
+
+void pipeline_command_argstr (pipeline *p, const char *argstr)
+{
+	pipeline_command (p, command_new_argstr (argstr));
 }
 
 void pipeline_commandv (pipeline *p, va_list cmdv)

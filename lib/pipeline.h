@@ -52,6 +52,14 @@ command *command_new (const char *name);
 command *command_new_argv (const char *name, va_list argv);
 command *command_new_args (const char *name, ...);
 
+/* Split argstr on whitespace to construct a command and arguments,
+ * honouring shell-style single-quoting, double-quoting, and backslashes,
+ * but not other shell evil like wildcards, semicolons, or backquotes. This
+ * is a backward-compatibility hack to support old configuration file
+ * directives; please try to avoid using it in new code.
+ */
+command *command_new_argstr (const char *argstr);
+
 /* Return a duplicate of a command. */
 command *command_dup (command *cmd);
 
@@ -63,6 +71,14 @@ void command_arg (command *cmd, const char *arg);
  */
 void command_argv (command *cmd, va_list argv);
 void command_args (command *cmd, ...);
+
+/* Split argstr on whitespace to add a list of arguments, honouring
+ * shell-style single-quoting, double-quoting, and backslashes, but not
+ * other shell evil like wildcards, semicolons, or backquotes. This is a
+ * backward-compatibility hack to support old configuration file directives;
+ * please try to avoid using it in new code.
+ */
+void command_argstr (command *cmd, const char *argstr);
 
 /* Destroy a command. */
 void command_free (command *cmd);
@@ -86,6 +102,12 @@ void pipeline_command (pipeline *p, command *cmd);
 
 /* Construct a new command and add it to a pipeline in one go. */
 void pipeline_command_args (pipeline *p, const char *name, ...);
+
+/* Construct a new command from a shell-quoted string and add it to a
+ * pipeline in one go. See the comment against command_new_argstr() above if
+ * you're tempted to use this function.
+ */
+void pipeline_command_argstr (pipeline *p, const char *argstr);
 
 /* Convenience functions wrapping pipeline_command().
  * Terminate commands with NULL.
