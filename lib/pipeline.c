@@ -49,6 +49,7 @@ extern char *strerror ();
 #define _(String) gettext (String)
 
 #include "manconfig.h"
+#include "cleanup.h"
 #include "error.h"
 #include "pipeline.h"
 
@@ -417,6 +418,8 @@ void pipeline_start (pipeline *p)
 			error (FATAL, errno, _("fork failed"));
 		if (pid == 0) {
 			/* child */
+			pop_all_cleanups ();
+
 			if (last_input != -1) {
 				if (close (0) < 0)
 					error (FATAL, errno,
