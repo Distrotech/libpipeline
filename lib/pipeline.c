@@ -511,6 +511,11 @@ void pipeline_start (pipeline *p)
 	assert (!p->pids);	/* pipeline not started already */
 	assert (!p->statuses);
 
+	if (debug) {
+		fputs ("Starting pipeline: ", stderr);
+		pipeline_dump (p, stderr);
+	}
+
 	/* Add to the table of active pipelines, so that signal handlers
 	 * know what to do with exit statuses. Block SIGCHLD so that we can
 	 * do this safely.
