@@ -40,8 +40,18 @@ typedef struct pipeline {
 	int commands_max;	/* size of allocated array */
 	command **commands;
 	pid_t *pids;
-	int want_in, want_out;	/* if non-zero, create input/output pipes */
-	int infd, outfd;	/* created by pipeline_start(), else -1 */
+
+	/* To be set by the caller. If positive, these contain
+	 * caller-supplied file descriptors for the input and output of the
+	 * whole pipeline. If negative, pipeline_start() will create pipes
+	 * and store the input writing half and the output reading half in
+	 * infd and outfd as appropriate. If zero, input and output will be
+	 * left as stdin and stdout.
+	 */
+	int want_in, want_out;
+
+	/* See above. The caller should consider these read-only. */
+	int infd, outfd;
 } pipeline;
 
 /* Construct a new command. */

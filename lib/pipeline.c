@@ -396,23 +396,28 @@ void pipeline_start (pipeline *p)
 	assert (!p->pids);	/* pipeline not started already */
 	p->pids = xmalloc (p->ncommands * sizeof *p->pids);
 
-	if (p->want_in) {
+	if (p->want_in < 0) {
 		if (pipe (infd) < 0)
 			error (FATAL, errno, _("pipe failed"));
 		last_input = infd[0];
 		p->infd = infd[1];
-	}
+	} else if (p->want_in > 0)
+		last_input = p->want_in;
 
 	for (i = 0; i < p->ncommands; i++) {
 		int pdes[2];
 		pid_t pid;
+		int output_read = -1, output_write = -1;
 
-		if (i != p->ncommands - 1 || p->want_out) {
+		if (i != p->ncommands - 1 || p->want_out < 0) {
 			if (pipe (pdes) < 0)
 				error (FATAL, errno, _("pipe failed"));
 			if (i == p->ncommands - 1)
 				p->outfd = pdes[0];
-		}
+			output_read = pdes[0];
+			output_write = pdes[1];
+		} else if (i == p->ncommands - 1 && p->want_out > 0)
+			output_write = p->want_out;
 
 		pid = fork ();
 		if (pid < 0)
@@ -421,6 +426,7 @@ void pipeline_start (pipeline *p)
 			/* child */
 			pop_all_cleanups ();
 
+			/* input, reading side */
 			if (last_input != -1) {
 				if (close (0) < 0)
 					error (FATAL, errno,
@@ -432,22 +438,32 @@ void pipeline_start (pipeline *p)
 					       _("close failed"));
 			}
 
-			if (i != p->ncommands - 1 || p->want_out) {
+			/* output, writing side */
+			if (output_write != -1) {
 				if (close (1) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
-				if (dup (pdes[1]) < 0)
+				if (dup (output_write) < 0)
 					error (FATAL, errno, _("dup failed"));
-				if (close (pdes[1]) < 0)
-					error (FATAL, errno,
-					       _("close failed"));
-				if (close (pdes[0]))
+				if (close (output_write) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
 			}
 
+			/* output, reading side */
+			if (output_read != -1)
+				if (close (output_read))
+					error (FATAL, errno,
+					       _("close failed"));
+
+			/* input from first command, writing side; must close
+			 * it in every child because it has to be created
+			 * before forking anything
+			 */
 			if (p->infd != -1)
-				close (p->infd);
+				if (close (p->infd))
+					error (FATAL, errno,
+					       _("close failed"));
 
 			if (p->commands[i]->nice)
 				nice (p->commands[i]->nice);
@@ -462,11 +478,12 @@ void pipeline_start (pipeline *p)
 			if (close (last_input) < 0)
 				error (FATAL, errno, _("close failed"));
 		}
-		if (i != p->ncommands - 1 || p->want_out) {
-			if (close (pdes[1]) < 0)
+		if (output_write != -1) {
+			if (close (output_write) < 0)
 				error (FATAL, errno, _("close failed"));
-			last_input = pdes[0];
 		}
+		if (output_read != -1)
+			last_input = output_read;
 		p->pids[i] = pid;
 	}
 }
@@ -474,9 +491,9 @@ void pipeline_start (pipeline *p)
 /* TODO: Perhaps it would be useful to wait on multiple pipelines
  * simultaneously? Then you could do:
  *
- *   p1->want_out = 1;
- *   p2->want_in = 1;
- *   p3->want_in = 1;
+ *   p1->want_out = -1;
+ *   p2->want_in = -1;
+ *   p3->want_in = -1;
  *   pipeline_start (p1);
  *   pipeline_start (p2);
  *   pipeline_start (p3);
