@@ -52,6 +52,9 @@ command *command_new (const char *name);
 command *command_new_argv (const char *name, va_list argv);
 command *command_new_args (const char *name, ...);
 
+/* Return a duplicate of a command. */
+command *command_dup (command *cmd);
+
 /* Add an argument to a command. */
 void command_arg (command *cmd, const char *arg);
 
@@ -72,6 +75,11 @@ pipeline *pipeline_new (void);
  */
 pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
 pipeline *pipeline_new_commands (command *cmd1, ...);
+
+/* Joins two pipelines, neither of which are allowed to be started. Discards
+ * want_out and outfd from p1, and want_in and infd from p2.
+ */
+pipeline *pipeline_join (pipeline *p1, pipeline *p2);
 
 /* Add a command to a pipeline. */
 void pipeline_command (pipeline *p, command *cmd);

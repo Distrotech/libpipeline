@@ -89,6 +89,22 @@ command *command_new_args (const char *name, ...)
 	return cmd;
 }
 
+command *command_dup (command *cmd)
+{
+	command *newcmd = xmalloc (sizeof *newcmd);
+	int i;
+
+	newcmd->name = xstrdup (cmd->name);
+	newcmd->argc = cmd->argc;
+	newcmd->argv_max = cmd->argv_max;
+	newcmd->argv = xmalloc (newcmd->argv_max * sizeof *newcmd->argv);
+
+	for (i = 0; i < cmd->argc; ++i)
+		newcmd->argv[i] = xstrdup (cmd->argv[i]);
+
+	return newcmd;
+}
+
 void command_arg (command *cmd, const char *arg)
 {
 	if (cmd->argc + 1 >= cmd->argv_max) {
@@ -159,6 +175,31 @@ pipeline *pipeline_new_commands (command *cmd1, ...)
 	va_start (cmdv, cmd1);
 	p = pipeline_new_commandv (cmd1, cmdv);
 	va_end (cmdv);
+
+	return p;
+}
+
+pipeline *pipeline_join (pipeline *p1, pipeline *p2)
+{
+	pipeline *p = xmalloc (sizeof *p);
+	int i;
+
+	assert (!p1->pids);
+	assert (!p2->pids);
+
+	p->ncommands = p1->ncommands + p2->ncommands;
+	p->commands_max = p1->ncommands + p2->ncommands;
+	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
+	p->pids = NULL;
+	p->want_in = p1->want_in;
+	p->want_out = p2->want_out;
+	p->infd = p1->infd;
+	p->outfd = p2->outfd;
+
+	for (i = 0; i < p1->ncommands; ++i)
+		p->commands[i] = command_dup (p1->commands[i]);
+	for (i = 0; i < p2->ncommands; ++i)
+		p->commands[p1->ncommands + i] = command_dup (p2->commands[i]);
 
 	return p;
 }
