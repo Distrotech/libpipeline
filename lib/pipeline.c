@@ -843,15 +843,15 @@ int pipeline_wait (pipeline *p)
 
 static void pipeline_sigchld (int signum)
 {
-	int save_errno = errno;
-
 	assert (signum == SIGCHLD);
 
 	++sigchld;
-	if (!queue_sigchld)
-		reap_children (0);
 
-	errno = save_errno;
+	if (!queue_sigchld) {
+		int save_errno = errno;
+		reap_children (0);
+		errno = save_errno;
+	}
 }
 
 void pipeline_install_sigchld (void)
