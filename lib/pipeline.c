@@ -295,6 +295,9 @@ void command_free (command *cmd)
 {
 	int i;
 
+	if (!cmd)
+		return;
+
 	free (cmd->name);
 	for (i = 0; i < cmd->argc; ++i)
 		free (cmd->argv[i]);
@@ -456,7 +459,8 @@ void pipeline_dump (pipeline *p, FILE *stream)
 		if (i < p->ncommands - 1)
 			fputs (" | ", stream);
 	}
-	putc ('\n', stream);
+	fprintf (stream, " [input: %d, output: %d]\n",
+		 p->want_in, p->want_out);
 }
 
 char *pipeline_tostring (pipeline *p)
@@ -480,6 +484,9 @@ char *pipeline_tostring (pipeline *p)
 void pipeline_free (pipeline *p)
 {
 	int i;
+
+	if (!p)
+		return;
 
 	for (i = 0; i < p->ncommands; ++i)
 		command_free (p->commands[i]);

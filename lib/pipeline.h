@@ -102,7 +102,7 @@ void command_args (command *cmd, ...);
  */
 void command_argstr (command *cmd, const char *argstr);
 
-/* Destroy a command. */
+/* Destroy a command. Safely does nothing on NULL. */
 void command_free (command *cmd);
 
 /* ---------------------------------------------------------------------- */
@@ -112,7 +112,7 @@ void command_free (command *cmd);
 /* Construct a new pipeline. */
 pipeline *pipeline_new (void);
 
-/* Convenience constructor wrapping pipeline_new() and pipeline_add().
+/* Convenience constructor wrapping pipeline_new() and pipeline_command().
  * Terminate commands with NULL.
  */
 pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
@@ -153,7 +153,7 @@ void pipeline_dump (pipeline *p, FILE *stream);
 /* Return a string representation of p. The caller should free the result. */
 char *pipeline_tostring (pipeline *p);
 
-/* Destroy a pipeline and all its commands. */
+/* Destroy a pipeline and all its commands. Safely does nothing on NULL. */
 void pipeline_free (pipeline *p);
 
 /* ---------------------------------------------------------------------- */
