@@ -761,7 +761,7 @@ int pipeline_wait (pipeline *p)
 		for (i = 0; i < p->ncommands; ++i) {
 			int status;
 
-			if (p->pids[i] == -1 || p->statuses[i] == -1)
+			if (p->pids[i] == -1)
 				continue;
 
 			if (debug)
