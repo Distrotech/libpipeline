@@ -62,6 +62,7 @@ command *command_new (const char *name)
 	cmd->argc = 0;
 	cmd->argv_max = 4;
 	cmd->argv = xmalloc (cmd->argv_max * sizeof *cmd->argv);
+	cmd->nice = 0;
 
 	/* argv[0] is the basename of the command name. */
 	name_copy = xstrdup (name);
@@ -447,6 +448,9 @@ void pipeline_start (pipeline *p)
 
 			if (p->infd != -1)
 				close (p->infd);
+
+			if (p->commands[i]->nice)
+				nice (p->commands[i]->nice);
 
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
