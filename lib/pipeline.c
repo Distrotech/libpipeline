@@ -138,6 +138,8 @@ pipeline *pipeline_new (void)
 	p->commands_max = 4;
 	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
 	p->pids = NULL;
+	p->writeto = p->readfrom = 0;
+	p->writefd = p->readfd = -1;
 	return p;
 }
 
@@ -208,26 +210,36 @@ void pipeline_commands (pipeline *p, ...)
 void pipeline_start (pipeline *p)
 {
 	int i;
-	int last_input = 0;
+	int last_input = -1;
+	int infd[2];
 
 	assert (!p->pids);	/* pipeline not started already */
-
 	p->pids = xmalloc (p->ncommands * sizeof *p->pids);
+
+	if (p->writeto) {
+		if (pipe (infd) < 0)
+			error (FATAL, errno, _("pipe failed"));
+		last_input = infd[0];
+		p->writefd = infd[1];
+	}
 
 	for (i = 0; i < p->ncommands; i++) {
 		int pdes[2];
 		pid_t pid;
 
-		if (i != p->ncommands - 1) {
+		if (i != p->ncommands - 1 || p->readfrom) {
 			if (pipe (pdes) < 0)
 				error (FATAL, errno, _("pipe failed"));
+			if (i == p->ncommands - 1)
+				p->readfd = pdes[0];
 		}
+
 		pid = fork ();
 		if (pid < 0)
 			error (FATAL, errno, _("fork failed"));
 		if (pid == 0) {
 			/* child */
-			if (last_input != 0) {
+			if (last_input != -1) {
 				if (close (0) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
@@ -237,7 +249,8 @@ void pipeline_start (pipeline *p)
 					error (FATAL, errno,
 					       _("close failed"));
 			}
-			if (i != p->ncommands - 1) {
+
+			if (i != p->ncommands - 1 || p->readfrom) {
 				if (close (1) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
@@ -250,16 +263,21 @@ void pipeline_start (pipeline *p)
 					error (FATAL, errno,
 					       _("close failed"));
 			}
+
+			if (p->writefd != -1)
+				close (p->writefd);
+
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
 			       _("couldn't exec %s"), p->commands[i]->name);
 		}
+
 		/* in the parent */
-		if (last_input != 0) {
+		if (last_input != -1) {
 			if (close (last_input) < 0)
 				error (FATAL, errno, _("close failed"));
 		}
-		if (i != p->ncommands - 1) {
+		if (i != p->ncommands - 1 || p->readfrom) {
 			if (close (pdes[1]) < 0)
 				error (FATAL, errno, _("close failed"));
 			last_input = pdes[0];
@@ -271,6 +289,9 @@ void pipeline_start (pipeline *p)
 /* TODO: Perhaps it would be useful to wait on multiple pipelines
  * simultaneously? Then you could do:
  *
+ *   p1->readfrom = 1;
+ *   p2->writeto = 1;
+ *   p3->writeto = 1;
  *   pipeline_start (p1);
  *   pipeline_start (p2);
  *   pipeline_start (p3);
@@ -280,6 +301,11 @@ void pipeline_start (pipeline *p)
  *
  * ... and have processes exit as their input is closed by other processes
  * exiting, etc.
+ *
+ * This function is kind of broken if multiple pipelines exist, anyway, or
+ * even if there are other child processes not created by the pipeline
+ * library. Unfortunately, spinning and polling non-blocking waitpid() is
+ * going to suck. Perhaps ignoring the second case is OK.
  */
 int pipeline_wait (pipeline *p)
 {
@@ -287,6 +313,11 @@ int pipeline_wait (pipeline *p)
 	int proc_count = p->ncommands;
 
 	assert (p->pids);	/* pipeline started */
+
+	if (p->writefd != -1) {
+		close (p->writefd);
+		p->writefd = -1;
+	}
 
 	while (proc_count > 0) {
 		int i;
@@ -327,6 +358,11 @@ int pipeline_wait (pipeline *p)
 					       status);
 				break;
 			}
+	}
+
+	if (p->readfd != -1) {
+		close (p->readfd);
+		p->readfd = -1;
 	}
 
 	free (p->pids);
