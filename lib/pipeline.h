@@ -24,6 +24,7 @@
 #ifndef PIPELINE_H
 #define PIPELINE_H
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <sys/types.h>
 
@@ -52,6 +53,11 @@ typedef struct pipeline {
 
 	/* See above. The caller should consider these read-only. */
 	int infd, outfd;
+
+	/* Set by pipeline_get_infile() and pipeline_get_outfile()
+	 * respectively.
+	 */
+	FILE *infile, *outfile;
 } pipeline;
 
 /* Construct a new command. */
@@ -125,6 +131,12 @@ void pipeline_command_argstr (pipeline *p, const char *argstr);
  */
 void pipeline_commandv (pipeline *p, va_list cmdv);
 void pipeline_commands (pipeline *p, ...);
+
+/* Get streams corresponding to infd and outfd respectively. The pipeline
+ * must be started.
+ */
+FILE *pipeline_get_infile (pipeline *p);
+FILE *pipeline_get_outfile (pipeline *p);
 
 /* Start the processes in a pipeline. Calls error(FATAL) on error. */
 void pipeline_start (pipeline *p);

@@ -290,6 +290,7 @@ pipeline *pipeline_new (void)
 	p->pids = NULL;
 	p->want_in = p->want_out = 0;
 	p->infd = p->outfd = -1;
+	p->infile = p->outfile = NULL;
 	return p;
 }
 
@@ -329,6 +330,8 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->want_out = p2->want_out;
 	p->infd = p1->infd;
 	p->outfd = p2->outfd;
+	p->infile = p1->infile;
+	p->outfile = p2->outfile;
 
 	for (i = 0; i < p1->ncommands; ++i)
 		p->commands[i] = command_dup (p1->commands[i]);
@@ -382,6 +385,30 @@ void pipeline_commands (pipeline *p, ...)
 	va_start (cmdv, p);
 	pipeline_commandv (p, cmdv);
 	va_end (cmdv);
+}
+
+FILE *pipeline_get_infile (pipeline *p)
+{
+	assert (p->pids);	/* pipeline started */
+	if (p->infile)
+		return p->infile;
+	else if (p->infd == -1) {
+		error (0, 0, _("pipeline input not open"));
+		return NULL;
+	} else
+		return p->infile = fdopen (p->infd, "w");
+}
+
+FILE *pipeline_get_outfile (pipeline *p)
+{
+	assert (p->pids);	/* pipeline started */
+	if (p->outfile)
+		return p->outfile;
+	else if (p->outfd == -1) {
+		error (0, 0, _("pipeline output not open"));
+		return NULL;
+	} else
+		return p->outfile = fdopen (p->outfd, "r");
 }
 
 /* Children exit with this status if execvp fails. */
@@ -510,8 +537,15 @@ int pipeline_wait (pipeline *p)
 
 	assert (p->pids);	/* pipeline started */
 
-	if (p->infd != -1) {
-		close (p->infd);
+	if (p->infile) {
+		if (fclose (p->infile))
+			error (0, errno,
+			       _("closing pipeline input stream failed"));
+		p->infile = NULL;
+		p->infd = -1;
+	} else if (p->infd != -1) {
+		if (close (p->infd))
+			error (0, errno, _("closing pipeline input failed"));
 		p->infd = -1;
 	}
 
@@ -556,8 +590,15 @@ int pipeline_wait (pipeline *p)
 			}
 	}
 
-	if (p->outfd != -1) {
-		close (p->outfd);
+	if (p->outfile) {
+		if (fclose (p->outfile))
+			error (0, errno,
+			       _("closing pipeline output stream failed"));
+		p->outfile = NULL;
+		p->outfd = -1;
+	} else if (p->outfd != -1) {
+		if (close (p->outfd))
+			error (0, errno, _("closing pipeline output failed"));
 		p->outfd = -1;
 	}
 
