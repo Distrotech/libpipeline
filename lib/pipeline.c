@@ -566,26 +566,19 @@ int pipeline_wait (pipeline *p)
 #ifdef SIGPIPE
 					if (sig != SIGPIPE)
 #endif /* SIGPIPE */
-					{
 						error (0, 0, _("%s: %s%s"),
 						       p->commands[i]->name,
 						       xstrsignal (sig),
 						       WCOREDUMP (status) ?
 							 " (core dumped)" :
 							 "");
-						ret |= 2;
-					}
-				} else if (WIFEXITED (status)) {
-					int exit_status = WEXITSTATUS (status);
-
-					if (exit_status ==
-					    EXEC_FAILED_EXIT_STATUS)
-						ret |= 4;
-					else if (exit_status != 0)
-						ret |= 1;
-				} else
+				} else if (!WIFEXITED (status))
 					error (0, 0, "unexpected status %d",
 					       status);
+
+				if (i == p->ncommands - 1)
+					ret = status;
+
 				break;
 			}
 	}
