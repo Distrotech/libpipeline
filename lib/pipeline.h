@@ -39,8 +39,8 @@ typedef struct pipeline {
 	int commands_max;	/* size of allocated array */
 	command **commands;
 	pid_t *pids;
-	int writeto, readfrom;	/* if non-zero, create input/output pipes */
-	int writefd, readfd;	/* created by pipeline_start(), else -1 */
+	int want_in, want_out;	/* if non-zero, create input/output pipes */
+	int infd, outfd;	/* created by pipeline_start(), else -1 */
 } pipeline;
 
 /* Construct a new command. */

@@ -138,8 +138,8 @@ pipeline *pipeline_new (void)
 	p->commands_max = 4;
 	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
 	p->pids = NULL;
-	p->writeto = p->readfrom = 0;
-	p->writefd = p->readfd = -1;
+	p->want_in = p->want_out = 0;
+	p->infd = p->outfd = -1;
 	return p;
 }
 
@@ -216,22 +216,22 @@ void pipeline_start (pipeline *p)
 	assert (!p->pids);	/* pipeline not started already */
 	p->pids = xmalloc (p->ncommands * sizeof *p->pids);
 
-	if (p->writeto) {
+	if (p->want_in) {
 		if (pipe (infd) < 0)
 			error (FATAL, errno, _("pipe failed"));
 		last_input = infd[0];
-		p->writefd = infd[1];
+		p->infd = infd[1];
 	}
 
 	for (i = 0; i < p->ncommands; i++) {
 		int pdes[2];
 		pid_t pid;
 
-		if (i != p->ncommands - 1 || p->readfrom) {
+		if (i != p->ncommands - 1 || p->want_out) {
 			if (pipe (pdes) < 0)
 				error (FATAL, errno, _("pipe failed"));
 			if (i == p->ncommands - 1)
-				p->readfd = pdes[0];
+				p->outfd = pdes[0];
 		}
 
 		pid = fork ();
@@ -250,7 +250,7 @@ void pipeline_start (pipeline *p)
 					       _("close failed"));
 			}
 
-			if (i != p->ncommands - 1 || p->readfrom) {
+			if (i != p->ncommands - 1 || p->want_out) {
 				if (close (1) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
@@ -264,8 +264,8 @@ void pipeline_start (pipeline *p)
 					       _("close failed"));
 			}
 
-			if (p->writefd != -1)
-				close (p->writefd);
+			if (p->infd != -1)
+				close (p->infd);
 
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
@@ -277,7 +277,7 @@ void pipeline_start (pipeline *p)
 			if (close (last_input) < 0)
 				error (FATAL, errno, _("close failed"));
 		}
-		if (i != p->ncommands - 1 || p->readfrom) {
+		if (i != p->ncommands - 1 || p->want_out) {
 			if (close (pdes[1]) < 0)
 				error (FATAL, errno, _("close failed"));
 			last_input = pdes[0];
@@ -289,9 +289,9 @@ void pipeline_start (pipeline *p)
 /* TODO: Perhaps it would be useful to wait on multiple pipelines
  * simultaneously? Then you could do:
  *
- *   p1->readfrom = 1;
- *   p2->writeto = 1;
- *   p3->writeto = 1;
+ *   p1->want_out = 1;
+ *   p2->want_in = 1;
+ *   p3->want_in = 1;
  *   pipeline_start (p1);
  *   pipeline_start (p2);
  *   pipeline_start (p3);
@@ -314,9 +314,9 @@ int pipeline_wait (pipeline *p)
 
 	assert (p->pids);	/* pipeline started */
 
-	if (p->writefd != -1) {
-		close (p->writefd);
-		p->writefd = -1;
+	if (p->infd != -1) {
+		close (p->infd);
+		p->infd = -1;
 	}
 
 	while (proc_count > 0) {
@@ -360,9 +360,9 @@ int pipeline_wait (pipeline *p)
 			}
 	}
 
-	if (p->readfd != -1) {
-		close (p->readfd);
-		p->readfd = -1;
+	if (p->outfd != -1) {
+		close (p->outfd);
+		p->outfd = -1;
 	}
 
 	free (p->pids);
