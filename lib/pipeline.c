@@ -230,6 +230,7 @@ command *command_dup (command *cmd)
 	newcmd->argv_max = cmd->argv_max;
 	assert (newcmd->argc < newcmd->argv_max);
 	newcmd->argv = xmalloc (newcmd->argv_max * sizeof *newcmd->argv);
+	newcmd->nice = cmd->nice;
 
 	for (i = 0; i < cmd->argc; ++i)
 		newcmd->argv[i] = xstrdup (cmd->argv[i]);
@@ -353,7 +354,7 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 
 void pipeline_command (pipeline *p, command *cmd)
 {
-	if (p->ncommands > p->commands_max) {
+	if (p->ncommands >= p->commands_max) {
 		p->commands_max *= 2;
 		p->commands = xrealloc (p->commands,
 					p->commands_max * sizeof *p->commands);
