@@ -428,11 +428,8 @@ void pipeline_start (pipeline *p)
 
 			/* input, reading side */
 			if (last_input != -1) {
-				if (close (0) < 0)
-					error (FATAL, errno,
-					       _("close failed"));
-				if (dup (last_input) < 0)
-					error (FATAL, errno, _("dup failed"));
+				if (dup2 (last_input, 0) < 0)
+					error (FATAL, errno, _("dup2 failed"));
 				if (close (last_input) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
@@ -440,11 +437,8 @@ void pipeline_start (pipeline *p)
 
 			/* output, writing side */
 			if (output_write != -1) {
-				if (close (1) < 0)
-					error (FATAL, errno,
-					       _("close failed"));
-				if (dup (output_write) < 0)
-					error (FATAL, errno, _("dup failed"));
+				if (dup2 (output_write, 1) < 0)
+					error (FATAL, errno, _("dup2 failed"));
 				if (close (output_write) < 0)
 					error (FATAL, errno,
 					       _("close failed"));
