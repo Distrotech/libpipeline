@@ -418,6 +418,41 @@ FILE *pipeline_get_outfile (pipeline *p)
 		return p->outfile = fdopen (p->outfd, "r");
 }
 
+void pipeline_dump (pipeline *p, FILE *stream)
+{
+	int i, j;
+
+	for (i = 0; i < p->ncommands; ++i) {
+		fputs (p->commands[i]->name, stream);
+		for (j = 1; j < p->commands[i]->argc; ++j) {
+			/* TODO: escape_shell()? */
+			putc (' ', stream);
+			fputs (p->commands[i]->argv[j], stream);
+		}
+		if (i < p->ncommands - 1)
+			fputs (" | ", stream);
+	}
+	putc ('\n', stream);
+}
+
+char *pipeline_tostring (pipeline *p)
+{
+	char *out = NULL;
+	int i, j;
+
+	for (i = 0; i < p->ncommands; ++i) {
+		out = strappend (out, p->commands[i]->name, NULL);
+		for (j = 1; j < p->commands[i]->argc; ++j)
+			/* TODO: escape_shell()? */
+			out = strappend (out, " ", p->commands[i]->argv[j],
+					 NULL);
+		if (i < p->ncommands - 1)
+			out = strappend (out, " | ", NULL);
+	}
+
+	return out;
+}
+
 /* Children exit with this status if execvp fails. */
 #define EXEC_FAILED_EXIT_STATUS 0xff
 

@@ -138,6 +138,12 @@ void pipeline_commands (pipeline *p, ...);
 FILE *pipeline_get_infile (pipeline *p);
 FILE *pipeline_get_outfile (pipeline *p);
 
+/* Dump a string representation of p to stream. */
+void pipeline_dump (pipeline *p, FILE *stream);
+
+/* Return a string representation of p. The caller should free the result. */
+char *pipeline_tostring (pipeline *p);
+
 /* Start the processes in a pipeline. Calls error(FATAL) on error. */
 void pipeline_start (pipeline *p);
 
