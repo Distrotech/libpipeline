@@ -44,6 +44,10 @@ extern char *strerror ();
 
 #include <sys/wait.h>
 
+#ifdef HAVE_LIBGEN_H
+#  include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+
 #include <locale.h>
 #include <libintl.h>
 #define _(String) gettext (String)
