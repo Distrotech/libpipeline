@@ -732,6 +732,11 @@ int pipeline_wait (pipeline *p)
 	int proc_count = p->ncommands;
 	int i;
 
+	if (debug) {
+		fputs ("Waiting for pipeline: ", stderr);
+		pipeline_dump (p, stderr);
+	}
+
 	assert (p->pids);	/* pipeline started */
 	assert (p->statuses);
 
