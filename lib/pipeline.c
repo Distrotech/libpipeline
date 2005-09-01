@@ -119,17 +119,17 @@ static char *argstr_get_word (const char **argstr)
 {
 	char *out = NULL;
 	const char *litstart = *argstr;
-	int quotemode = 0;
+	enum { NONE, SINGLE, DOUBLE } quotemode = NONE;
 
 	while (**argstr) {
 		char backslashed[2];
 
 		/* If it's just a literal character, go round again. */
-		if ((quotemode == 0 && !strchr (" \t'\"\\", **argstr)) ||
+		if ((quotemode == NONE && !strchr (" \t'\"\\", **argstr)) ||
 		    /* nothing is special in '; terminated by ' */
-		    (quotemode == 1 && **argstr != '\'') ||
+		    (quotemode == SINGLE && **argstr != '\'') ||
 		    /* \ is special in "; terminated by " */
-		    (quotemode == 2 && !strchr ("\"\\", **argstr))) {
+		    (quotemode == DOUBLE && !strchr ("\"\\", **argstr))) {
 			++*argstr;
 			continue;
 		}
@@ -137,7 +137,7 @@ static char *argstr_get_word (const char **argstr)
 		/* Within "", \ is only special when followed by $, `, ", or
 		 * \ (or <newline> in a real shell, but we don't do that).
 		 */
-		if (quotemode == 2 && **argstr == '\\' &&
+		if (quotemode == DOUBLE && **argstr == '\\' &&
 		    !strchr ("$`\"\\", *(*argstr + 1))) {
 			++*argstr;
 			continue;
@@ -160,18 +160,18 @@ static char *argstr_get_word (const char **argstr)
 				return out;
 
 			case '\'':
-				if (quotemode)
-					quotemode = 0;
+				if (quotemode != NONE)
+					quotemode = NONE;
 				else
-					quotemode = 1;
+					quotemode = SINGLE;
 				litstart = ++*argstr;
 				break;
 
 			case '"':
-				if (quotemode)
-					quotemode = 0;
+				if (quotemode != NONE)
+					quotemode = NONE;
 				else
-					quotemode = 2;
+					quotemode = DOUBLE;
 				litstart = ++*argstr;
 				break;
 
@@ -193,7 +193,7 @@ static char *argstr_get_word (const char **argstr)
 		}
 	}
 
-	if (quotemode) {
+	if (quotemode != NONE) {
 		/* Unterminated quoting; give up. */
 		if (out)
 			free (out);
