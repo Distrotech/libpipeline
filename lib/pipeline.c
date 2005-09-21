@@ -796,6 +796,9 @@ int pipeline_wait (pipeline *p)
 		p->outfd = -1;
 	}
 
+	/* Tell the SIGCHLD handler not to get in our way. */
+	queue_sigchld = 1;
+
 	while (proc_count > 0) {
 		int r;
 
@@ -854,10 +857,8 @@ int pipeline_wait (pipeline *p)
 		if (proc_count == 0)
 			break;
 
-		/* Tell the SIGCHLD handler not to get in our way. */
-		queue_sigchld = 1;
+		errno = 0;
 		r = reap_children (1);
-		queue_sigchld = 0;
 
 		if (r == -1 && errno == ECHILD)
 			/* Eh? The pipeline was allegedly still running, so
@@ -865,6 +866,8 @@ int pipeline_wait (pipeline *p)
 			 */
 			error (FATAL, errno, _("waitpid failed"));
 	}
+
+	queue_sigchld = 0;
 
 	for (i = 0; i < n_active_pipelines; ++i)
 		if (active_pipelines[i] == p)
