@@ -505,6 +505,9 @@ void pipeline_free (pipeline *p)
 static pipeline **active_pipelines = NULL;
 static int n_active_pipelines = 0, max_active_pipelines = 0;
 
+static int ignored_signals = 0;
+static struct sigaction osa_sigint, osa_sigquit;
+
 /* Children exit with this status if execvp fails. */
 #define EXEC_FAILED_EXIT_STATUS 0xff
 
@@ -521,6 +524,27 @@ void pipeline_start (pipeline *p)
 	if (debug) {
 		fputs ("Starting pipeline: ", stderr);
 		pipeline_dump (p, stderr);
+	}
+
+	if (!ignored_signals++) {
+		struct sigaction sa;
+
+		/* Ignore SIGINT and SIGQUIT while subprocesses are running,
+		 * just like system().
+		 */
+		sa.sa_handler = SIG_IGN;
+		sigemptyset (&sa.sa_mask);
+		sa.sa_flags = 0;
+		while (sigaction (SIGINT, &sa, &osa_sigint) < 0) {
+			if (errno == EINTR)
+				continue;
+			error (FATAL, errno, "Couldn't ignore SIGINT");
+		}
+		while (sigaction (SIGQUIT, &sa, &osa_sigint) < 0) {
+			if (errno == EINTR)
+				continue;
+			error (FATAL, errno, "Couldn't ignore SIGQUIT");
+		}
 	}
 
 	/* Add to the table of active pipelines, so that signal handlers
@@ -640,6 +664,14 @@ void pipeline_start (pipeline *p)
 
 			if (p->commands[i]->nice)
 				nice (p->commands[i]->nice);
+
+			/* Restore signals. */
+			while (sigaction (SIGINT, &osa_sigint, NULL) &&
+			       errno == EINTR)
+				;
+			while (sigaction (SIGQUIT, &osa_sigquit, NULL) &&
+			       errno == EINTR)
+				;
 
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
@@ -842,6 +874,16 @@ int pipeline_wait (pipeline *p)
 	p->pids = NULL;
 	free (p->statuses);
 	p->statuses = NULL;
+
+	if (!--ignored_signals) {
+		/* Restore signals. */
+		while (sigaction (SIGINT, &osa_sigint, NULL) &&
+		       errno == EINTR)
+			;
+		while (sigaction (SIGQUIT, &osa_sigquit, NULL) &&
+		       errno == EINTR)
+			;
+	}
 
 	return ret;
 }
