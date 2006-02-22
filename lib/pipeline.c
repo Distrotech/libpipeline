@@ -219,6 +219,19 @@ command *command_new_argstr (const char *argstr)
 		error (FATAL, 0,
 		       _("badly formed configuration directive: '%s'"),
 		       argstr);
+	if (STREQ (arg, "exec")) {
+		/* Some old configuration files have "exec command" rather
+		 * than "command"; this worked fine when being evaluated by
+		 * a shell, but since exec is a shell builtin it doesn't
+		 * work when being executed directly. To work around this,
+		 * we just drop "exec" if it appears at the start of argstr.
+		 */
+		arg = argstr_get_word (&argstr);
+		if (!arg)
+			error (FATAL, 0,
+			       _("badly formed configuration directive: '%s'"),
+			       argstr);
+	}
 	cmd = command_new (arg);
 	free (arg);
 
