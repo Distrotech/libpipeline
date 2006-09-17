@@ -639,6 +639,8 @@ void pipeline_start (pipeline *p)
 		if (pid < 0)
 			error (FATAL, errno, _("fork failed"));
 		if (pid == 0) {
+			struct sigaction sa;
+
 			/* child */
 			pop_all_cleanups ();
 
@@ -683,6 +685,13 @@ void pipeline_start (pipeline *p)
 			       errno == EINTR)
 				;
 			while (sigaction (SIGQUIT, &osa_sigquit, NULL) &&
+			       errno == EINTR)
+				;
+			/* ... but we don't want to know about SIGPIPE. */
+			sa.sa_handler = SIG_IGN;
+			sigemptyset(&sa.sa_mask);
+			sa.sa_flags = 0;
+			while (sigaction (SIGPIPE, &sa, NULL) &&
 			       errno == EINTR)
 				;
 
