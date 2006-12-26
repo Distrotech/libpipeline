@@ -48,8 +48,8 @@ extern char *strerror ();
 #  include <libgen.h>
 #endif /* HAVE_LIBGEN_H */
 
+#include "gettext.h"
 #include <locale.h>
-#include <libintl.h>
 #define _(String) gettext (String)
 
 #include "manconfig.h"
