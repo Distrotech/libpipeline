@@ -548,16 +548,10 @@ void pipeline_start (pipeline *p)
 		sa.sa_handler = SIG_IGN;
 		sigemptyset (&sa.sa_mask);
 		sa.sa_flags = 0;
-		while (sigaction (SIGINT, &sa, &osa_sigint) < 0) {
-			if (errno == EINTR)
-				continue;
+		if (xsigaction (SIGINT, &sa, &osa_sigint) < 0)
 			error (FATAL, errno, "Couldn't ignore SIGINT");
-		}
-		while (sigaction (SIGQUIT, &sa, &osa_sigint) < 0) {
-			if (errno == EINTR)
-				continue;
+		if (xsigaction (SIGQUIT, &sa, &osa_sigint) < 0)
 			error (FATAL, errno, "Couldn't ignore SIGQUIT");
-		}
 	}
 
 	/* Add to the table of active pipelines, so that signal handlers
@@ -681,19 +675,13 @@ void pipeline_start (pipeline *p)
 				nice (p->commands[i]->nice);
 
 			/* Restore signals. */
-			while (sigaction (SIGINT, &osa_sigint, NULL) &&
-			       errno == EINTR)
-				;
-			while (sigaction (SIGQUIT, &osa_sigquit, NULL) &&
-			       errno == EINTR)
-				;
+			xsigaction (SIGINT, &osa_sigint, NULL);
+			xsigaction (SIGQUIT, &osa_sigquit, NULL);
 			/* ... but we don't want to know about SIGPIPE. */
 			sa.sa_handler = SIG_IGN;
 			sigemptyset(&sa.sa_mask);
 			sa.sa_flags = 0;
-			while (sigaction (SIGPIPE, &sa, NULL) &&
-			       errno == EINTR)
-				;
+			xsigaction (SIGPIPE, &sa, NULL);
 
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
@@ -902,12 +890,8 @@ int pipeline_wait (pipeline *p)
 
 	if (!--ignored_signals) {
 		/* Restore signals. */
-		while (sigaction (SIGINT, &osa_sigint, NULL) &&
-		       errno == EINTR)
-			;
-		while (sigaction (SIGQUIT, &osa_sigquit, NULL) &&
-		       errno == EINTR)
-			;
+		xsigaction (SIGINT, &osa_sigint, NULL);
+		xsigaction (SIGQUIT, &osa_sigquit, NULL);
 	}
 
 	return ret;
@@ -944,9 +928,6 @@ void pipeline_install_sigchld (void)
 #ifdef SA_RESTART
 	act.sa_flags |= SA_RESTART;
 #endif
-	while (sigaction (SIGCHLD, &act, NULL) == -1) {
-		if (errno == EINTR)
-			continue;
+	if (xsigaction (SIGCHLD, &act, NULL) == -1)
 		error (FATAL, errno, _("can't install SIGCHLD handler"));
-	}
 }
