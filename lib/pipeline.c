@@ -57,8 +57,6 @@ extern char *strerror ();
 #include "error.h"
 #include "pipeline.h"
 
-extern int debug;
-
 /* ---------------------------------------------------------------------- */
 
 /* Functions to build individual commands. */
@@ -534,8 +532,8 @@ void pipeline_start (pipeline *p)
 	assert (!p->pids);	/* pipeline not started already */
 	assert (!p->statuses);
 
-	if (debug) {
-		fputs ("Starting pipeline: ", stderr);
+	if (debug_level) {
+		debug ("Starting pipeline: ");
 		pipeline_dump (p, stderr);
 	}
 
@@ -707,9 +705,7 @@ void pipeline_start (pipeline *p)
 		       errno == EINTR)
 			;
 
-		if (debug)
-			fprintf (stderr, "Started \"%s\", pid %d\n",
-				 p->commands[i]->name, pid);
+		debug ("Started \"%s\", pid %d\n", p->commands[i]->name, pid);
 	}
 }
 
@@ -774,8 +770,8 @@ int pipeline_wait (pipeline *p)
 	int proc_count = p->ncommands;
 	int i;
 
-	if (debug) {
-		fputs ("Waiting for pipeline: ", stderr);
+	if (debug_level) {
+		debug ("Waiting for pipeline: ");
 		pipeline_dump (p, stderr);
 	}
 
@@ -812,9 +808,7 @@ int pipeline_wait (pipeline *p)
 	while (proc_count > 0) {
 		int r;
 
-		if (debug)
-			fprintf (stderr, "Active processes (%d):\n",
-				 proc_count);
+		debug ("Active processes (%d):\n", proc_count);
 
 		/* Check for any statuses already collected by SIGCHLD
 		 * handlers or the previous iteration before calling
@@ -826,10 +820,9 @@ int pipeline_wait (pipeline *p)
 			if (p->pids[i] == -1)
 				continue;
 
-			if (debug)
-				fprintf (stderr, "  \"%s\" (%d) -> %d\n",
-					 p->commands[i]->name, p->pids[i],
-					 p->statuses[i]);
+			debug ("  \"%s\" (%d) -> %d\n",
+			       p->commands[i]->name, p->pids[i],
+			       p->statuses[i]);
 
 			if (p->statuses[i] == -1)
 				continue;
