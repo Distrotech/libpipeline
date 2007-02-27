@@ -548,7 +548,7 @@ void pipeline_start (pipeline *p)
 		sa.sa_flags = 0;
 		if (xsigaction (SIGINT, &sa, &osa_sigint) < 0)
 			error (FATAL, errno, "Couldn't ignore SIGINT");
-		if (xsigaction (SIGQUIT, &sa, &osa_sigint) < 0)
+		if (xsigaction (SIGQUIT, &sa, &osa_sigquit) < 0)
 			error (FATAL, errno, "Couldn't ignore SIGQUIT");
 	}
 
