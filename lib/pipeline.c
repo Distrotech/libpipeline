@@ -631,8 +631,6 @@ void pipeline_start (pipeline *p)
 		if (pid < 0)
 			error (FATAL, errno, _("fork failed"));
 		if (pid == 0) {
-			struct sigaction sa;
-
 			/* child */
 			pop_all_cleanups ();
 
@@ -675,11 +673,6 @@ void pipeline_start (pipeline *p)
 			/* Restore signals. */
 			xsigaction (SIGINT, &osa_sigint, NULL);
 			xsigaction (SIGQUIT, &osa_sigquit, NULL);
-			/* ... but we don't want to know about SIGPIPE. */
-			sa.sa_handler = SIG_IGN;
-			sigemptyset(&sa.sa_mask);
-			sa.sa_flags = 0;
-			xsigaction (SIGPIPE, &sa, NULL);
 
 			execvp (p->commands[i]->name, p->commands[i]->argv);
 			error (EXEC_FAILED_EXIT_STATUS, errno,
@@ -833,7 +826,9 @@ int pipeline_wait (pipeline *p)
 			if (WIFSIGNALED (status)) {
 				int sig = WTERMSIG (status);
 #ifdef SIGPIPE
-				if (sig != SIGPIPE) {
+				if (sig == SIGPIPE)
+					status = 0;
+				else {
 #endif /* SIGPIPE */
 					if (WCOREDUMP (status))
 						error (0, 0,
