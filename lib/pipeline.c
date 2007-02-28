@@ -524,7 +524,7 @@ static struct sigaction osa_sigint, osa_sigquit;
 
 void pipeline_start (pipeline *p)
 {
-	int i;
+	int i, j;
 	int last_input = -1;
 	int infd[2];
 	sigset_t set, oset;
@@ -666,6 +666,18 @@ void pipeline_start (pipeline *p)
 				if (close (p->infd))
 					error (FATAL, errno,
 					       _("close failed"));
+
+			/* inputs and outputs from other active pipelines */
+			for (j = 0; j < n_active_pipelines; ++j) {
+				pipeline *active = active_pipelines[j];
+				if (!active || active == p)
+					continue;
+				/* ignore failures */
+				if (active->infd != -1)
+					close (active->infd);
+				if (active->outfd != -1)
+					close (active->outfd);
+			}
 
 			if (p->commands[i]->nice)
 				nice (p->commands[i]->nice);
