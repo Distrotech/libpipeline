@@ -605,7 +605,6 @@ void pipeline_start (pipeline *p)
 		int pdes[2];
 		pid_t pid;
 		int output_read = -1, output_write = -1;
-		sigset_t set, oset;
 
 		if (i != p->ncommands - 1 || p->want_out < 0) {
 			if (pipe (pdes) < 0)
