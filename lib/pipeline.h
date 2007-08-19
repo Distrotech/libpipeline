@@ -34,6 +34,7 @@ typedef struct command {
 	int argv_max;		/* size of allocated array */
 	char **argv;
 	int nice;
+	int discard_err;	/* discard stderr? */
 } command;
 
 typedef struct pipeline {

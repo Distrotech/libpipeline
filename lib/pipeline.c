@@ -30,6 +30,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <fcntl.h>
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
@@ -71,6 +72,7 @@ command *command_new (const char *name)
 	cmd->argv_max = 4;
 	cmd->argv = xmalloc (cmd->argv_max * sizeof *cmd->argv);
 	cmd->nice = 0;
+	cmd->discard_err = 0;
 
 	/* argv[0] is the basename of the command name. */
 	name_copy = xstrdup (name);
@@ -252,6 +254,7 @@ command *command_dup (command *cmd)
 	assert (newcmd->argc < newcmd->argv_max);
 	newcmd->argv = xmalloc (newcmd->argv_max * sizeof *newcmd->argv);
 	newcmd->nice = cmd->nice;
+	newcmd->discard_err = cmd->discard_err;
 
 	for (i = 0; i < cmd->argc; ++i)
 		newcmd->argv[i] = xstrdup (cmd->argv[i]);
@@ -680,6 +683,14 @@ void pipeline_start (pipeline *p)
 
 			if (p->commands[i]->nice)
 				nice (p->commands[i]->nice);
+
+			if (p->commands[i]->discard_err) {
+				int devnull = open ("/dev/null", O_WRONLY);
+				if (devnull != -1) {
+					dup2 (devnull, 2);
+					close (devnull);
+				}
+			}
 
 			/* Restore signals. */
 			xsigaction (SIGINT, &osa_sigint, NULL);
