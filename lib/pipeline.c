@@ -784,6 +784,7 @@ int pipeline_wait (pipeline *p)
 	int ret = 0;
 	int proc_count = p->ncommands;
 	int i;
+	int raise_signal = 0;
 
 	if (debug_level) {
 		debug ("Waiting for pipeline: ");
@@ -856,6 +857,11 @@ int pipeline_wait (pipeline *p)
 					status = 0;
 				else {
 #endif /* SIGPIPE */
+					/* signals currently blocked,
+					 * re-raise later
+					 */
+					if (sig == SIGINT || sig == SIGQUIT)
+						raise_signal = sig;
 					if (WCOREDUMP (status))
 						error (0, 0,
 						       _("%s: %s "
@@ -907,6 +913,9 @@ int pipeline_wait (pipeline *p)
 		xsigaction (SIGINT, &osa_sigint, NULL);
 		xsigaction (SIGQUIT, &osa_sigquit, NULL);
 	}
+
+	if (raise_signal)
+		raise (raise_signal);
 
 	return ret;
 }
