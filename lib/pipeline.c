@@ -806,14 +806,18 @@ int pipeline_wait (pipeline *p)
 	}
 
 	if (p->outfile) {
-		if (fclose (p->outfile))
+		if (fclose (p->outfile)) {
 			error (0, errno,
 			       _("closing pipeline output stream failed"));
+			ret = 1;
+		}
 		p->outfile = NULL;
 		p->outfd = -1;
 	} else if (p->outfd != -1) {
-		if (close (p->outfd))
+		if (close (p->outfd)) {
 			error (0, errno, _("closing pipeline output failed"));
+			ret = 1;
+		}
 		p->outfd = -1;
 	}
 
