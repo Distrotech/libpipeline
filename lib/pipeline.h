@@ -1,6 +1,6 @@
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002
  * Free Software Foundation, Inc.
- * Copyright (C) 2003 Colin Watson.
+ * Copyright (C) 2003, 2004, 2005, 2007 Colin Watson.
  *   Written for groff by James Clark (jjc@jclark.com)
  *   Adapted for man-db by Colin Watson.
  *
@@ -28,13 +28,29 @@
 #include <stdarg.h>
 #include <sys/types.h>
 
+enum command_tag {
+	COMMAND_PROCESS,
+	COMMAND_FUNCTION
+};
+
+typedef void command_function_type (void *);
+
 typedef struct command {
+	enum command_tag tag;
 	char *name;
-	int argc;
-	int argv_max;		/* size of allocated array */
-	char **argv;
 	int nice;
 	int discard_err;	/* discard stderr? */
+	union {
+		struct command_process {
+			int argc;
+			int argv_max;	/* size of allocated array */
+			char **argv;
+		} process;
+		struct command_function {
+			command_function_type *func;
+			void *data;
+		} function;
+	} u;
 } command;
 
 typedef struct pipeline {
@@ -49,17 +65,48 @@ typedef struct pipeline {
 	 * whole pipeline. If negative, pipeline_start() will create pipes
 	 * and store the input writing half and the output reading half in
 	 * infd and outfd as appropriate. If zero, input and output will be
-	 * left as stdin and stdout.
+	 * left as stdin and stdout unless want_infile or want_outfile
+	 * respectively is set.
 	 */
 	int want_in, want_out;
 
-	/* See above. The caller should consider these read-only. */
+	/* To be set (and freed) by the caller. If non-NULL, these contain
+	 * files to open and use as the input and output of the whole
+	 * pipeline. These are only used if want_in or want_out respectively
+	 * is zero. The value of using these rather than simply opening the
+	 * files before starting the pipeline is that the files will be
+	 * opened with the same privileges under which the pipeline is being
+	 * run.
+	 */
+	const char *want_infile, *want_outfile;
+
+	/* See above. Default to -1. The caller should consider these
+	 * read-only.
+	 */
 	int infd, outfd;
 
 	/* Set by pipeline_get_infile() and pipeline_get_outfile()
-	 * respectively.
+	 * respectively. Default to NULL.
 	 */
 	FILE *infile, *outfile;
+
+	/* Set by pipeline_connect() to record that this pipeline reads its
+	 * input from another pipeline. Defaults to NULL.
+	 */
+	struct pipeline *source;
+
+	/* Private buffer for use by read/peek functions. */
+	char *buffer;
+	size_t buflen, bufmax;
+
+	/* The last line returned by readline/peekline. Private. */
+	char *line_cache;
+
+	/* The amount of data at the end of buffer which has been
+	 * read-ahead, either by an explicit peek or by readline/peekline
+	 * reading a block at a time to save work. Private.
+	 */
+	size_t peek_offset;
 } pipeline;
 
 /* ---------------------------------------------------------------------- */
@@ -83,6 +130,17 @@ command *command_new_args (const char *name, ...) ATTRIBUTE_SENTINEL;
  */
 command *command_new_argstr (const char *argstr);
 
+/* Construct a new command that calls a given function rather than executing
+ * a process. The data argument is passed as the function's only argument.
+ * There is currently no provision for freeing data (TODO), so the caller
+ * should make sure that data's lifetime exceeds that of the command.
+ *
+ * command_* functions that deal with arguments cannot be used with the
+ * command returned by this function.
+ */
+command *command_new_function (const char *name,
+			       command_function_type *func, void *data);
+
 /* Return a duplicate of a command. */
 command *command_dup (command *cmd);
 
@@ -103,6 +161,14 @@ void command_args (command *cmd, ...) ATTRIBUTE_SENTINEL;
  */
 void command_argstr (command *cmd, const char *argstr);
 
+/* Dump a string representation of a command to stream. */
+void command_dump (command *cmd, FILE *stream);
+
+/* Return a string representation of a command. The caller should free the
+ * result.
+ */
+char *command_tostring (command *cmd);
+
 /* Destroy a command. Safely does nothing on NULL. */
 void command_free (command *cmd);
 
@@ -120,9 +186,25 @@ pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
 pipeline *pipeline_new_commands (command *cmd1, ...) ATTRIBUTE_SENTINEL;
 
 /* Joins two pipelines, neither of which are allowed to be started. Discards
- * want_out and outfd from p1, and want_in and infd from p2.
+ * want_out, want_outfile, and outfd from p1, and want_in, want_infile, and
+ * infd from p2.
  */
 pipeline *pipeline_join (pipeline *p1, pipeline *p2);
+
+/* Connect the input of one or more sink pipelines to the output of a source
+ * pipeline. The source pipeline may be started, but in that case want_out
+ * must be negative; otherwise, discards want_out from source. In any event,
+ * discards want_in from all sinks, none of which are allowed to be started.
+ * Terminate arguments with NULL.
+ *
+ * This is an application-level connection; data may be intercepted between
+ * the pipelines by the program before calling pipeline_pump(), which sets
+ * data flowing from the source to the sinks. It is primarily useful when
+ * more than one sink pipeline is involved, in which case the pipelines
+ * cannot simply be concatenated into one.
+ */
+void pipeline_connect (pipeline *source, pipeline *sink, ...)
+	ATTRIBUTE_SENTINEL;
 
 /* Add a command to a pipeline. */
 void pipeline_command (pipeline *p, command *cmd);
@@ -173,5 +255,50 @@ int pipeline_wait (pipeline *p);
  * pipeline_start().
  */
 void pipeline_install_sigchld (void);
+
+/* Pump data among one or more pipelines connected using pipeline_connect()
+ * until all source pipelines have reached end-of-file and all data has been
+ * written to all sinks (or failed). All relevant pipelines must be
+ * supplied: that is, no pipeline that has been connected to a source
+ * pipeline may be supplied unless that source pipeline is also supplied.
+ * Automatically starts all pipelines if they are not already started, but
+ * does not wait for them.
+ */
+void pipeline_pump (pipeline *p, ...) ATTRIBUTE_SENTINEL;
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to read output from pipelines. */
+
+/* Read len bytes of data from the pipeline, returning the data block. len
+ * is updated with the number of bytes read.
+ */
+const char *pipeline_read (pipeline *p, size_t *len);
+
+/* Look ahead in the pipeline's output for len bytes of data, returning the
+ * data block. len is updated with the number of bytes read. The starting
+ * position of the next read or peek is not affected by this call.
+ */
+const char *pipeline_peek (pipeline *p, size_t *len);
+
+/* Return the number of bytes of data that can be read using pipeline_read
+ * or pipeline_peek solely from the peek cache, without having to read from
+ * the pipeline itself (and thus potentially block).
+ */
+size_t pipeline_peek_size (pipeline *p);
+
+/* Skip over and discard len bytes of data from the peek cache. Asserts that
+ * enough data is available to skip, so you may want to check using
+ * pipeline_peek_size first.
+ */
+void pipeline_peek_skip (pipeline *p, size_t len);
+
+/* Read a line of data from the pipeline, returning it. */
+const char *pipeline_readline (pipeline *p);
+
+/* Look ahead in the pipeline's output for a line of data, returning it. The
+ * starting position of the next read or peek is not affected by this call.
+ */
+const char *pipeline_peekline (pipeline *p);
 
 #endif /* PIPELINE_H */

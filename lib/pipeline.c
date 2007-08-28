@@ -1,6 +1,6 @@
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
  * Free Software Foundation, Inc.
- * Copyright (C) 2003 Colin Watson.
+ * Copyright (C) 2003, 2004, 2005, 2006, 2007 Colin Watson.
  *   Written for groff by James Clark (jjc@jclark.com)
  *   Heavily adapted and extended for man-db by Colin Watson.
  *
@@ -29,17 +29,20 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
+/* TODO: requires POSIX 1003.1-2001 */
+#include <sys/select.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
+#include <fcntl.h>
 #include <stdarg.h>
 #include <assert.h>
-
-#ifdef HAVE_STRERROR
 #include <string.h>
-#else
+
+#ifndef HAVE_STRERROR
 extern char *strerror ();
 #endif
 
@@ -65,14 +68,19 @@ extern char *strerror ();
 command *command_new (const char *name)
 {
 	command *cmd = xmalloc (sizeof *cmd);
+	struct command_process *cmdp;
 	char *name_copy;
 
+	cmd->tag = COMMAND_PROCESS;
 	cmd->name = xstrdup (name);
-	cmd->argc = 0;
-	cmd->argv_max = 4;
-	cmd->argv = xmalloc (cmd->argv_max * sizeof *cmd->argv);
 	cmd->nice = 0;
 	cmd->discard_err = 0;
+
+	cmdp = &cmd->u.process;
+
+	cmdp->argc = 0;
+	cmdp->argv_max = 4;
+	cmdp->argv = xmalloc (cmdp->argv_max * sizeof *cmdp->argv);
 
 	/* argv[0] is the basename of the command name. */
 	name_copy = xstrdup (name);
@@ -243,42 +251,89 @@ command *command_new_argstr (const char *argstr)
 	return cmd;
 }
 
+command *command_new_function (const char *name,
+			       command_function_type *func, void *data)
+{
+	command *cmd = xmalloc (sizeof *cmd);
+	struct command_function *cmdf;
+
+	cmd->tag = COMMAND_FUNCTION;
+	cmd->name = xstrdup (name);
+	cmd->nice = 0;
+
+	cmdf = &cmd->u.function;
+
+	cmdf->func = func;
+	cmdf->data = data;
+
+	return cmd;
+}
+
 command *command_dup (command *cmd)
 {
 	command *newcmd = xmalloc (sizeof *newcmd);
 	int i;
 
+	newcmd->tag = cmd->tag;
 	newcmd->name = xstrdup (cmd->name);
-	newcmd->argc = cmd->argc;
-	newcmd->argv_max = cmd->argv_max;
-	assert (newcmd->argc < newcmd->argv_max);
-	newcmd->argv = xmalloc (newcmd->argv_max * sizeof *newcmd->argv);
 	newcmd->nice = cmd->nice;
 	newcmd->discard_err = cmd->discard_err;
 
-	for (i = 0; i < cmd->argc; ++i)
-		newcmd->argv[i] = xstrdup (cmd->argv[i]);
-	newcmd->argv[cmd->argc] = NULL;
+	switch (newcmd->tag) {
+		case COMMAND_PROCESS: {
+			struct command_process *cmdp = &cmd->u.process;
+			struct command_process *newcmdp = &newcmd->u.process;
+
+			newcmdp->argc = cmdp->argc;
+			newcmdp->argv_max = cmdp->argv_max;
+			assert (newcmdp->argc < newcmdp->argv_max);
+			newcmdp->argv = xmalloc
+				(newcmdp->argv_max * sizeof *newcmdp->argv);
+
+			for (i = 0; i < cmdp->argc; ++i)
+				newcmdp->argv[i] = xstrdup (cmdp->argv[i]);
+			newcmdp->argv[cmdp->argc] = NULL;
+
+			break;
+		}
+
+		case COMMAND_FUNCTION: {
+			struct command_function *cmdf = &cmd->u.function;
+			struct command_function *newcmdf = &newcmd->u.function;
+
+			newcmdf->func = cmdf->func;
+			newcmdf->data = cmdf->data;
+
+			break;
+		}
+	}
 
 	return newcmd;
 }
 
 void command_arg (command *cmd, const char *arg)
 {
-	if (cmd->argc + 1 >= cmd->argv_max) {
-		cmd->argv_max *= 2;
-		cmd->argv = xrealloc (cmd->argv,
-				      cmd->argv_max * sizeof *cmd->argv);
+	struct command_process *cmdp;
+
+	assert (cmd->tag == COMMAND_PROCESS);
+	cmdp = &cmd->u.process;
+
+	if (cmdp->argc + 1 >= cmdp->argv_max) {
+		cmdp->argv_max *= 2;
+		cmdp->argv = xrealloc (cmdp->argv,
+				       cmdp->argv_max * sizeof *cmdp->argv);
 	}
 
-	cmd->argv[cmd->argc++] = xstrdup (arg);
-	assert (cmd->argc < cmd->argv_max);
-	cmd->argv[cmd->argc] = NULL;
+	cmdp->argv[cmdp->argc++] = xstrdup (arg);
+	assert (cmdp->argc < cmdp->argv_max);
+	cmdp->argv[cmdp->argc] = NULL;
 }
 
 void command_argv (command *cmd, va_list argv)
 {
 	const char *arg = va_arg (argv, const char *);
+
+	assert (cmd->tag == COMMAND_PROCESS);
 
 	while (arg) {
 		command_arg (cmd, arg);
@@ -290,6 +345,8 @@ void command_args (command *cmd, ...)
 {
 	va_list argv;
 
+	assert (cmd->tag == COMMAND_PROCESS);
+
 	va_start (argv, cmd);
 	command_argv (cmd, argv);
 	va_end (argv);
@@ -299,10 +356,61 @@ void command_argstr (command *cmd, const char *argstr)
 {
 	char *arg;
 
+	assert (cmd->tag == COMMAND_PROCESS);
+
 	while ((arg = argstr_get_word (&argstr))) {
 		command_arg (cmd, arg);
 		free (arg);
 	}
+}
+
+void command_dump (command *cmd, FILE *stream)
+{
+	switch (cmd->tag) {
+		case COMMAND_PROCESS: {
+			struct command_process *cmdp = &cmd->u.process;
+			int i;
+
+			fputs (cmd->name, stream);
+			for (i = 1; i < cmdp->argc; ++i) {
+				/* TODO: escape_shell()? */
+				putc (' ', stream);
+				fputs (cmdp->argv[i], stream);
+			}
+
+			break;
+		}
+
+		case COMMAND_FUNCTION:
+			fputs (cmd->name, stream);
+			break;
+	}
+}
+
+char *command_tostring (command *cmd)
+{
+	char *out = NULL;
+
+	switch (cmd->tag) {
+		case COMMAND_PROCESS: {
+			struct command_process *cmdp = &cmd->u.process;
+			int i;
+
+			out = strappend (out, cmd->name, NULL);
+			for (i = 1; i < cmdp->argc; ++i)
+				/* TODO: escape_shell()? */
+				out = strappend (out, " ", cmdp->argv[i],
+						 NULL);
+
+			break;
+		}
+
+		case COMMAND_FUNCTION:
+			out = xstrdup (cmd->name);
+			break;
+	}
+
+	return out;
 }
 
 void command_free (command *cmd)
@@ -313,9 +421,22 @@ void command_free (command *cmd)
 		return;
 
 	free (cmd->name);
-	for (i = 0; i < cmd->argc; ++i)
-		free (cmd->argv[i]);
-	free (cmd->argv);
+
+	switch (cmd->tag) {
+		case COMMAND_PROCESS: {
+			struct command_process *cmdp = &cmd->u.process;
+
+			for (i = 0; i < cmdp->argc; ++i)
+				free (cmdp->argv[i]);
+			free (cmdp->argv);
+
+			break;
+		}
+
+		case COMMAND_FUNCTION:
+			break;
+	}
+
 	free (cmd);
 }
 
@@ -332,8 +453,14 @@ pipeline *pipeline_new (void)
 	p->pids = NULL;
 	p->statuses = NULL;
 	p->want_in = p->want_out = 0;
+	p->want_infile = p->want_outfile = NULL;
 	p->infd = p->outfd = -1;
 	p->infile = p->outfile = NULL;
+	p->source = NULL;
+	p->buffer = NULL;
+	p->buflen = p->bufmax = 0;
+	p->line_cache = NULL;
+	p->peek_offset = 0;
 	return p;
 }
 
@@ -373,7 +500,9 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->pids = NULL;
 	p->statuses = NULL;
 	p->want_in = p1->want_in;
+	p->want_infile = p1->want_infile;
 	p->want_out = p2->want_out;
+	p->want_outfile = p2->want_outfile;
 	p->infd = p1->infd;
 	p->outfd = p2->outfd;
 	p->infile = p1->infile;
@@ -385,6 +514,31 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 		p->commands[p1->ncommands + i] = command_dup (p2->commands[i]);
 
 	return p;
+}
+
+void pipeline_connect (pipeline *source, pipeline *sink, ...)
+{
+	va_list argv;
+	pipeline *arg;
+
+	/* We must be in control of output from the source pipeline. If the
+	 * source isn't started, we can force this.
+	 */
+	if (!source->pids) {
+		source->want_out = -1;
+		source->want_outfile = NULL;
+	}
+	assert (source->want_out < 0);
+	assert (!source->want_outfile);
+
+	va_start (argv, sink);
+	for (arg = sink; arg; arg = va_arg (argv, pipeline *)) {
+		assert (!arg->pids); /* not started */
+		arg->source = source;
+		arg->want_in = -1;
+		arg->want_infile = NULL;
+	}
+	va_end (argv);
 }
 
 void pipeline_command (pipeline *p, command *cmd)
@@ -461,33 +615,27 @@ FILE *pipeline_get_outfile (pipeline *p)
 
 void pipeline_dump (pipeline *p, FILE *stream)
 {
-	int i, j;
+	int i;
 
 	for (i = 0; i < p->ncommands; ++i) {
-		fputs (p->commands[i]->name, stream);
-		for (j = 1; j < p->commands[i]->argc; ++j) {
-			/* TODO: escape_shell()? */
-			putc (' ', stream);
-			fputs (p->commands[i]->argv[j], stream);
-		}
+		command_dump (p->commands[i], stream);
 		if (i < p->ncommands - 1)
 			fputs (" | ", stream);
 	}
-	fprintf (stream, " [input: %d, output: %d]\n",
-		 p->want_in, p->want_out);
+	fprintf (stream, " [input: {%d, %s}, output: {%d, %s}]\n",
+		 p->want_in, p->want_infile ? p->want_infile : "NULL",
+		 p->want_out, p->want_outfile ? p->want_outfile : "NULL");
 }
 
 char *pipeline_tostring (pipeline *p)
 {
 	char *out = NULL;
-	int i, j;
+	int i;
 
 	for (i = 0; i < p->ncommands; ++i) {
-		out = strappend (out, p->commands[i]->name, NULL);
-		for (j = 1; j < p->commands[i]->argc; ++j)
-			/* TODO: escape_shell()? */
-			out = strappend (out, " ", p->commands[i]->argv[j],
-					 NULL);
+		char *cmdout = command_tostring (p->commands[i]);
+		out = strappend (out, cmdout, NULL);
+		free (cmdout);
 		if (i < p->ncommands - 1)
 			out = strappend (out, " | ", NULL);
 	}
@@ -531,6 +679,9 @@ void pipeline_start (pipeline *p)
 	int last_input = -1;
 	int infd[2];
 	sigset_t set, oset;
+
+	/* Flush all pending output so that subprocesses don't inherit it. */
+	fflush (NULL);
 
 	assert (!p->pids);	/* pipeline not started already */
 	assert (!p->statuses);
@@ -603,6 +754,12 @@ void pipeline_start (pipeline *p)
 		p->infd = infd[1];
 	} else if (p->want_in > 0)
 		last_input = p->want_in;
+	else if (p->want_infile) {
+		last_input = open (p->want_infile, O_RDONLY);
+		if (last_input < 0)
+			error (FATAL, errno, _("can't open %s"),
+			       p->want_infile);
+	}
 
 	for (i = 0; i < p->ncommands; i++) {
 		int pdes[2];
@@ -616,8 +773,17 @@ void pipeline_start (pipeline *p)
 				p->outfd = pdes[0];
 			output_read = pdes[0];
 			output_write = pdes[1];
-		} else if (i == p->ncommands - 1 && p->want_out > 0)
-			output_write = p->want_out;
+		} else if (i == p->ncommands - 1) {
+			if (p->want_out > 0)
+				output_write = p->want_out;
+			else if (p->want_outfile) {
+				output_write = open (p->want_outfile,
+						     O_WRONLY);
+				if (output_write < 0)
+					error (FATAL, errno, "can't open %s",
+					       p->want_outfile);
+			}
+		}
 
 		/* Block SIGCHLD so that the signal handler doesn't collect
 		 * the exit status before we've filled in the pids array.
@@ -696,7 +862,26 @@ void pipeline_start (pipeline *p)
 			xsigaction (SIGINT, &osa_sigint, NULL);
 			xsigaction (SIGQUIT, &osa_sigquit, NULL);
 
-			execvp (p->commands[i]->name, p->commands[i]->argv);
+			switch (p->commands[i]->tag) {
+				case COMMAND_PROCESS: {
+					struct command_process *cmdp =
+						&p->commands[i]->u.process;
+					execvp (p->commands[i]->name,
+						cmdp->argv);
+				}
+
+				/* TODO: ideally, could there be a facility
+				 * to execute non-blocking functions without
+				 * needing to fork?
+				 */
+				case COMMAND_FUNCTION: {
+					struct command_function *cmdf =
+						&p->commands[i]->u.function;
+					(*cmdf->func) (cmdf->data);
+					exit (0);
+				}
+			}
+
 			error (EXEC_FAILED_EXIT_STATUS, errno,
 			       _("can't execute %s"), p->commands[i]->name);
 		}
@@ -722,6 +907,9 @@ void pipeline_start (pipeline *p)
 
 		debug ("Started \"%s\", pid %d\n", p->commands[i]->name, pid);
 	}
+
+	if (p->ncommands == 0)
+		p->outfd = last_input;
 }
 
 static int sigchld = 0;
@@ -953,4 +1141,479 @@ void pipeline_install_sigchld (void)
 #endif
 	if (xsigaction (SIGCHLD, &act, NULL) == -1)
 		error (FATAL, errno, _("can't install SIGCHLD handler"));
+}
+
+void pipeline_pump (pipeline *p, ...)
+{
+	va_list argv;
+	int argc, i, j;
+	pipeline *arg, **pieces;
+	size_t *pos;
+	int *known_source, *blocking_in, *blocking_out, *waiting, *write_error;
+	struct sigaction sa, osa_sigpipe;
+
+	/* Count pipelines and allocate space for arrays. */
+	va_start (argv, p);
+	argc = 0;
+	for (arg = p; arg; arg = va_arg (argv, pipeline *))
+		++argc;
+	va_end (argv);
+	pieces = xmalloc (argc * sizeof *pieces);
+	pos = xmalloc (argc * sizeof *pos);
+	known_source = xmalloc (argc * sizeof *known_source);
+	blocking_in = xmalloc (argc * sizeof *blocking_in);
+	blocking_out = xmalloc (argc * sizeof *blocking_out);
+	waiting = xmalloc (argc * sizeof *waiting);
+	write_error = xmalloc (argc * sizeof *write_error);
+
+	/* Set up arrays of pipelines and their read positions. Start all
+	 * pipelines if necessary.
+	 */
+	va_start (argv, p);
+	for (arg = p, i = 0; i < argc; arg = va_arg (argv, pipeline *), ++i) {
+		pieces[i] = arg;
+		pos[i] = 0;
+		if (!pieces[i]->pids)
+			pipeline_start (pieces[i]);
+	}
+	assert (arg == NULL);
+	va_end (argv);
+
+	/* All source pipelines must be supplied as arguments. */
+	memset (known_source, 0, argc * sizeof *known_source);
+	for (i = 0; i < argc; ++i) {
+		int found = 0;
+		if (!pieces[i]->source)
+			continue;
+		for (j = 0; j < argc; ++j) {
+			if (pieces[i]->source == pieces[j]) {
+				known_source[j] = found = 1;
+				break;
+			}
+		}
+		assert (found);
+	}
+
+	memset (blocking_in, 0, argc * sizeof *blocking_in);
+	memset (blocking_out, 0, argc * sizeof *blocking_out);
+	for (i = 0; i < argc; ++i) {
+		int flags;
+		if (pieces[i]->infd != -1) {
+			flags = fcntl (pieces[i]->infd, F_GETFL);
+			if (!(flags & O_NONBLOCK)) {
+				blocking_in[i] = 1;
+				fcntl (pieces[i]->infd, F_SETFL,
+				       flags | O_NONBLOCK);
+			}
+		}
+		if (pieces[i]->outfd != -1) {
+			flags = fcntl (pieces[i]->outfd, F_GETFL);
+			if (!(flags & O_NONBLOCK)) {
+				blocking_out[i] = 1;
+				fcntl (pieces[i]->outfd, F_SETFL,
+				       flags | O_NONBLOCK);
+			}
+		}
+	}
+
+	memset (waiting, 0, argc * sizeof *waiting);
+	memset (write_error, 0, argc * sizeof *write_error);
+
+#ifdef SIGPIPE
+	sa.sa_handler = SIG_IGN;
+	sigemptyset (&sa.sa_mask);
+	sa.sa_flags = 0;
+	xsigaction (SIGPIPE, &sa, &osa_sigpipe);
+#endif
+
+#ifdef SA_RESTART
+	/* We rely on getting EINTR from select. */
+	xsigaction (SIGCHLD, NULL, &sa);
+	sa.sa_flags &= ~SA_RESTART;
+	xsigaction (SIGCHLD, &sa, NULL);
+#endif
+
+	for (;;) {
+		fd_set rfds, wfds;
+		int maxfd = -1;
+		int ret;
+
+		/* If a source dies and all data from it has been written to
+		 * all sinks, close the writing end of the pipe to each of
+		 * its sinks.
+		 */
+		for (i = 0; i < argc; ++i) {
+			if (!known_source[i] || pieces[i]->outfd != -1 ||
+			    pipeline_peek_size (pieces[i]))
+				continue;
+			for (j = 0; j < argc; ++j) {
+				if (pieces[j]->source == pieces[i] &&
+				    pieces[j]->infd != -1) {
+					if (close (pieces[j]->infd))
+						error (0, errno,
+						       _("closing pipeline "
+							 "input failed"));
+					pieces[j]->infd = -1;
+				}
+			}
+		}
+
+		/* If all sinks on a source have died, close the reading end
+		 * of the pipe from that source.
+		 */
+		for (i = 0; i < argc; ++i) {
+			int got_sink = 0;
+			if (!known_source[i] || pieces[i]->outfd == -1)
+				continue;
+			for (j = 0; j < argc; ++j) {
+				if (pieces[j]->source == pieces[i] &&
+				    pieces[j]->infd != -1) {
+					got_sink = 1;
+					break;
+				}
+			}
+			if (got_sink)
+				continue;
+			if (close (pieces[i]->outfd))
+				error (0, errno,
+				       _("closing pipeline output failed"));
+			pieces[i]->outfd = -1;
+		}
+
+		FD_ZERO (&rfds);
+		FD_ZERO (&wfds);
+		for (i = 0; i < argc; ++i) {
+			if (pieces[i]->source && pieces[i]->infd != -1 &&
+			    !waiting[i]) {
+				FD_SET (pieces[i]->infd, &wfds);
+				if (pieces[i]->infd > maxfd)
+					maxfd = pieces[i]->infd;
+			}
+			if (known_source[i] && pieces[i]->outfd != -1) {
+				FD_SET (pieces[i]->outfd, &rfds);
+				if (pieces[i]->outfd > maxfd)
+					maxfd = pieces[i]->outfd;
+			}
+		}
+		if (maxfd == -1)
+			break; /* nothing meaningful left to do */
+
+		ret = select (maxfd + 1, &rfds, &wfds, NULL, NULL);
+		if (ret < 0 && errno == EINTR) {
+			/* Did a source or sink pipeline die? */
+			for (i = 0; i < argc; ++i) {
+				if (pieces[i]->ncommands == 0)
+					continue;
+				if (known_source[i] &&
+				    pieces[i]->outfd != -1) {
+					int last = pieces[i]->ncommands - 1;
+					assert (pieces[i]->statuses);
+					if (pieces[i]->statuses[last] != -1) {
+						debug ("source pipeline %d "
+						       "died\n", i);
+						close (pieces[i]->outfd);
+						pieces[i]->outfd = -1;
+					}
+				}
+				if (pieces[i]->source &&
+				    pieces[i]->infd != -1) {
+					assert (pieces[i]->statuses);
+					if (pieces[i]->statuses[0] != -1) {
+						debug ("sink pipeline %d "
+						       "died\n", i);
+						close (pieces[i]->infd);
+						pieces[i]->infd = -1;
+					}
+				}
+			}
+			continue;
+		} else if (ret < 0)
+			error (FATAL, errno, "select");
+
+		/* Read a block of data from each available source pipeline. */
+		for (i = 0; i < argc; ++i) {
+			size_t peek_size, len;
+
+			if (!known_source[i] || pieces[i]->outfd == -1)
+				continue;
+			if (!FD_ISSET (pieces[i]->outfd, &rfds))
+				continue;
+
+			peek_size = pipeline_peek_size (pieces[i]);
+			len = peek_size + 4096;
+			if (!pipeline_peek (pieces[i], &len) ||
+			    len == peek_size) {
+				/* Error or end-of-file; skip this pipeline
+				 * from now on.
+				 */
+				debug ("source pipeline %d returned error "
+				       "or EOF\n", i);
+				close (pieces[i]->outfd);
+				pieces[i]->outfd = -1;
+			} else
+				/* This is rather a large hammer. Whenever
+				 * any data is read from any source
+				 * pipeline, we go through and retry all
+				 * sink pipelines, even if they aren't
+				 * receiving data from the source in
+				 * question. This probably results in a few
+				 * more passes around the select() loop, but
+				 * it eliminates some annoyingly fiddly
+				 * bookkeeping.
+				 */
+				memset (waiting, 0, argc * sizeof *waiting);
+		}
+
+		/* Write as much data as we can to each available sink
+		 * pipeline.
+		 */
+		for (i = 0; i < argc; ++i) {
+			const char *block;
+			size_t peek_size;
+			ssize_t w;
+			size_t minpos;
+
+			if (!pieces[i]->source || pieces[i]->infd == -1)
+				continue;
+			if (!FD_ISSET (pieces[i]->infd, &wfds))
+				continue;
+			peek_size = pipeline_peek_size (pieces[i]->source);
+			if (peek_size <= pos[i]) {
+				/* Disable reading until data is read from a
+				 * source fd or a child process exits, so
+				 * that we neither spin nor block if the
+				 * source is slow.
+				 */
+				waiting[i] = 1;
+				continue;
+			}
+
+			/* peek a block from the source */
+			block = pipeline_peek (pieces[i]->source, &peek_size);
+			/* should all already be in the peek cache */
+			assert (block);
+			assert (peek_size);
+
+			/* write as much of it as will fit to the sink */
+			for (;;) {
+				w = write (pieces[i]->infd, block + pos[i],
+					   peek_size - pos[i]);
+				if (w >= 0 || errno == EAGAIN)
+					break;
+				if (errno == EINTR)
+					continue;
+				/* It may be useful for other processes to
+				 * continue even though this one fails, so
+				 * don't FATAL yet.
+				 */
+				if (errno != EPIPE)
+					write_error[i] = errno;
+				close (pieces[i]->infd);
+				pieces[i]->infd = -1;
+				goto next_sink;
+			}
+			pos[i] += w;
+			minpos = pos[i];
+
+			/* check other sinks on the same source, and update
+			 * the source's read position if earlier data is no
+			 * longer needed by any sink
+			 */
+			for (j = 0; j < argc; ++j) {
+				if (pieces[i]->source != pieces[j]->source ||
+				    pieces[j]->infd == -1)
+					continue;
+				if (pos[j] < minpos)
+					minpos = pos[j];
+				/* If the source is dead and all data has
+				 * been written to this sink, close the
+				 * writing end of the pipe to the sink.
+				 */
+				if (pieces[j]->source->outfd == -1 &&
+				    pos[j] >= peek_size) {
+					close (pieces[j]->infd);
+					pieces[j]->infd = -1;
+				}
+			}
+
+			/* If some data has been written to all sinks,
+			 * discard it from the source's peek cache.
+			 */
+			pipeline_peek_skip (pieces[i]->source, minpos);
+			for (j = 0; j < argc; ++j) {
+				if (pieces[i]->source == pieces[j]->source)
+					pos[j] -= minpos;
+			}
+next_sink:		;
+		}
+	}
+
+#ifdef SA_RESTART
+	xsigaction (SIGCHLD, NULL, &sa);
+	sa.sa_flags |= SA_RESTART;
+	xsigaction (SIGCHLD, &sa, NULL);
+#endif
+
+#ifdef SIGPIPE
+	xsigaction (SIGPIPE, &osa_sigpipe, NULL);
+#endif
+
+	for (i = 0; i < argc; ++i) {
+		int flags;
+		if (blocking_in[i] && pieces[i]->infd != -1) {
+			flags = fcntl (pieces[i]->infd, F_GETFL);
+			fcntl (pieces[i]->infd, F_SETFL, flags & ~O_NONBLOCK);
+		}
+		if (blocking_out[i] && pieces[i]->outfd != -1) {
+			flags = fcntl (pieces[i]->outfd, F_GETFL);
+			fcntl (pieces[i]->outfd, F_SETFL, flags & ~O_NONBLOCK);
+		}
+	}
+
+	for (i = 0; i < argc; ++i) {
+		if (write_error[i])
+			error (FATAL, write_error[i], "write to sink %d", i);
+	}
+
+	free (write_error);
+	free (waiting);
+	free (blocking_out);
+	free (blocking_in);
+	free (pieces);
+	free (pos);
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Functions to read output from pipelines. */
+
+static const char *get_block (pipeline *p, size_t *len, int peek)
+{
+	size_t readstart = 0, retstart = 0;
+	size_t space = p->bufmax;
+	size_t toread = *len;
+	ssize_t r;
+
+	if (p->buffer && p->peek_offset) {
+		if (p->peek_offset >= toread) {
+			/* We've got the whole thing in the peek cache; just
+			 * return it.
+			 */
+			const char *buffer;
+			assert (p->peek_offset <= p->buflen);
+			buffer = p->buffer + p->buflen - p->peek_offset;
+			if (!peek)
+				p->peek_offset -= toread;
+			return buffer;
+		} else {
+			readstart = p->buflen;
+			retstart = p->buflen - p->peek_offset;
+			space -= p->buflen;
+			toread -= p->peek_offset;
+		}
+	}
+
+	if (toread > space) {
+		if (p->buffer)
+			p->bufmax = readstart + toread;
+		else
+			p->bufmax = toread;
+		p->buffer = realloc (p->buffer, p->bufmax + 1);
+	}
+
+	if (!peek)
+		p->peek_offset = 0;
+
+	assert (p->outfd != -1);
+	r = read (p->outfd, p->buffer + readstart, toread);
+	if (r == -1)
+		return NULL;
+	p->buflen = readstart + r;
+	if (peek)
+		p->peek_offset += r;
+	*len -= (toread - r);
+
+	return p->buffer + retstart;
+}
+
+const char *pipeline_read (pipeline *p, size_t *len)
+{
+	return get_block (p, len, 0);
+}
+
+const char *pipeline_peek (pipeline *p, size_t *len)
+{
+	return get_block (p, len, 1);
+}
+
+size_t pipeline_peek_size (pipeline *p)
+{
+	if (!p->buffer)
+		return 0;
+	return p->peek_offset;
+}
+
+void pipeline_peek_skip (pipeline *p, size_t len)
+{
+	if (len > 0) {
+		assert (p->buffer);
+		assert (len <= p->peek_offset);
+		p->peek_offset -= len;
+	}
+}
+
+/* readline and peekline repeatedly peek larger and larger buffers until
+ * they find a newline or they fail. readline then adjusts the peek offset.
+ */
+
+static const char *get_line (pipeline *p, size_t *outlen)
+{
+	const size_t block = 4096;
+	const char *buffer = NULL, *end = NULL;
+	int i;
+
+	if (p->line_cache) {
+		free (p->line_cache);
+		p->line_cache = NULL;
+	}
+
+	if (outlen)
+		*outlen = 0;
+
+	for (i = 0; ; ++i) {
+		size_t plen = block * (i + 1);
+
+		buffer = get_block (p, &plen, 1);
+		if (!buffer || plen == 0)
+			return NULL;
+
+		end = strchr (buffer + block * i, '\n');
+		if (!end && plen < block * (i + 1))
+			/* end of file, no newline found */
+			end = buffer + plen - 1;
+		if (end)
+			break;
+	}
+
+	if (end) {
+		p->line_cache = xstrndup (buffer, end - buffer + 1);
+		if (outlen)
+			*outlen = end - buffer + 1;
+		return p->line_cache;
+	} else
+		return NULL;
+}
+
+const char *pipeline_readline (pipeline *p)
+{
+	size_t buflen;
+	const char *buffer = get_line (p, &buflen);
+	if (buffer)
+		p->peek_offset -= buflen;
+	return buffer;
+}
+
+const char *pipeline_peekline (pipeline *p)
+{
+	return get_line (p, NULL);
 }
