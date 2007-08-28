@@ -1402,9 +1402,9 @@ void pipeline_pump (pipeline *p, ...)
 					break;
 				if (errno == EINTR)
 					continue;
-				/* Failure to save a cat page shouldn't
-				 * impede displaying the page in a pager, so
-				 * we report errors later.
+				/* It may be useful for other processes to
+				 * continue even though this one fails, so
+				 * don't FATAL yet.
 				 */
 				if (errno != EPIPE)
 					write_error[i] = errno;
