@@ -680,6 +680,9 @@ void pipeline_start (pipeline *p)
 	int infd[2];
 	sigset_t set, oset;
 
+	/* Flush all pending output so that subprocesses don't inherit it. */
+	fflush (NULL);
+
 	assert (!p->pids);	/* pipeline not started already */
 	assert (!p->statuses);
 
