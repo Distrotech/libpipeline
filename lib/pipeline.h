@@ -237,7 +237,9 @@ void pipeline_dump (pipeline *p, FILE *stream);
 /* Return a string representation of p. The caller should free the result. */
 char *pipeline_tostring (pipeline *p);
 
-/* Destroy a pipeline and all its commands. Safely does nothing on NULL. */
+/* Destroy a pipeline and all its commands. Safely does nothing on NULL.
+ * May wait for the pipeline to complete if it has not already done so.
+ */
 void pipeline_free (pipeline *p);
 
 /* ---------------------------------------------------------------------- */

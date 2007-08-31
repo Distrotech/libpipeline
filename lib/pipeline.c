@@ -649,6 +649,8 @@ void pipeline_free (pipeline *p)
 
 	if (!p)
 		return;
+	if (p->pids)
+		pipeline_wait (p);
 
 	for (i = 0; i < p->ncommands; ++i)
 		command_free (p->commands[i]);
