@@ -870,6 +870,7 @@ void pipeline_start (pipeline *p)
 						&p->commands[i]->u.process;
 					execvp (p->commands[i]->name,
 						cmdp->argv);
+					break;
 				}
 
 				/* TODO: ideally, could there be a facility
