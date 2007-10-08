@@ -154,7 +154,7 @@ static char *argstr_get_word (const char **argstr)
 		/* Copy any accumulated literal characters. */
 		if (litstart < *argstr) {
 			char *tmp = xstrndup (litstart, *argstr - litstart);
-			out = strappend (out, tmp, NULL);
+			out = appendstr (out, tmp, NULL);
 			free (tmp);
 		}
 
@@ -192,7 +192,7 @@ static char *argstr_get_word (const char **argstr)
 					return NULL;
 				}
 				backslashed[1] = '\0';
-				out = strappend (out, backslashed, NULL);
+				out = appendstr (out, backslashed, NULL);
 				litstart = ++*argstr;
 				break;
 
@@ -211,7 +211,7 @@ static char *argstr_get_word (const char **argstr)
 	/* Copy any accumulated literal characters. */
 	if (litstart < *argstr) {
 		char *tmp = xstrndup (litstart, *argstr - litstart);
-		out = strappend (out, tmp, NULL);
+		out = appendstr (out, tmp, NULL);
 	}
 
 	return out;
@@ -396,10 +396,10 @@ char *command_tostring (command *cmd)
 			struct command_process *cmdp = &cmd->u.process;
 			int i;
 
-			out = strappend (out, cmd->name, NULL);
+			out = appendstr (out, cmd->name, NULL);
 			for (i = 1; i < cmdp->argc; ++i)
 				/* TODO: escape_shell()? */
-				out = strappend (out, " ", cmdp->argv[i],
+				out = appendstr (out, " ", cmdp->argv[i],
 						 NULL);
 
 			break;
@@ -634,10 +634,10 @@ char *pipeline_tostring (pipeline *p)
 
 	for (i = 0; i < p->ncommands; ++i) {
 		char *cmdout = command_tostring (p->commands[i]);
-		out = strappend (out, cmdout, NULL);
+		out = appendstr (out, cmdout, NULL);
 		free (cmdout);
 		if (i < p->ncommands - 1)
-			out = strappend (out, " | ", NULL);
+			out = appendstr (out, " | ", NULL);
 	}
 
 	return out;
