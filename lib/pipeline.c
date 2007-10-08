@@ -1521,7 +1521,7 @@ static const char *get_block (pipeline *p, size_t *len, int peek)
 			p->bufmax = readstart + toread;
 		else
 			p->bufmax = toread;
-		p->buffer = realloc (p->buffer, p->bufmax + 1);
+		p->buffer = xrealloc (p->buffer, p->bufmax + 1);
 	}
 
 	if (!peek)
