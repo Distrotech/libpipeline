@@ -43,9 +43,7 @@
 #include <string.h>
 #include <sys/wait.h>
 
-#ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-#endif /* HAVE_LIBGEN_H */
+#include "dirname.h"
 
 #include "gettext.h"
 #include <locale.h>
@@ -64,7 +62,7 @@ command *command_new (const char *name)
 {
 	command *cmd = xmalloc (sizeof *cmd);
 	struct command_process *cmdp;
-	char *name_copy;
+	char *name_base;
 
 	cmd->tag = COMMAND_PROCESS;
 	cmd->name = xstrdup (name);
@@ -78,9 +76,9 @@ command *command_new (const char *name)
 	cmdp->argv = xmalloc (cmdp->argv_max * sizeof *cmdp->argv);
 
 	/* argv[0] is the basename of the command name. */
-	name_copy = xstrdup (name);
-	command_arg (cmd, basename (name_copy));
-	free (name_copy);
+	name_base = base_name (name);
+	command_arg (cmd, name_base);
+	free (name_base);
 
 	return cmd;
 }
