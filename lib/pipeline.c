@@ -41,11 +41,6 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <string.h>
-
-#ifndef HAVE_STRERROR
-extern char *strerror ();
-#endif
-
 #include <sys/wait.h>
 
 #ifdef HAVE_LIBGEN_H
