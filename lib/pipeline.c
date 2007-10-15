@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
-/* TODO: requires POSIX 1003.1-2001 */
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
