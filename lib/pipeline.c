@@ -36,7 +36,6 @@
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
-#include <fcntl.h>
 #include <stdarg.h>
 #include <assert.h>
 #include <string.h>
