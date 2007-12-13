@@ -56,7 +56,7 @@
 
 command *command_new (const char *name)
 {
-	command *cmd = xmalloc (sizeof *cmd);
+	command *cmd = XMALLOC (command);
 	struct command_process *cmdp;
 	char *name_base;
 
@@ -69,7 +69,7 @@ command *command_new (const char *name)
 
 	cmdp->argc = 0;
 	cmdp->argv_max = 4;
-	cmdp->argv = xmalloc (cmdp->argv_max * sizeof *cmdp->argv);
+	cmdp->argv = xnmalloc (cmdp->argv_max, sizeof *cmdp->argv);
 
 	/* argv[0] is the basename of the command name. */
 	name_base = base_name (name);
@@ -243,7 +243,7 @@ command *command_new_argstr (const char *argstr)
 command *command_new_function (const char *name,
 			       command_function_type *func, void *data)
 {
-	command *cmd = xmalloc (sizeof *cmd);
+	command *cmd = XMALLOC (command);
 	struct command_function *cmdf;
 
 	cmd->tag = COMMAND_FUNCTION;
@@ -260,7 +260,7 @@ command *command_new_function (const char *name,
 
 command *command_dup (command *cmd)
 {
-	command *newcmd = xmalloc (sizeof *newcmd);
+	command *newcmd = XMALLOC (command);
 	int i;
 
 	newcmd->tag = cmd->tag;
@@ -435,10 +435,10 @@ void command_free (command *cmd)
 
 pipeline *pipeline_new (void)
 {
-	pipeline *p = xmalloc (sizeof *p);
+	pipeline *p = XMALLOC (pipeline);
 	p->ncommands = 0;
 	p->commands_max = 4;
-	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
+	p->commands = xnmalloc (p->commands_max, sizeof *p->commands);
 	p->pids = NULL;
 	p->statuses = NULL;
 	p->want_in = p->want_out = 0;
@@ -475,7 +475,7 @@ pipeline *pipeline_new_commands (command *cmd1, ...)
 
 pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 {
-	pipeline *p = xmalloc (sizeof *p);
+	pipeline *p = XMALLOC (pipeline);
 	int i;
 
 	assert (!p1->pids);
@@ -485,7 +485,7 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 
 	p->ncommands = p1->ncommands + p2->ncommands;
 	p->commands_max = p1->ncommands + p2->ncommands;
-	p->commands = xmalloc (p->commands_max * sizeof *p->commands);
+	p->commands = xnmalloc (p->commands_max, sizeof *p->commands);
 	p->pids = NULL;
 	p->statuses = NULL;
 	p->want_in = p1->want_in;
@@ -735,8 +735,8 @@ void pipeline_start (pipeline *p)
 	while (sigprocmask (SIG_SETMASK, &oset, NULL) == -1 && errno == EINTR)
 		;
 
-	p->pids = xmalloc (p->ncommands * sizeof *p->pids);
-	p->statuses = xmalloc (p->ncommands * sizeof *p->statuses);
+	p->pids = xnmalloc (p->ncommands, sizeof *p->pids);
+	p->statuses = xnmalloc (p->ncommands, sizeof *p->statuses);
 
 	if (p->want_in < 0) {
 		if (pipe (infd) < 0)
@@ -1150,13 +1150,13 @@ void pipeline_pump (pipeline *p, ...)
 	for (arg = p; arg; arg = va_arg (argv, pipeline *))
 		++argc;
 	va_end (argv);
-	pieces = xmalloc (argc * sizeof *pieces);
-	pos = xmalloc (argc * sizeof *pos);
-	known_source = xmalloc (argc * sizeof *known_source);
-	blocking_in = xmalloc (argc * sizeof *blocking_in);
-	blocking_out = xmalloc (argc * sizeof *blocking_out);
-	waiting = xmalloc (argc * sizeof *waiting);
-	write_error = xmalloc (argc * sizeof *write_error);
+	pieces = xnmalloc (argc, sizeof *pieces);
+	pos = xnmalloc (argc, sizeof *pos);
+	known_source = xcalloc (argc, sizeof *known_source);
+	blocking_in = xcalloc (argc, sizeof *blocking_in);
+	blocking_out = xcalloc (argc, sizeof *blocking_out);
+	waiting = xcalloc (argc, sizeof *waiting);
+	write_error = xcalloc (argc, sizeof *write_error);
 
 	/* Set up arrays of pipelines and their read positions. Start all
 	 * pipelines if necessary.
@@ -1172,7 +1172,6 @@ void pipeline_pump (pipeline *p, ...)
 	va_end (argv);
 
 	/* All source pipelines must be supplied as arguments. */
-	memset (known_source, 0, argc * sizeof *known_source);
 	for (i = 0; i < argc; ++i) {
 		int found = 0;
 		if (!pieces[i]->source)
@@ -1186,8 +1185,6 @@ void pipeline_pump (pipeline *p, ...)
 		assert (found);
 	}
 
-	memset (blocking_in, 0, argc * sizeof *blocking_in);
-	memset (blocking_out, 0, argc * sizeof *blocking_out);
 	for (i = 0; i < argc; ++i) {
 		int flags;
 		if (pieces[i]->infd != -1) {
@@ -1207,9 +1204,6 @@ void pipeline_pump (pipeline *p, ...)
 			}
 		}
 	}
-
-	memset (waiting, 0, argc * sizeof *waiting);
-	memset (write_error, 0, argc * sizeof *write_error);
 
 #ifdef SIGPIPE
 	sa.sa_handler = SIG_IGN;
