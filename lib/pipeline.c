@@ -505,6 +505,20 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	return p;
 }
 
+static void passthrough (void *data ATTRIBUTE_UNUSED)
+{
+	for (;;) {
+		char buffer[4096];
+		int r = read (fileno (stdin), buffer, 4096);
+		if (r <= 0)
+			break;
+		if (fwrite (buffer, 1, (size_t) r, stdout) < (size_t) r)
+			break;
+	}
+
+	return;
+}
+
 void pipeline_connect (pipeline *source, pipeline *sink, ...)
 {
 	va_list argv;
@@ -526,6 +540,21 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 		arg->source = source;
 		arg->want_in = -1;
 		arg->want_infile = NULL;
+
+		/* Zero-command sinks should represent data being passed
+		 * straight through from the input to the output.
+		 * Unfortunately pipeline_start and pipeline_pump don't
+		 * handle this very well between them; a zero-command
+		 * pipeline has the write end of its input pipe wrongly
+		 * stashed in outfd and then pipeline_pump can't handle it
+		 * because it has nowhere to send output. Until this is
+		 * fixed, this kludge is necessary.
+		 */
+		if (arg->ncommands == 0) {
+			command *cmd = command_new_function
+				("cat", &passthrough, NULL);
+			pipeline_command (arg, cmd);
+		}
 	}
 	va_end (argv);
 }
@@ -1269,12 +1298,14 @@ void pipeline_pump (pipeline *p, ...)
 		FD_ZERO (&rfds);
 		FD_ZERO (&wfds);
 		for (i = 0; i < argc; ++i) {
+			/* Input to sink pipeline. */
 			if (pieces[i]->source && pieces[i]->infd != -1 &&
 			    !waiting[i]) {
 				FD_SET (pieces[i]->infd, &wfds);
 				if (pieces[i]->infd > maxfd)
 					maxfd = pieces[i]->infd;
 			}
+			/* Output from source pipeline. */
 			if (known_source[i] && pieces[i]->outfd != -1) {
 				FD_SET (pieces[i]->outfd, &rfds);
 				if (pieces[i]->outfd > maxfd)
