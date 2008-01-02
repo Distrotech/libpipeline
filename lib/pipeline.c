@@ -509,7 +509,7 @@ static void passthrough (void *data ATTRIBUTE_UNUSED)
 {
 	for (;;) {
 		char buffer[4096];
-		int r = read (fileno (stdin), buffer, 4096);
+		int r = read (STDIN_FILENO, buffer, 4096);
 		if (r <= 0)
 			break;
 		if (fwrite (buffer, 1, (size_t) r, stdout) < (size_t) r)
