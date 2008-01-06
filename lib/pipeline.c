@@ -720,9 +720,9 @@ void pipeline_start (pipeline *p)
 		sa.sa_handler = SIG_IGN;
 		sigemptyset (&sa.sa_mask);
 		sa.sa_flags = 0;
-		if (xsigaction (SIGINT, &sa, &osa_sigint) < 0)
+		if (sigaction (SIGINT, &sa, &osa_sigint) < 0)
 			error (FATAL, errno, "Couldn't ignore SIGINT");
-		if (xsigaction (SIGQUIT, &sa, &osa_sigquit) < 0)
+		if (sigaction (SIGQUIT, &sa, &osa_sigquit) < 0)
 			error (FATAL, errno, "Couldn't ignore SIGQUIT");
 	}
 
@@ -879,8 +879,8 @@ void pipeline_start (pipeline *p)
 			}
 
 			/* Restore signals. */
-			xsigaction (SIGINT, &osa_sigint, NULL);
-			xsigaction (SIGQUIT, &osa_sigquit, NULL);
+			sigaction (SIGINT, &osa_sigint, NULL);
+			sigaction (SIGQUIT, &osa_sigquit, NULL);
 
 			switch (p->commands[i]->tag) {
 				case COMMAND_PROCESS: {
@@ -1119,8 +1119,8 @@ int pipeline_wait (pipeline *p)
 
 	if (!--ignored_signals) {
 		/* Restore signals. */
-		xsigaction (SIGINT, &osa_sigint, NULL);
-		xsigaction (SIGQUIT, &osa_sigquit, NULL);
+		sigaction (SIGINT, &osa_sigint, NULL);
+		sigaction (SIGQUIT, &osa_sigquit, NULL);
 	}
 
 	if (raise_signal)
@@ -1160,7 +1160,7 @@ void pipeline_install_sigchld (void)
 #ifdef SA_RESTART
 	act.sa_flags |= SA_RESTART;
 #endif
-	if (xsigaction (SIGCHLD, &act, NULL) == -1)
+	if (sigaction (SIGCHLD, &act, NULL) == -1)
 		error (FATAL, errno, _("can't install SIGCHLD handler"));
 }
 
@@ -1238,14 +1238,14 @@ void pipeline_pump (pipeline *p, ...)
 	sa.sa_handler = SIG_IGN;
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
-	xsigaction (SIGPIPE, &sa, &osa_sigpipe);
+	sigaction (SIGPIPE, &sa, &osa_sigpipe);
 #endif
 
 #ifdef SA_RESTART
 	/* We rely on getting EINTR from select. */
-	xsigaction (SIGCHLD, NULL, &sa);
+	sigaction (SIGCHLD, NULL, &sa);
 	sa.sa_flags &= ~SA_RESTART;
-	xsigaction (SIGCHLD, &sa, NULL);
+	sigaction (SIGCHLD, &sa, NULL);
 #endif
 
 	for (;;) {
@@ -1466,13 +1466,13 @@ next_sink:		;
 	}
 
 #ifdef SA_RESTART
-	xsigaction (SIGCHLD, NULL, &sa);
+	sigaction (SIGCHLD, NULL, &sa);
 	sa.sa_flags |= SA_RESTART;
-	xsigaction (SIGCHLD, &sa, NULL);
+	sigaction (SIGCHLD, &sa, NULL);
 #endif
 
 #ifdef SIGPIPE
-	xsigaction (SIGPIPE, &osa_sigpipe, NULL);
+	sigaction (SIGPIPE, &osa_sigpipe, NULL);
 #endif
 
 	for (i = 0; i < argc; ++i) {
