@@ -497,6 +497,11 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->outfd = p2->outfd;
 	p->infile = p1->infile;
 	p->outfile = p2->outfile;
+	p->source = NULL;
+	p->buffer = NULL;
+	p->buflen = p->bufmax = 0;
+	p->line_cache = NULL;
+	p->peek_offset = 0;
 	p->ignore_signals = (p1->ignore_signals || p2->ignore_signals);
 
 	for (i = 0; i < p1->ncommands; ++i)
