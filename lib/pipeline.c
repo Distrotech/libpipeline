@@ -1,6 +1,6 @@
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
  * Free Software Foundation, Inc.
- * Copyright (C) 2003, 2004, 2005, 2006, 2007 Colin Watson.
+ * Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008 Colin Watson.
  *   Written for groff by James Clark (jjc@jclark.com)
  *   Heavily adapted and extended for man-db by Colin Watson.
  *
@@ -450,6 +450,7 @@ pipeline *pipeline_new (void)
 	p->buflen = p->bufmax = 0;
 	p->line_cache = NULL;
 	p->peek_offset = 0;
+	p->ignore_signals = 1;
 	return p;
 }
 
@@ -496,6 +497,7 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->outfd = p2->outfd;
 	p->infile = p1->infile;
 	p->outfile = p2->outfile;
+	p->ignore_signals = (p1->ignore_signals || p2->ignore_signals);
 
 	for (i = 0; i < p1->ncommands; ++i)
 		p->commands[i] = command_dup (p1->commands[i]);
@@ -711,7 +713,7 @@ void pipeline_start (pipeline *p)
 		pipeline_dump (p, stderr);
 	}
 
-	if (!ignored_signals++) {
+	if (p->ignore_signals && !ignored_signals++) {
 		struct sigaction sa;
 
 		/* Ignore SIGINT and SIGQUIT while subprocesses are running,
@@ -879,8 +881,10 @@ void pipeline_start (pipeline *p)
 			}
 
 			/* Restore signals. */
-			sigaction (SIGINT, &osa_sigint, NULL);
-			sigaction (SIGQUIT, &osa_sigquit, NULL);
+			if (p->ignore_signals) {
+				sigaction (SIGINT, &osa_sigint, NULL);
+				sigaction (SIGQUIT, &osa_sigquit, NULL);
+			}
 
 			switch (p->commands[i]->tag) {
 				case COMMAND_PROCESS: {
@@ -1117,7 +1121,7 @@ int pipeline_wait (pipeline *p)
 	free (p->statuses);
 	p->statuses = NULL;
 
-	if (!--ignored_signals) {
+	if (p->ignore_signals && !--ignored_signals) {
 		/* Restore signals. */
 		sigaction (SIGINT, &osa_sigint, NULL);
 		sigaction (SIGQUIT, &osa_sigquit, NULL);

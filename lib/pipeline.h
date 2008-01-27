@@ -1,6 +1,6 @@
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002
  * Free Software Foundation, Inc.
- * Copyright (C) 2003, 2004, 2005, 2007 Colin Watson.
+ * Copyright (C) 2003, 2004, 2005, 2007, 2008 Colin Watson.
  *   Written for groff by James Clark (jjc@jclark.com)
  *   Adapted for man-db by Colin Watson.
  *
@@ -107,6 +107,11 @@ typedef struct pipeline {
 	 * reading a block at a time to save work. Private.
 	 */
 	size_t peek_offset;
+
+	/* If set, ignore SIGINT and SIGQUIT while the pipeline is running,
+	 * like system(). Defaults to 1.
+	 */
+	int ignore_signals;
 } pipeline;
 
 /* ---------------------------------------------------------------------- */
