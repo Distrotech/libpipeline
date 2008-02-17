@@ -1085,11 +1085,11 @@ int pipeline_wait (pipeline *p)
 						       _("%s: %s "
 							 "(core dumped)"),
 						       p->commands[i]->name,
-						       xstrsignal (sig));
+						       strsignal (sig));
 					else
 						error (0, 0, _("%s: %s"),
 						       p->commands[i]->name,
-						       xstrsignal (sig));
+						       strsignal (sig));
 #ifdef SIGPIPE
 				}
 #endif /* SIGPIPE */
