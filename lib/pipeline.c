@@ -1140,14 +1140,15 @@ int pipeline_wait (pipeline *p)
 
 static void pipeline_sigchld (int signum)
 {
-	assert (signum == SIGCHLD);
+	/* really an assert, but that's not async-signal-safe */
+	if (signum == SIGCHLD) {
+		++sigchld;
 
-	++sigchld;
-
-	if (!queue_sigchld) {
-		int save_errno = errno;
-		reap_children (0);
-		errno = save_errno;
+		if (!queue_sigchld) {
+			int save_errno = errno;
+			reap_children (0);
+			errno = save_errno;
+		}
 	}
 }
 
