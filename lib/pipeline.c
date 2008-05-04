@@ -724,6 +724,7 @@ void pipeline_start (pipeline *p)
 		/* Ignore SIGINT and SIGQUIT while subprocesses are running,
 		 * just like system().
 		 */
+		memset (&sa, 0, sizeof sa);
 		sa.sa_handler = SIG_IGN;
 		sigemptyset (&sa.sa_mask);
 		sa.sa_flags = 0;
@@ -1245,6 +1246,7 @@ void pipeline_pump (pipeline *p, ...)
 	}
 
 #ifdef SIGPIPE
+	memset (&sa, 0, sizeof sa);
 	sa.sa_handler = SIG_IGN;
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
