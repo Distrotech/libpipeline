@@ -1508,6 +1508,7 @@ next_sink:		;
 	free (waiting);
 	free (blocking_out);
 	free (blocking_in);
+	free (known_source);
 	free (pieces);
 	free (pos);
 }
