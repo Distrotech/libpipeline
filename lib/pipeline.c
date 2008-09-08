@@ -241,7 +241,9 @@ command *command_new_argstr (const char *argstr)
 }
 
 command *command_new_function (const char *name,
-			       command_function_type *func, void *data)
+			       command_function_type *func,
+			       command_function_free_type *free_func,
+			       void *data)
 {
 	command *cmd = XMALLOC (command);
 	struct command_function *cmdf;
@@ -253,6 +255,7 @@ command *command_new_function (const char *name,
 	cmdf = &cmd->u.function;
 
 	cmdf->func = func;
+	cmdf->free_func = free_func;
 	cmdf->data = data;
 
 	return cmd;
@@ -291,6 +294,7 @@ command *command_dup (command *cmd)
 			struct command_function *newcmdf = &newcmd->u.function;
 
 			newcmdf->func = cmdf->func;
+			newcmdf->free_func = cmdf->free_func;
 			newcmdf->data = cmdf->data;
 
 			break;
@@ -559,7 +563,7 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 		 */
 		if (arg->ncommands == 0) {
 			command *cmd = command_new_function
-				("cat", &passthrough, NULL);
+				("cat", &passthrough, NULL, NULL);
 			pipeline_command (arg, cmd);
 		}
 	}
@@ -909,6 +913,10 @@ void pipeline_start (pipeline *p)
 					struct command_function *cmdf =
 						&p->commands[i]->u.function;
 					(*cmdf->func) (cmdf->data);
+					/* pacify valgrind et al */
+					if (cmdf->free_func)
+						(*cmdf->free_func)
+							(cmdf->data);
 					exit (0);
 				}
 			}
@@ -1097,6 +1105,13 @@ int pipeline_wait (pipeline *p)
 			} else if (!WIFEXITED (status))
 				error (0, 0, "unexpected status %d",
 				       status);
+
+			if (p->commands[i]->tag == COMMAND_FUNCTION) {
+				struct command_function *cmdf =
+					&p->commands[i]->u.function;
+				if (cmdf->free_func)
+					(*cmdf->free_func) (cmdf->data);
+			}
 
 			if (i == p->ncommands - 1)
 				ret = status;

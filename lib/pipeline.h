@@ -34,6 +34,7 @@ enum command_tag {
 };
 
 typedef void command_function_type (void *);
+typedef void command_function_free_type (void *);
 
 typedef struct command {
 	enum command_tag tag;
@@ -48,6 +49,7 @@ typedef struct command {
 		} process;
 		struct command_function {
 			command_function_type *func;
+			command_function_free_type *free_func;
 			void *data;
 		} function;
 	} u;
@@ -136,15 +138,16 @@ command *command_new_args (const char *name, ...) ATTRIBUTE_SENTINEL;
 command *command_new_argstr (const char *argstr);
 
 /* Construct a new command that calls a given function rather than executing
- * a process. The data argument is passed as the function's only argument.
- * There is currently no provision for freeing data (TODO), so the caller
- * should make sure that data's lifetime exceeds that of the command.
+ * a process. The data argument is passed as the function's only argument,
+ * and will be freed before returning using free_func (if non-NULL).
  *
  * command_* functions that deal with arguments cannot be used with the
  * command returned by this function.
  */
 command *command_new_function (const char *name,
-			       command_function_type *func, void *data);
+			       command_function_type *func,
+			       command_function_free_type *free_func,
+			       void *data);
 
 /* Return a duplicate of a command. */
 command *command_dup (command *cmd);
