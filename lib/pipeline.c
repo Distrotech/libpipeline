@@ -251,6 +251,7 @@ command *command_new_function (const char *name,
 	cmd->tag = COMMAND_FUNCTION;
 	cmd->name = xstrdup (name);
 	cmd->nice = 0;
+	cmd->discard_err = 0;
 
 	cmdf = &cmd->u.function;
 
@@ -772,12 +773,12 @@ void pipeline_start (pipeline *p)
 	assert (i < max_active_pipelines);
 	++n_active_pipelines;
 
+	p->pids = xcalloc (p->ncommands, sizeof *p->pids);
+	p->statuses = xcalloc (p->ncommands, sizeof *p->statuses);
+
 	/* Unblock SIGCHLD. */
 	while (sigprocmask (SIG_SETMASK, &oset, NULL) == -1 && errno == EINTR)
 		;
-
-	p->pids = xnmalloc (p->ncommands, sizeof *p->pids);
-	p->statuses = xnmalloc (p->ncommands, sizeof *p->statuses);
 
 	if (p->want_in < 0) {
 		if (pipe (infd) < 0)
