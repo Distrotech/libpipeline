@@ -1113,8 +1113,12 @@ int pipeline_wait (pipeline *p)
 					(*cmdf->free_func) (cmdf->data);
 			}
 
-			if (i == p->ncommands - 1)
-				ret = status;
+			if (i == p->ncommands - 1) {
+				if (WIFSIGNALED (status))
+					ret = 128 + WTERMSIG (status);
+				else
+					ret = WEXITSTATUS (status);
+			}
 		}
 
 		assert (proc_count >= 0);
