@@ -881,7 +881,10 @@ void pipeline_start (pipeline *p)
 			}
 
 			if (p->commands[i]->nice)
-				nice (p->commands[i]->nice);
+				if (nice (p->commands[i]->nice) < 0)
+					/* Don't worry too much. */
+					debug ("nice failed: %s",
+					       strerror (errno));
 
 			if (p->commands[i]->discard_err) {
 				int devnull = open ("/dev/null", O_WRONLY);
