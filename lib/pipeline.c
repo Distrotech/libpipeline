@@ -689,6 +689,10 @@ void pipeline_free (pipeline *p)
 		free (p->pids);
 	if (p->statuses)
 		free (p->statuses);
+	if (p->buffer)
+		free (p->buffer);
+	if (p->line_cache)
+		free (p->line_cache);
 	free (p);
 }
 
