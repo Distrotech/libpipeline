@@ -65,6 +65,10 @@ command *command_new (const char *name)
 	cmd->nice = 0;
 	cmd->discard_err = 0;
 
+	cmd->nenv = 0;
+	cmd->env_max = 4;
+	cmd->env = xnmalloc (cmd->env_max, sizeof *cmd->env);
+
 	cmdp = &cmd->u.process;
 
 	cmdp->argc = 0;
@@ -111,6 +115,8 @@ command *command_new_args (const char *name, ...)
  * whatever, we parse a safe subset manually. Environment variables are not
  * currently handled because of tricky word splitting issues, but in
  * principle they could be if there's demand for it.
+ *
+ * TODO: Support setting environment variables.
  */
 static char *argstr_get_word (const char **argstr)
 {
@@ -253,6 +259,10 @@ command *command_new_function (const char *name,
 	cmd->nice = 0;
 	cmd->discard_err = 0;
 
+	cmd->nenv = 0;
+	cmd->env_max = 4;
+	cmd->env = xnmalloc (cmd->env_max, sizeof *cmd->env);
+
 	cmdf = &cmd->u.function;
 
 	cmdf->func = func;
@@ -271,6 +281,17 @@ command *command_dup (command *cmd)
 	newcmd->name = xstrdup (cmd->name);
 	newcmd->nice = cmd->nice;
 	newcmd->discard_err = cmd->discard_err;
+
+	newcmd->nenv = cmd->nenv;
+	newcmd->env_max = cmd->env_max;
+	assert (newcmd->nenv < newcmd->env_max);
+	newcmd->env = xmalloc (newcmd->env_max * sizeof *newcmd->env);
+
+	for (i = 0; i < cmd->nenv; ++i) {
+		newcmd->env[i].name = xstrdup (cmd->env[i].name);
+		newcmd->env[i].value = xstrdup (cmd->env[i].value);
+	}
+	newcmd->env[cmd->nenv].name = newcmd->env[cmd->nenv].value = NULL;
 
 	switch (newcmd->tag) {
 		case COMMAND_PROCESS: {
@@ -358,12 +379,32 @@ void command_argstr (command *cmd, const char *argstr)
 	}
 }
 
+void command_setenv (command *cmd, const char *name, const char *value)
+{
+	if (cmd->nenv + 1 >= cmd->env_max) {
+		cmd->env_max *= 2;
+		cmd->env = xrealloc (cmd->env,
+				     cmd->env_max * sizeof *cmd->env);
+	}
+
+	cmd->env[cmd->nenv].name = xstrdup (name);
+	cmd->env[cmd->nenv].value = xstrdup (value);
+	++cmd->nenv;
+	assert (cmd->nenv < cmd->env_max);
+	cmd->env[cmd->nenv].name = cmd->env[cmd->nenv].value = NULL;
+}
+
 void command_dump (command *cmd, FILE *stream)
 {
+	int i;
+
+	for (i = 0; i < cmd->nenv; ++i)
+		fprintf (stream, "%s=%s ",
+			 cmd->env[i].name, cmd->env[i].value);
+
 	switch (cmd->tag) {
 		case COMMAND_PROCESS: {
 			struct command_process *cmdp = &cmd->u.process;
-			int i;
 
 			fputs (cmd->name, stream);
 			for (i = 1; i < cmdp->argc; ++i) {
@@ -384,11 +425,15 @@ void command_dump (command *cmd, FILE *stream)
 char *command_tostring (command *cmd)
 {
 	char *out = NULL;
+	int i;
+
+	for (i = 0; i < cmd->nenv; ++i)
+		out = appendstr (out, cmd->env[i].name, "=", cmd->env[i].value,
+				 " ", NULL);
 
 	switch (cmd->tag) {
 		case COMMAND_PROCESS: {
 			struct command_process *cmdp = &cmd->u.process;
-			int i;
 
 			out = appendstr (out, cmd->name, NULL);
 			for (i = 1; i < cmdp->argc; ++i)
@@ -400,7 +445,7 @@ char *command_tostring (command *cmd)
 		}
 
 		case COMMAND_FUNCTION:
-			out = xstrdup (cmd->name);
+			out = appendstr (out, cmd->name, NULL);
 			break;
 	}
 
@@ -415,6 +460,12 @@ void command_free (command *cmd)
 		return;
 
 	free (cmd->name);
+
+	for (i = 0; i < cmd->nenv; ++i) {
+		free (cmd->env[i].name);
+		free (cmd->env[i].value);
+	}
+	free (cmd->env);
 
 	switch (cmd->tag) {
 		case COMMAND_PROCESS: {
@@ -897,6 +948,10 @@ void pipeline_start (pipeline *p)
 					close (devnull);
 				}
 			}
+
+			for (j = 0; j < p->commands[i]->nenv; ++j)
+				setenv (p->commands[i]->env[j].name,
+					p->commands[i]->env[j].value, 1);
 
 			/* Restore signals. */
 			if (p->ignore_signals) {

@@ -36,11 +36,19 @@ enum command_tag {
 typedef void command_function_type (void *);
 typedef void command_function_free_type (void *);
 
+struct command_env {
+	char *name;
+	char *value;
+};
+
 typedef struct command {
 	enum command_tag tag;
 	char *name;
 	int nice;
 	int discard_err;	/* discard stderr? */
+	int nenv;
+	int env_max;		/* size of allocated array */
+	struct command_env *env;
 	union {
 		struct command_process {
 			int argc;
@@ -168,6 +176,9 @@ void command_args (command *cmd, ...) ATTRIBUTE_SENTINEL;
  * please try to avoid using it in new code.
  */
 void command_argstr (command *cmd, const char *argstr);
+
+/* Set an environment variable while running this command. */
+void command_setenv (command *cmd, const char *name, const char *value);
 
 /* Dump a string representation of a command to stream. */
 void command_dump (command *cmd, FILE *stream);
