@@ -284,7 +284,7 @@ command *command_dup (command *cmd)
 
 	newcmd->nenv = cmd->nenv;
 	newcmd->env_max = cmd->env_max;
-	assert (newcmd->nenv < newcmd->env_max);
+	assert (newcmd->nenv <= newcmd->env_max);
 	newcmd->env = xmalloc (newcmd->env_max * sizeof *newcmd->env);
 
 	for (i = 0; i < cmd->nenv; ++i) {
