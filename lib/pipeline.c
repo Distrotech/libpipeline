@@ -291,7 +291,6 @@ command *command_dup (command *cmd)
 		newcmd->env[i].name = xstrdup (cmd->env[i].name);
 		newcmd->env[i].value = xstrdup (cmd->env[i].value);
 	}
-	newcmd->env[cmd->nenv].name = newcmd->env[cmd->nenv].value = NULL;
 
 	switch (newcmd->tag) {
 		case COMMAND_PROCESS: {
@@ -381,7 +380,7 @@ void command_argstr (command *cmd, const char *argstr)
 
 void command_setenv (command *cmd, const char *name, const char *value)
 {
-	if (cmd->nenv + 1 >= cmd->env_max) {
+	if (cmd->nenv >= cmd->env_max) {
 		cmd->env_max *= 2;
 		cmd->env = xrealloc (cmd->env,
 				     cmd->env_max * sizeof *cmd->env);
@@ -390,8 +389,6 @@ void command_setenv (command *cmd, const char *name, const char *value)
 	cmd->env[cmd->nenv].name = xstrdup (name);
 	cmd->env[cmd->nenv].value = xstrdup (value);
 	++cmd->nenv;
-	assert (cmd->nenv < cmd->env_max);
-	cmd->env[cmd->nenv].name = cmd->env[cmd->nenv].value = NULL;
 }
 
 void command_dump (command *cmd, FILE *stream)
