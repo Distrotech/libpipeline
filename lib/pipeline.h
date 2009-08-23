@@ -30,7 +30,8 @@
 
 enum command_tag {
 	COMMAND_PROCESS,
-	COMMAND_FUNCTION
+	COMMAND_FUNCTION,
+	COMMAND_SEQUENCE
 };
 
 typedef void command_function_type (void *);
@@ -60,6 +61,11 @@ typedef struct command {
 			command_function_free_type *free_func;
 			void *data;
 		} function;
+		struct command_sequence {
+			int ncommands;
+			int commands_max;
+			struct command **commands;
+		} sequence;
 	} u;
 } command;
 
@@ -157,6 +163,15 @@ command *command_new_function (const char *name,
 			       command_function_free_type *free_func,
 			       void *data);
 
+/* Construct a new command that runs a sequence of commands. The commands
+ * will be executed in forked children; if any exits non-zero then it will
+ * terminate the sequence, as with "&&" in shell.
+ *
+ * command_* functions that deal with arguments cannot be used with the
+ * command returned by this function.
+ */
+command *command_new_sequence (const char *name, ...) ATTRIBUTE_SENTINEL;
+
 /* Return a duplicate of a command. */
 command *command_dup (command *cmd);
 
@@ -179,6 +194,9 @@ void command_argstr (command *cmd, const char *argstr);
 
 /* Set an environment variable while running this command. */
 void command_setenv (command *cmd, const char *name, const char *value);
+
+/* Add a command to a sequence. */
+void command_sequence_command (command *cmd, command *child);
 
 /* Dump a string representation of a command to stream. */
 void command_dump (command *cmd, FILE *stream);
