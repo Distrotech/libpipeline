@@ -1260,7 +1260,8 @@ void pipeline_pump (pipeline *p, ...)
 	int argc, i, j;
 	pipeline *arg, **pieces;
 	size_t *pos;
-	int *known_source, *blocking_in, *blocking_out, *waiting, *write_error;
+	int *known_source, *blocking_in, *blocking_out,
+	    *dying_source, *waiting, *write_error;
 	struct sigaction sa, osa_sigpipe;
 
 	/* Count pipelines and allocate space for arrays. */
@@ -1274,6 +1275,7 @@ void pipeline_pump (pipeline *p, ...)
 	known_source = xcalloc (argc, sizeof *known_source);
 	blocking_in = xcalloc (argc, sizeof *blocking_in);
 	blocking_out = xcalloc (argc, sizeof *blocking_out);
+	dying_source = xcalloc (argc, sizeof *dying_source);
 	waiting = xcalloc (argc, sizeof *waiting);
 	write_error = xcalloc (argc, sizeof *write_error);
 
@@ -1412,15 +1414,14 @@ void pipeline_pump (pipeline *p, ...)
 			for (i = 0; i < argc; ++i) {
 				if (pieces[i]->ncommands == 0)
 					continue;
-				if (known_source[i] &&
+				if (known_source[i] && !dying_source[i] &&
 				    pieces[i]->outfd != -1) {
 					int last = pieces[i]->ncommands - 1;
 					assert (pieces[i]->statuses);
 					if (pieces[i]->statuses[last] != -1) {
 						debug ("source pipeline %d "
 						       "died\n", i);
-						close (pieces[i]->outfd);
-						pieces[i]->outfd = -1;
+						dying_source[i] = 1;
 					}
 				}
 				if (pieces[i]->source &&
@@ -1585,6 +1586,7 @@ next_sink:		;
 
 	free (write_error);
 	free (waiting);
+	free (dying_source);
 	free (blocking_out);
 	free (blocking_in);
 	free (known_source);
