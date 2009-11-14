@@ -207,6 +207,7 @@ static char *argstr_get_word (const char **argstr)
 	if (litstart < *argstr) {
 		char *tmp = xstrndup (litstart, *argstr - litstart);
 		out = appendstr (out, tmp, NULL);
+		free (tmp);
 	}
 
 	return out;
