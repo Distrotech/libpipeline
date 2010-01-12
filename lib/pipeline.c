@@ -1704,8 +1704,12 @@ void pipeline_pump (pipeline *p, ...)
 			for (;;) {
 				w = write (pieces[i]->infd, block + pos[i],
 					   peek_size - pos[i]);
-				if (w >= 0 || errno == EAGAIN)
+				if (w >= 0)
 					break;
+				if (errno == EAGAIN) {
+					w = 0;
+					break;
+				}
 				if (errno == EINTR)
 					continue;
 				/* It may be useful for other processes to
