@@ -50,6 +50,29 @@
 #include "error.h"
 #include "pipeline.h"
 
+#ifdef USE_SOCKETPAIR_PIPE
+#   include <netdb.h>
+#   include <netinet/in.h>
+#   include <sys/socket.h>
+#   ifdef CORRECT_SOCKETPAIR_MODE
+#	include <sys/stat.h>
+#   endif
+#   ifndef SHUT_RD
+#	define SHUT_RD		0
+#   endif
+#   ifndef SHUT_WR
+#	define SHUT_WR		1
+#   endif
+#   ifdef CORRECT_SOCKETPAIR_MODE
+#	define pipe(p) (((socketpair(AF_UNIX,SOCK_STREAM,0,p) < 0) || \
+                   (shutdown((p)[1],SHUT_RD) < 0) || (fchmod((p)[1],S_IWUSR) < 0) || \
+                   (shutdown((p)[0],SHUT_WR) < 0) || (fchmod((p)[0],S_IRUSR) < 0)) ? -1 : 0)
+#   else
+#	define pipe(p) (((socketpair(AF_UNIX,SOCK_STREAM,0,p) < 0) || \
+                   (shutdown((p)[1],SHUT_RD) < 0) || (shutdown((p)[0],SHUT_WR) < 0)) ? -1 : 0)
+#   endif
+#endif
+
 /* ---------------------------------------------------------------------- */
 
 /* Functions to build individual commands. */
