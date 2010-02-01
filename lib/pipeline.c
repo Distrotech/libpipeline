@@ -1369,7 +1369,7 @@ int pipeline_wait (pipeline *p)
 					 */
 					if (sig == SIGINT || sig == SIGQUIT)
 						raise_signal = sig;
-					if (WCOREDUMP (status))
+					else if (WCOREDUMP (status))
 						error (0, 0,
 						       _("%s: %s "
 							 "(core dumped)"),
