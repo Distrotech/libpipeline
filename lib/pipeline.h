@@ -172,6 +172,9 @@ command *command_new_function (const char *name,
  */
 command *command_new_sequence (const char *name, ...) ATTRIBUTE_SENTINEL;
 
+/* Return a new command that just passes data from its input to its output. */
+command *command_new_passthrough (void);
+
 /* Return a duplicate of a command. */
 command *command_dup (command *cmd);
 

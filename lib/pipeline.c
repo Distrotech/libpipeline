@@ -329,6 +329,25 @@ command *command_new_sequence (const char *name, ...)
 	return cmd;
 }
 
+static void passthrough (void *data ATTRIBUTE_UNUSED)
+{
+	for (;;) {
+		char buffer[4096];
+		int r = read (STDIN_FILENO, buffer, 4096);
+		if (r <= 0)
+			break;
+		if (fwrite (buffer, 1, (size_t) r, stdout) < (size_t) r)
+			break;
+	}
+
+	return;
+}
+
+command *command_new_passthrough (void)
+{
+	return command_new_function ("cat", &passthrough, NULL, NULL);
+}
+
 command *command_dup (command *cmd)
 {
 	command *newcmd = XMALLOC (command);
@@ -831,20 +850,6 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	return p;
 }
 
-static void passthrough (void *data ATTRIBUTE_UNUSED)
-{
-	for (;;) {
-		char buffer[4096];
-		int r = read (STDIN_FILENO, buffer, 4096);
-		if (r <= 0)
-			break;
-		if (fwrite (buffer, 1, (size_t) r, stdout) < (size_t) r)
-			break;
-	}
-
-	return;
-}
-
 void pipeline_connect (pipeline *source, pipeline *sink, ...)
 {
 	va_list argv;
@@ -876,11 +881,8 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 		 * because it has nowhere to send output. Until this is
 		 * fixed, this kludge is necessary.
 		 */
-		if (arg->ncommands == 0) {
-			command *cmd = command_new_function
-				("cat", &passthrough, NULL, NULL);
-			pipeline_command (arg, cmd);
-		}
+		if (arg->ncommands == 0)
+			pipeline_command (arg, command_new_passthrough ());
 	}
 	va_end (argv);
 }
