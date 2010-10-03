@@ -181,6 +181,10 @@ command *command_dup (command *cmd);
 /* Add an argument to a command. */
 void command_arg (command *cmd, const char *arg);
 
+/* Convenience function to add an argument with printf substitutions. */
+void command_argf (command *cmd, const char *format, ...)
+	ATTRIBUTE_FORMAT_PRINTF(2, 3);
+
 /* Convenience functions wrapping command_arg().
  * Terminate arguments with NULL.
  */

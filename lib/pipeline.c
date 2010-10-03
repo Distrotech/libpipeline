@@ -40,6 +40,7 @@
 #include <sys/wait.h>
 
 #include "dirname.h"
+#include "xvasprintf.h"
 
 #include "gettext.h"
 #include <locale.h>
@@ -435,6 +436,18 @@ void command_arg (command *cmd, const char *arg)
 	cmdp->argv[cmdp->argc++] = xstrdup (arg);
 	assert (cmdp->argc < cmdp->argv_max);
 	cmdp->argv[cmdp->argc] = NULL;
+}
+
+void command_argf (command *cmd, const char *format, ...)
+{
+	va_list argv;
+	char *arg;
+
+	va_start (argv, format);
+	arg = xvasprintf (format, argv);
+	command_arg (cmd, arg);
+	free (arg);
+	va_end (argv);
 }
 
 void command_argv (command *cmd, va_list argv)
