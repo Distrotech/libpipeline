@@ -286,17 +286,12 @@ void pipeline_free (pipeline *p);
 
 /* Functions to run pipelines and handle signals. */
 
-/* Start the processes in a pipeline. Calls error(FATAL) on error. */
+/* Start the processes in a pipeline. Installs this library's SIGCHLD
+ * handler if not already installed. Calls error(FATAL) on error. */
 void pipeline_start (pipeline *p);
 
 /* Wait for a pipeline to complete and return the exit status. */
 int pipeline_wait (pipeline *p);
-
-/* Install a SIGCHLD handler that reaps exit statuses from child processes
- * in pipelines. This should be called once per program before calling
- * pipeline_start().
- */
-void pipeline_install_sigchld (void);
 
 /* Pump data among one or more pipelines connected using pipeline_connect()
  * until all source pipelines have reached end-of-file and all data has been

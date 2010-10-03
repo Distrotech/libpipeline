@@ -1019,6 +1019,103 @@ void pipeline_free (pipeline *p)
 static pipeline **active_pipelines = NULL;
 static int n_active_pipelines = 0, max_active_pipelines = 0;
 
+static int sigchld = 0;
+static int queue_sigchld = 0;
+
+static int reap_children (int block)
+{
+	pid_t pid;
+	int status;
+	int collected = 0;
+
+	do {
+		int i;
+
+		if (sigchld) {
+			/* Deal with a SIGCHLD delivery. */
+			pid = waitpid (-1, &status, WNOHANG);
+			--sigchld;
+		} else
+			pid = waitpid (-1, &status, block ? 0 : WNOHANG);
+
+		if (pid < 0 && errno == EINTR) {
+			/* Try again. */
+			pid = 0;
+			continue;
+		}
+
+		if (pid <= 0)
+			/* We've run out of children to reap. */
+			break;
+
+		++collected;
+
+		/* Deliver the command status if possible. */
+		for (i = 0; i < n_active_pipelines; ++i) {
+			pipeline *p = active_pipelines[i];
+			int j;
+
+			if (!p || !p->pids || !p->statuses)
+				continue;
+
+			for (j = 0; j < p->ncommands; ++j) {
+				if (p->pids[j] == pid) {
+					p->statuses[j] = status;
+					i = n_active_pipelines;
+					break;
+				}
+			}
+		}
+	} while ((sigchld || block == 0) && pid >= 0);
+
+	if (collected)
+		return collected;
+	else
+		return -1;
+}
+
+static void pipeline_sigchld (int signum)
+{
+	/* really an assert, but that's not async-signal-safe */
+	if (signum == SIGCHLD) {
+		++sigchld;
+
+		if (!queue_sigchld) {
+			int save_errno = errno;
+			reap_children (0);
+			errno = save_errno;
+		}
+	}
+}
+
+static void pipeline_install_sigchld (void)
+{
+	struct sigaction act;
+	static int installed = 0;
+
+	if (installed)
+		return;
+
+	memset (&act, 0, sizeof act);
+	act.sa_handler = &pipeline_sigchld;
+	sigemptyset (&act.sa_mask);
+	sigaddset (&act.sa_mask, SIGINT);
+	sigaddset (&act.sa_mask, SIGTERM);
+	sigaddset (&act.sa_mask, SIGHUP);
+	sigaddset (&act.sa_mask, SIGCHLD);
+	act.sa_flags = 0;
+#ifdef SA_NOCLDSTOP
+	act.sa_flags |= SA_NOCLDSTOP;
+#endif
+#ifdef SA_RESTART
+	act.sa_flags |= SA_RESTART;
+#endif
+	if (sigaction (SIGCHLD, &act, NULL) == -1)
+		error (FATAL, errno, _("can't install SIGCHLD handler"));
+
+	installed = 1;
+}
+
 static int ignored_signals = 0;
 static struct sigaction osa_sigint, osa_sigquit;
 
@@ -1028,6 +1125,9 @@ void pipeline_start (pipeline *p)
 	int last_input = -1;
 	int infd[2];
 	sigset_t set, oset;
+
+	/* Make sure our SIGCHLD handler is installed. */
+	pipeline_install_sigchld ();
 
 	/* Flush all pending output so that subprocesses don't inherit it. */
 	fflush (NULL);
@@ -1233,61 +1333,6 @@ void pipeline_start (pipeline *p)
 		p->outfd = last_input;
 }
 
-static int sigchld = 0;
-static int queue_sigchld = 0;
-
-static int reap_children (int block)
-{
-	pid_t pid;
-	int status;
-	int collected = 0;
-
-	do {
-		int i;
-
-		if (sigchld) {
-			/* Deal with a SIGCHLD delivery. */
-			pid = waitpid (-1, &status, WNOHANG);
-			--sigchld;
-		} else
-			pid = waitpid (-1, &status, block ? 0 : WNOHANG);
-
-		if (pid < 0 && errno == EINTR) {
-			/* Try again. */
-			pid = 0;
-			continue;
-		}
-
-		if (pid <= 0)
-			/* We've run out of children to reap. */
-			break;
-
-		++collected;
-
-		/* Deliver the command status if possible. */
-		for (i = 0; i < n_active_pipelines; ++i) {
-			pipeline *p = active_pipelines[i];
-			int j;
-
-			if (!p || !p->pids || !p->statuses)
-				continue;
-
-			for (j = 0; j < p->ncommands; ++j) {
-				if (p->pids[j] == pid) {
-					p->statuses[j] = status;
-					i = n_active_pipelines;
-					break;
-				}
-			}
-		}
-	} while ((sigchld || block == 0) && pid >= 0);
-
-	if (collected)
-		return collected;
-	else
-		return -1;
-}
-
 int pipeline_wait (pipeline *p)
 {
 	int ret = 0;
@@ -1438,42 +1483,6 @@ int pipeline_wait (pipeline *p)
 		raise (raise_signal);
 
 	return ret;
-}
-
-static void pipeline_sigchld (int signum)
-{
-	/* really an assert, but that's not async-signal-safe */
-	if (signum == SIGCHLD) {
-		++sigchld;
-
-		if (!queue_sigchld) {
-			int save_errno = errno;
-			reap_children (0);
-			errno = save_errno;
-		}
-	}
-}
-
-void pipeline_install_sigchld (void)
-{
-	struct sigaction act;
-
-	memset (&act, 0, sizeof act);
-	act.sa_handler = &pipeline_sigchld;
-	sigemptyset (&act.sa_mask);
-	sigaddset (&act.sa_mask, SIGINT);
-	sigaddset (&act.sa_mask, SIGTERM);
-	sigaddset (&act.sa_mask, SIGHUP);
-	sigaddset (&act.sa_mask, SIGCHLD);
-	act.sa_flags = 0;
-#ifdef SA_NOCLDSTOP
-	act.sa_flags |= SA_NOCLDSTOP;
-#endif
-#ifdef SA_RESTART
-	act.sa_flags |= SA_RESTART;
-#endif
-	if (sigaction (SIGCHLD, &act, NULL) == -1)
-		error (FATAL, errno, _("can't install SIGCHLD handler"));
 }
 
 void pipeline_pump (pipeline *p, ...)
