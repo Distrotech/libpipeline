@@ -1,0 +1,538 @@
+Entries below this point are edited versions of entries in man-db.
+
+Sun Oct  3 23:57:45 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_argf): New function.
+	* lib/pipeline.h (command_argf): Add prototype.
+
+Sun Oct  3 22:34:13 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (reap_children, pipeline_sigchld,
+	  pipeline_install_sigchld): Move above pipeline_start.
+	  (pipeline_install_sigchld): Make static.  Return immediately if
+	  already installed.
+	  (pipeline_start): Call pipeline_install_sigchld.
+	* lib/pipeline.h (pipeline_start): Document that this installs a
+	  SIGCHLD handler.
+	  (pipeline_install_sigchld): Remove prototype.
+
+Tue Mar  2 10:04:54 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	Fix assertion failure on 'man -l' with an uncompressed page and
+	prefixed input (no-hyphenation, no-justification, or a non-English
+	page).
+
+	* lib/pipeline.c (command_new_passthrough): New function.
+	* lib/pipeline.h (command_new_passthrough): Add prototype.
+
+Mon Feb  1 12:18:36 PST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Don't bother printing error
+	  messages for SIGINT and SIGQUIT, since these correspond to
+	  explicit user actions (Debian bug #568000).
+
+Wed Jan 13 23:42:00 GMT 2010  Werner Fink  <werner@suse.de>
+
+	Add support for using socketpair(2) as a replacement for pipe(2),
+	which is faster on some systems (Savannah patch #6741).
+
+	* lib/pipeline.c [USE_SOCKETPAIR_PIPE]: Redefine pipe() to a
+	  construction based on socketpair().
+
+Tue Jan 12 13:33:51 GMT 2010  Samuel Thibault  <sthibault@debian.org>
+
+	* lib/pipeline.c (pipeline_pump): Fix off-by-one error when write
+	  returns EAGAIN (Debian bug #564818).
+
+Sat Nov 14 18:52:15 GMT 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (argstr_get_word): Fix a small memory leak.
+
+Sat Nov 14 10:23:28 GMT 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_new_sequence, command_sequence_command):
+	  New functions.
+	  (command_dup, command_dump, command_tostring, command_free):
+	  Handle commands of type COMMAND_SEQUENCE.
+	  (pipeline_start): Move command execution to ...
+	  (command_start_child): ... here (new function). Handle commands of
+	  type COMMAND_SEQUENCE.
+	* lib/pipeline.h (enum command_tag): Add COMMAND_SEQUENCE.
+	  (struct command): Add support for commands that consist of a
+	  sequence of commands.
+	  (command_new_sequence, command_sequence_command): Add prototypes.
+
+Thu Sep 24 12:32:48 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_pump): When a source pipeline dies, make
+	  sure to drain its output before discarding its output file
+	  descriptor (Debian bug #548153). We still record the death to
+	  avoid duplicate debugging messages.
+
+Sun Aug 23 15:49:45 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_dup): Fix newcmd->nenv assertion.
+
+Sun Aug 23 15:41:32 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_dup, command_setenv): cmd->env does not
+	  need to be { NULL, NULL }-terminated.
+
+Sun Aug 23 00:04:56 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_setenv): New function, allowing
+	  application code to ask for environment variables to be set when a
+	  command is executed.
+	  (command_new, command_new_function, command_dup, command_dump,
+	  command_tostring, command_free): Handle new nenv, env_max, and env
+	  members of 'struct command'.
+	  (argstr_get_word): Add TODO comment for environment variable
+	  support.
+	  (pipeline_start): Set environment variables as requested.
+	* lib/pipeline.h (struct command_env): New structure.
+	  (struct command): Add nenv, env_max, and env members.
+	  (command_setenv): Add prototype.
+
+Sun Jun 28 01:47:51 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_free): Free buffer and line_cache.
+
+Sun Jun 28 01:40:24 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (get_line): Limit newline search to the data length
+	  returned by get_block, fixing an assertion failure.
+
+Sat May 30 12:50:44 BST 2009  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Check the return value of nice.
+
+Mon Nov 17 11:07:50 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_new_function): Initialise discard_err.
+	  (pipeline_start): Zero-initialise pids and statuses arrays on
+	  allocation, and don'\''t unblock SIGCHLD until after doing so.
+
+Mon Nov 17 00:39:14 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Mangle return value into a value
+	  suitable for passing to exit (Debian bug #477305).
+
+Mon Sep  8 09:09:06 BST 2008  Colin Watson  <cjwatson@debian.org>
+
+	Add support for freeing command_function data.
+
+	* lib/pipeline.c (command_new_function): Add free_func argument.
+	  (command_dup): Copy it.
+	  (pipeline_connect): Adjust command_new_function call.
+	  (pipeline_start): Free command_function data before exiting.
+	  (pipeline_wait): Free command_function data while cleaning up
+	  pipeline.
+	* lib/pipeline.h: Add command_function_free_type typedef.
+	  (struct command [struct command_function]): Add free_func member.
+	  (command_new_function): Update prototype.
+
+Thu Jul 31 00:51:58 BST 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_pump): Free known_source before returning
+	  (Coverity CID #15).
+
+Sun May  4 23:16:59 BST 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start, pipeline_pump): Zero sigaction
+	  structures before using them. (I believe we set all required
+	  fields anyway; this is just an extra safety catch.)
+
+Sun Apr 27 11:24:24 BST 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_sigchld): assert is not
+	  async-signal-safe, so avoid calling it in a signal handler and use
+	  an if guard instead (Ubuntu bug #221635, although exactly why the
+	  assertion is failing there is unclear).
+
+Sun Feb 17 17:13:55 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Call strsignal rather than
+	  xstrsignal.
+
+Sun Jan 27 13:42:31 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_join): Initialise source, buffer, buflen,
+	  bufmax, line_cache, and peek_offset.
+
+Sun Jan 27 13:37:17 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (struct pipeline): Add ignore_signals member.
+	* lib/pipeline.c (pipeline_new): Initialise ignore_signals to 1.
+	  (pipeline_join): Set ignore_signals if either input pipeline has
+	  it set.
+	  (pipeline_start): Only ignore SIGINT and SIGQUIT if ignore_signals
+	  is set.
+	  (pipeline_wait): Only restore SIGINT and SIGQUIT if ignore_signals
+	  is set.
+
+Sun Jan  6 15:01:08 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start, pipeline_wait,
+	  pipeline_install_sigchld, pipeline_pump): Call sigaction rather
+	  than xsigaction.
+
+Wed Jan  2 23:30:33 GMT 2008  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (passthrough): Use STDIN_FILENO, STDOUT_FILENO, and
+	  STDERR_FILENO macros rather than calling fileno.
+
+Mon Dec 31 10:02:28 GMT 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (passthrough): New helper function.
+	  (pipeline_connect): Add special (kludge) handling for zero-command
+	  sinks.
+	  (pipeline_pump): Add minor commentary.
+
+Wed Oct 17 21:05:50 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c: Assume <sys/select.h> and <unistd.h>. Remove
+	  duplicate <fcntl.h> inclusion.
+	  (command_new): Use base_name.
+
+Mon Oct  8 02:24:19 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (get_block): Use xrealloc instead of realloc.
+
+Mon Oct  8 02:09:55 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	The strappend function is in the namespace reserved by C99
+	7.26.10/7.26.11; rename it to appendstr.
+
+	* lib/pipeline.c: Update all callers.
+
+Mon Sep 17 00:11:38 UTC 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Break after execvp, otherwise we
+	  segfault if execvp fails.
+
+Fri Aug 31 04:54:45 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_free): Call pipeline_wait if the pipeline
+	  is still running.
+	* lib/pipeline.h (pipeline_free): Document that this may happen.
+
+Tue Aug 28 17:19:16 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	Implement and use a decompression library. This allows cat pages to
+	be saved in the background (Debian bug #18452) and operation with a
+	read-only /tmp (Debian bug #165499).
+  
+	* lib/pipeline.h (struct command): Add support for commands that
+	  consist of calling a function rather than executing a process.
+	  (struct pipeline): Add want_infile and want_outfile members. Note
+	  that infile and outfile default to NULL. Add source, buffer,
+	  buflen, bufmax, line_cache, and peek_offset members.
+	  (command_new_function, command_dump, command_tostring,
+	  pipeline_connect, pipeline_pump, pipeline_read, pipeline_peek,
+	  pipeline_peek_size, pipeline_peek_skip, pipeline_readline,
+	  pipeline_peekline): New prototypes.
+	  (pipeline_join): Update description for want_infile and
+	  want_outfile.
+	* lib/pipeline.c (command_new, command_dup, command_arg,
+	  command_argv, command_args, command_argstr, command_free): Update
+	  for 'struct command' changes.
+	  (command_new_function, command_dump, command_tostring): New
+	  functions.
+	  (pipeline_new, pipeline_join, pipeline_dump, pipeline_tostring):
+	  Update for 'struct pipeline' changes.
+	  (pipeline_dump): Use command_dump.
+	  (pipeline_tostring): Use command_tostring.
+	  (pipeline_start): Implement want_infile, want_outfile, and
+	  function commands. Make zero-command case work properly (read
+	  directly from input file). Flush all pending stdio output so that
+	  subprocesses don't inherit it.
+	  (pipeline_connect, pipeline_pump, get_block, pipeline_read,
+	  pipeline_peek, pipeline_peek_size, pipeline_peek_skip, get_line,
+	  pipeline_readline, pipeline_peekline): New functions.
+
+Mon Aug 27 20:02:17 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Re-raise SIGINT or SIGQUIT if they
+	  terminate a subprocess.
+
+Mon Aug 27 19:58:19 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Return 1 if we fail to close the
+	  pipeline's output.
+
+Mon Aug 20 00:10:49 BST 2007  Colin Watson  <cjwatson@debian.org>
+
+	Discard stderr from formatting processes when outputting to a pager,
+	to avoid visual corruption from any error messages (thanks, Vincent
+	Lefevre; Debian bug #372939).
+  
+	* lib/pipeline.h (struct command): Add discard_err member.
+	* lib/pipeline.c (command_new, command_dup): Initialise discard_err.
+	  (pipeline_start): Redirect the child's stderr to /dev/null if
+	  discard_err is set.
+
+Sun Mar  4 00:51:30 GMT 2007  Colin Watson  <cjwatson@debian.org>
+
+	Eliminate variable and function shadowing.
+
+	* lib/pipeline.c (pipeline_start): Remove duplicate declarations of
+	  set and oset.
+
+Wed Feb 28 22:04:04 GMT 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Close inputs and outputs from
+	  other active pipelines in all subprocesses.
+
+Wed Feb 28 21:57:24 GMT 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Don't ignore SIGPIPE in
+	  subprocesses; this has undesirable consequences in some
+	  situations.
+	  (pipeline_wait): Flatten SIGPIPE exit statuses to zero instead.
+
+Tue Feb 27 20:58:31 GMT 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Save previous value of SIGQUIT
+	  such that it gets restored as SIGQUIT, not as SIGINT.
+
+Mon Jan  8 10:39:24 GMT 2007  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start, pipeline_wait,
+	  pipeline_install_sigchld): Use xsigaction instead of
+	  sigaction-plus-EINTR-check.
+
+Tue Dec 26 14:27:59 GMT 2006  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c: Include "gettext.h" rather than <libintl.h>. Make
+	  sure not to include <locale.h> before "gettext.h", for portability
+	  to Solaris.
+
+Sun Sep 17 09:20:33 BST 2006  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Ignore SIGPIPE in child processes
+	  (Debian bug #387864).
+
+Wed Feb 22 09:44:02 GMT 2006  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_new_argstr): Skip "exec" at the start of a
+	  command, to make old configuration files work (Debian bug
+	  #353959).
+
+Wed Sep 21 10:56:22 BST 2005  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Queue SIGCHLD for the whole time
+	  we're collecting child process statuses; we need to keep a careful
+	  count of processes. Forget any previous errno before calling
+	  reap_children. Should fix Debian bug #326488.
+
+Wed Sep 21 10:10:12 BST 2005  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start, pipeline_wait): Ignore SIGINT and
+	  SIGQUIT in the parent while running subprocesses (Debian bug
+	  #328982).
+
+Thu Sep  1 14:10:07 BST 2005  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (argstr_get_word): Use an enum for quotemode rather
+	  than magic numbers.
+
+Mon Jul 11 18:12:58 BST 2005  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Emit a debugging message.
+
+Mon Jul 11 14:41:52 BST 2005  Colin Watson  <cjwatson@debian.org>
+
+	* include/manconfig.h.in: Define ATTRIBUTE_SENTINEL to a function
+	  attribute enabling sentinel checking if using GCC 4.0 or newer.
+	  (strappend): Use it.
+	* lib/pipeline.h (command_new_args, command_args,
+	  pipeline_new_commands, pipeline_command_args, pipeline_commands):
+	  Likewise.
+
+Sun Dec 12 21:48:04 CET 2004  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_sigchld): Don't bother saving and
+	  restoring errno if SIGCHLD is being queued.
+
+Sun Nov  7 16:07:26 GMT 2004  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Close pipeline output before
+	  reaping processes, so that writing processes get SIGPIPE.
+
+Sun Nov  7 16:05:08 GMT 2004  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Fix active process debugging
+	  output to include processes without statuses.
+
+Mon Mar  8 11:21:05 GMT 2004  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_dump): Show caller-supplied input and
+	  output file descriptors.
+
+	* lib/pipeline.c (command_free, pipeline_free): Return safely if
+	  argument is NULL.
+	* lib/pipeline.h (command_free, pipeline_free): Document NULL
+	  arguments as a safe no-op, like free().
+
+Sun Sep 21 02:17:43 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Dump pipeline in debugging mode.
+
+Thu Aug 28 00:40:09 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Change "couldn't exec %s" to
+	  "can't execute %s" in line with src/man.c, to make translators'
+	  lives easier.
+	  (pipeline_wait): Separate "%s: %s%s" into two translatable
+	  strings: the "(core dumped)" portion should definitely be
+	  translated.
+
+Fri Aug 15 18:05:37 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c: Include <libgen.h> instead of relying on
+	  basename() prototype in manconfig.h.
+
+Sat Aug  9 18:28:01 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	Replace the old "wait() for one child at a time" approach with a
+	SIGCHLD-handling edifice that collects children's exit statuses as
+	they die.
+
+	* lib/pipeline.c (pipeline_new): Initialize statuses.
+	  (pipeline_join): Set statuses to NULL in joined pipeline.
+	  (pipeline_join, pipeline_get_infile, pipeline_get_outfile,
+	  pipeline_start, pipeline_wait): Assert that statuses field is NULL
+	  or non-NULL as appropriate.
+	  (pipeline_free): Free statuses if necessary.
+
+	  (pipeline_start): Add p to a new active_pipelines array, to be
+	  used while reaping children. Initialize statuses elements to -1.
+	  Block SIGCHLD while forking children.
+	  (reap_children): New function. Delivers collected exit statuses
+	  into statuses fields of entries in active_pipelines.
+	  (pipeline_wait): Rather than wait()ing manually here, check
+	  whether any statuses have been picked up by the SIGCHLD handler,
+	  and if not call reap_children(). Remove now-obsolete TODO comment.
+	  (pipeline_sigchld): New function, the SIGCHLD handler.
+	  (pipeline_install_sigchld): New function, to be called once per
+	  program.
+
+	  (pipeline_start, pipeline_wait): Add minimal debugging
+	  information.
+
+	* lib/pipeline.h: Prototype new functions.
+	  (struct pipeline): New statuses member.
+
+Sat Aug  9 17:00:12 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_dup): Copy cmd->nice.
+	  (pipeline_command): Correct condition for growing commands array.
+
+Mon Aug  4 19:35:26 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_dup): Terminate argv with a NULL.
+	  (command_dup, command_arg): Assert that argc < argv_max after
+	  changing either.
+
+Mon Aug  4 19:30:22 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_dump): New function to dump a printable
+	  representation of a pipeline to a stream.
+	  (pipeline_tostring): Likewise, but to a newly allocated string.
+	* lib/pipeline.h: Prototype these.
+
+Mon Aug  4 12:03:38 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (argstr_get_word): Plug some memory leaks.
+
+Mon Aug  4 01:05:12 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): The return value was a bit
+	  groff-specific. Now just return the status of the last command in
+	  the pipeline, as reported by wait().
+
+Mon Aug  4 00:31:44 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	Add support for getting stdio streams for input and output. Needs
+	library support because pipeline_wait() needs to know to close the
+	stream rather than the underlying file descriptor.
+
+	* lib/pipeline.h (struct pipeline): New infile and outfile members.
+	  (pipeline_get_infile, pipeline_get_outfile): Add prototypes.
+	* lib/pipeline.c (pipeline_new): Initialize infile and outfile.
+	  (pipeline_join): Likewise.
+	  (pipeline_get_infile, pipeline_get_outfile): New functions.
+	  (pipeline_wait): Check for infile and outfile and fclose() them in
+	  preference to close()ing infd and outfd. Check for errors on
+	  close().
+
+Sun Aug  3 23:59:18 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Use dup2() instead of close()
+	  then dup().
+
+Sun Aug  3 23:52:14 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	infd and outfd should now only be set by pipeline_start(). Positive
+	values in want_in and want_out now indicate caller-supplied file
+	descriptors, while negative values indicate a request for
+	pipeline_start() to create a pipe.
+
+	* lib/pipeline.h (struct pipeline): Document this.
+	* lib/pipeline.c (pipeline_start): Implement it. Caller-supplied
+	  input and output file descriptors previously didn't work properly.
+	  (pipeline_wait): Update TODO comment.
+
+Sun Aug  3 21:07:46 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (struct command): New 'nice' member.
+	* lib/pipeline.c (command_new): Initialize nice.
+	  (pipeline_start): Change child process priority if nice is set.
+
+Sun Aug  3 20:50:35 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Pop all cleanups in child.
+
+Sun Aug  3 20:47:24 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (argstr_get_word, command_new_argstr,
+	  command_argstr, pipeline_command_argstr): New functions to handle
+	  constructing commands from shell-quoted strings, such as those
+	  found in man-db configuration files. They deliberately handle only
+	  a safe subset of shell syntax.
+	* lib/pipeline.h: Prototype command_new_argstr(), command_argstr(),
+	  and pipeline_command_argstr().
+
+Sun Aug  3 19:09:59 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (command_dup): New function to duplicate a command.
+	  (pipeline_join): New function to join two pipelines together.
+	* lib/pipeline.h: Prototype these.
+
+Sun Aug  3 18:00:59 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (struct pipeline): The writeto, readfrom, writefd,
+	  and readfd names turn out to be confusing in calling code. Rename
+	  to want_in, want_out, infd, and outfd respectively.
+	* lib/pipeline.c (pipeline_new, pipeline_start, pipeline_wait): Use
+	  new names.
+
+Sun Aug  3 16:35:24 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	Add support in pipeline library for writing input to or reading
+	output from the whole pipeline.
+
+	* lib/pipeline.c (pipeline_new): Initialize writeto, readfrom,
+	  writefd, and readfd.
+	  (pipeline_start): Create extra pipes as necessary.
+	  (pipeline_wait): Expand TODO comment. Close file descriptors from
+	  extra pipes if necessary.
+	* lib/pipeline.h (struct pipeline): Add writeto, readfrom, writefd,
+	  and readfd.
+
+Sun Aug  3 11:15:17 BST 2003  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c: New pipeline library, adapted from that in groff.
+	  The interface isn't complete yet; in particular, it can't be a
+	  replacement for popen() at the moment.
+	* lib/pipeline.h: New file with pipeline library interface.
