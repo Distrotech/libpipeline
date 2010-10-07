@@ -4,21 +4,22 @@
  *   Written for groff by James Clark (jjc@jclark.com)
  *   Heavily adapted and extended for man-db by Colin Watson.
  *
- * This file is part of man-db.
+ * This file is part of libpipeline.
  *
- * man-db is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * libpipeline is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- * man-db is distributed in the hope that it will be useful, but
+ * libpipeline is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with man-db; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
+ * along with libpipeline; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+ * USA.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -40,14 +41,15 @@
 #include <sys/wait.h>
 
 #include "dirname.h"
+#include "xalloc.h"
+#include "xstrndup.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
 #include <locale.h>
 #define _(String) gettext (String)
 
-#include "manconfig.h"
-#include "cleanup.h"
+#include "pipeline-private.h"
 #include "error.h"
 #include "pipeline.h"
 
@@ -247,7 +249,7 @@ command *command_new_argstr (const char *argstr)
 		error (FATAL, 0,
 		       _("badly formed configuration directive: '%s'"),
 		       argstr);
-	if (STREQ (arg, "exec")) {
+	if (!strcmp (arg, "exec")) {
 		/* Some old configuration files have "exec command" rather
 		 * than "command"; this worked fine when being evaluated by
 		 * a shell, but since exec is a shell builtin it doesn't
@@ -1129,6 +1131,13 @@ static void pipeline_install_sigchld (void)
 	installed = 1;
 }
 
+static pipeline_post_fork_fn *post_fork = NULL;
+
+void pipeline_install_post_fork (pipeline_post_fork_fn *fn)
+{
+	post_fork = fn;
+}
+
 static int ignored_signals = 0;
 static struct sigaction osa_sigint, osa_sigquit;
 
@@ -1263,7 +1272,8 @@ void pipeline_start (pipeline *p)
 			error (FATAL, errno, _("fork failed"));
 		if (pid == 0) {
 			/* child */
-			pop_all_cleanups ();
+			if (post_fork)
+				post_fork ();
 
 			/* input, reading side */
 			if (last_input != -1) {

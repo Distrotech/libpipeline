@@ -1,3 +1,35 @@
+Thu Oct  7 07:48:12 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	Build independently from man-db.  Many new files from gettextize,
+	gnulib-tool, and autoreconf.
+
+	* lib/appendstr.c: New file, from man-db.
+	* lib/debug.c: Likewise.
+	* m4/pipeline-gcc-warning.m4: Likewise.
+	* m4/pipeline-socketpair.m4: Likewise.
+
+	* lib/pipeline-private.h: New file.
+
+	* lib/pipeline.c (command_new_argstr): Use strcmp rather than STREQ.
+	  (pipeline_install_post_fork): New function.
+	  (pipeline_start): Call post-fork handler rather than hardcoding
+	  pop_all_cleanups.
+	* lib/pipeline.h (pipeline_install_post_fork): Add prototype.
+
+	* lib/pipeline.c: Update copyright notice for libpipeline.
+	* lib/pipeline.h: Likewise.
+
+	* gnulib: Import dirname, error, gettext, lib-ignore, setenv,
+	  sigaction, signal, sigprocmask, strerror, strsignal, sys_select,
+	  xalloc, xstrndup, and xvasprintf modules.
+
+	* Makefile.am: New file.
+	* NEWS: New file.
+	* autogen.sh: New file.
+	* configure.ac: New file.
+	* lib/Makefile.am: New file.
+	* .bzrignore: New file.
+
 Entries below this point are edited versions of entries in man-db.
 
 Sun Oct  3 23:57:45 BST 2010  Colin Watson  <cjwatson@debian.org>

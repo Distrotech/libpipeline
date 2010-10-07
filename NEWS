@@ -1,0 +1,5 @@
+libpipeline 1.0.0
+=================
+
+This is a new C library for pipeline manipulation, broken out from man-db
+2.5.8.

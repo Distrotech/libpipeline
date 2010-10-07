@@ -4,21 +4,22 @@
  *   Written for groff by James Clark (jjc@jclark.com)
  *   Adapted for man-db by Colin Watson.
  *
- * This file is part of man-db.
+ * This file is part of libpipeline.
  *
- * man-db is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * libpipeline is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- * man-db is distributed in the hope that it will be useful, but
+ * libpipeline is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with man-db; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
+ * along with libpipeline; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+ * USA.
  */
 
 #ifndef PIPELINE_H
@@ -289,6 +290,15 @@ void pipeline_free (pipeline *p);
 /* ---------------------------------------------------------------------- */
 
 /* Functions to run pipelines and handle signals. */
+
+typedef void pipeline_post_fork_fn (void);
+
+/* Install a post-fork handler.  This will be run immediately after forking
+ * any child process.  For instance, this may be used for cleaning up
+ * application-specific signal handlers.  Pass NULL to clear any existing
+ * post-fork handler.
+ */
+void pipeline_install_post_fork (pipeline_post_fork_fn *fn);
 
 /* Start the processes in a pipeline. Installs this library's SIGCHLD
  * handler if not already installed. Calls error(FATAL) on error. */
