@@ -1,26 +1,25 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Colin Watson <cjwatson@debian.org>
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Czech message catalog for man-db.
+# Vladimir Michl <Vladimir.Michl@seznam.cz>, 1998.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: libpipeline 1.0.0-pre1\n"
+"Project-Id-Version: man-db 2.3.16\n"
 "Report-Msgid-Bugs-To: Colin Watson <cjwatson@debian.org>\n"
 "POT-Creation-Date: 2010-10-07 07:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2005-09-21 10:27+0100\n"
+"Last-Translator: Vladimir Michl <Vladimir.Michl@seznam.cz>\n"
+"Language-Team: Czech <cs@li.org>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2\n"
 
 #: lib/pipeline.c:250 lib/pipeline.c:262
 #, c-format
 msgid "badly formed configuration directive: '%s'"
-msgstr ""
+msgstr "¹patnì vytvoøený pøíkaz v konfiguraci: '%s'"
 
 #: lib/pipeline.c:670 lib/pipeline.c:1129
 #, c-format
@@ -30,7 +29,7 @@ msgstr ""
 #: lib/pipeline.c:678 lib/pipeline.c:1272
 #, c-format
 msgid "fork failed"
-msgstr ""
+msgstr "funkce fork havarovala"
 
 #: lib/pipeline.c:688 lib/pipeline.c:1485
 #, c-format
@@ -50,7 +49,7 @@ msgstr ""
 #: lib/pipeline.c:735
 #, c-format
 msgid "can't execute %s"
-msgstr ""
+msgstr "nelze spustit %s"
 
 #: lib/pipeline.c:958
 #, c-format
@@ -65,23 +64,23 @@ msgstr ""
 #: lib/pipeline.c:1224 lib/pipeline.c:1243
 #, c-format
 msgid "pipe failed"
-msgstr ""
+msgstr "vytvoøení roury selhalo"
 
 #: lib/pipeline.c:1232
 #, c-format
 msgid "can't open %s"
-msgstr ""
+msgstr "soubor %s nelze otevøít"
 
 #: lib/pipeline.c:1281 lib/pipeline.c:1290
 #, c-format
 msgid "dup2 failed"
-msgstr ""
+msgstr "funkce dup2 havarovala"
 
 #: lib/pipeline.c:1284 lib/pipeline.c:1293 lib/pipeline.c:1300
 #: lib/pipeline.c:1309 lib/pipeline.c:1336 lib/pipeline.c:1340
 #, c-format
 msgid "close failed"
-msgstr ""
+msgstr "uzavøení souboru selhalo"
 
 #: lib/pipeline.c:1377
 #, c-format

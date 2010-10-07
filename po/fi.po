@@ -1,20 +1,19 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Colin Watson <cjwatson@debian.org>
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Finnish translation of man-db.
+# Copyright © 2004 Free Software Foundation, Inc.
+# This file is distributed under the same license as the man-db package.
+# Lauri Nurmi <lanurmi@iki.fi>, 2003, 2004.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: libpipeline 1.0.0-pre1\n"
+"Project-Id-Version: man-db 2.4.2-pre1\n"
 "Report-Msgid-Bugs-To: Colin Watson <cjwatson@debian.org>\n"
 "POT-Creation-Date: 2010-10-07 07:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2004-01-25 15:07+0200\n"
+"Last-Translator: Lauri Nurmi <lanurmi@iki.fi>\n"
+"Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: lib/pipeline.c:250 lib/pipeline.c:262
@@ -27,15 +26,17 @@ msgstr ""
 msgid "can't install SIGCHLD handler"
 msgstr ""
 
+# Kannattaako näihin jättää alkuperäinen funktion nimi vai yrittää selittää
+# mitä oikeasti tarkoitetaan? "haarauttaminen epäonnistui"
 #: lib/pipeline.c:678 lib/pipeline.c:1272
 #, c-format
 msgid "fork failed"
-msgstr ""
+msgstr "fork epäonnistui"
 
 #: lib/pipeline.c:688 lib/pipeline.c:1485
 #, c-format
 msgid "waitpid failed"
-msgstr ""
+msgstr "waitpid epäonnistui"
 
 #: lib/pipeline.c:703 lib/pipeline.c:1444
 #, c-format
@@ -43,9 +44,9 @@ msgid "%s: %s (core dumped)"
 msgstr ""
 
 #: lib/pipeline.c:708 lib/pipeline.c:1449
-#, c-format
+#, fuzzy, c-format
 msgid "%s: %s"
-msgstr ""
+msgstr "%s: %s%s"
 
 #: lib/pipeline.c:735
 #, c-format
@@ -75,13 +76,13 @@ msgstr ""
 #: lib/pipeline.c:1281 lib/pipeline.c:1290
 #, c-format
 msgid "dup2 failed"
-msgstr ""
+msgstr "dup2 epäonnistui"
 
 #: lib/pipeline.c:1284 lib/pipeline.c:1293 lib/pipeline.c:1300
 #: lib/pipeline.c:1309 lib/pipeline.c:1336 lib/pipeline.c:1340
 #, c-format
 msgid "close failed"
-msgstr ""
+msgstr "close epäonnistui"
 
 #: lib/pipeline.c:1377
 #, c-format

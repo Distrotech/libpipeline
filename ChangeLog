@@ -1,3 +1,8 @@
+Thu Oct  7 07:56:27 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* po/libpipeline.pot: Update.
+	* po/*.po: Import translations from man-db.
+
 Thu Oct  7 07:54:12 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/Makefile.am (libpipeline_la_SOURCES): Add pipeline-private.h.

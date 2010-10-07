@@ -1,104 +1,106 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Colin Watson <cjwatson@debian.org>
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Dutch translations for man-db.
+# Copyright (C) 2009 Colin Watson (msgids)
+# This file is distributed under the same license as the man-db package.
 #
-#, fuzzy
+# Benno Schulenberg <benno@vertaalt.nl>, 2007, 2008.
+# Erwin Poeze <erwin.poeze@gmail.com>, 2009
 msgid ""
 msgstr ""
-"Project-Id-Version: libpipeline 1.0.0-pre1\n"
+"Project-Id-Version: man-db-2.5.7-pre1\n"
 "Report-Msgid-Bugs-To: Colin Watson <cjwatson@debian.org>\n"
 "POT-Creation-Date: 2010-10-07 07:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2009-11-16 08:36+0100\n"
+"Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
+"Language-Team: Dutch <vertaling@vrijschrift.org>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: lib/pipeline.c:250 lib/pipeline.c:262
 #, c-format
 msgid "badly formed configuration directive: '%s'"
-msgstr ""
+msgstr "syntaxfout in configuratieopdracht: '%s'"
 
 #: lib/pipeline.c:670 lib/pipeline.c:1129
 #, c-format
 msgid "can't install SIGCHLD handler"
-msgstr ""
+msgstr "kan geen SIGCHLD-verwerker instellen"
 
 #: lib/pipeline.c:678 lib/pipeline.c:1272
 #, c-format
 msgid "fork failed"
-msgstr ""
+msgstr "starten van nieuw proces is mislukt"
 
 #: lib/pipeline.c:688 lib/pipeline.c:1485
 #, c-format
 msgid "waitpid failed"
-msgstr ""
+msgstr "waitpid() is mislukt"
 
 #: lib/pipeline.c:703 lib/pipeline.c:1444
 #, c-format
 msgid "%s: %s (core dumped)"
-msgstr ""
+msgstr "%s: %s (geheugendump gemaakt)"
 
 #: lib/pipeline.c:708 lib/pipeline.c:1449
 #, c-format
 msgid "%s: %s"
-msgstr ""
+msgstr "%s: %s"
 
 #: lib/pipeline.c:735
 #, c-format
 msgid "can't execute %s"
-msgstr ""
+msgstr "kan %s niet uitvoeren"
 
 #: lib/pipeline.c:958
 #, c-format
 msgid "pipeline input not open"
-msgstr ""
+msgstr "pijpinvoer is niet open"
 
 #: lib/pipeline.c:971
 #, c-format
 msgid "pipeline output not open"
-msgstr ""
+msgstr "pijpuitvoer is niet open"
 
 #: lib/pipeline.c:1224 lib/pipeline.c:1243
 #, c-format
 msgid "pipe failed"
-msgstr ""
+msgstr "aanmaken van pijp is mislukt"
 
 #: lib/pipeline.c:1232
 #, c-format
 msgid "can't open %s"
-msgstr ""
+msgstr "kan %s niet openen"
 
 #: lib/pipeline.c:1281 lib/pipeline.c:1290
 #, c-format
 msgid "dup2 failed"
-msgstr ""
+msgstr "dup2() is mislukt"
 
 #: lib/pipeline.c:1284 lib/pipeline.c:1293 lib/pipeline.c:1300
 #: lib/pipeline.c:1309 lib/pipeline.c:1336 lib/pipeline.c:1340
 #, c-format
 msgid "close failed"
-msgstr ""
+msgstr "sluiten is mislukt"
 
 #: lib/pipeline.c:1377
 #, c-format
 msgid "closing pipeline input stream failed"
-msgstr ""
+msgstr "sluiten van pijpinvoerstroom is mislukt"
 
 #: lib/pipeline.c:1382 lib/pipeline.c:1616
 #, c-format
 msgid "closing pipeline input failed"
-msgstr ""
+msgstr "sluiten van pijpinvoer is mislukt"
 
 #: lib/pipeline.c:1389
 #, c-format
 msgid "closing pipeline output stream failed"
-msgstr ""
+msgstr "sluiten van pijpuitvoerstroom is mislukt"
 
 #: lib/pipeline.c:1396 lib/pipeline.c:1641
 #, c-format
 msgid "closing pipeline output failed"
-msgstr ""
+msgstr "sluiten van pijpuitvoer is mislukt"

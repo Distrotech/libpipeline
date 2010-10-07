@@ -1,41 +1,40 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Colin Watson <cjwatson@debian.org>
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Mesajele în limba românã pentru pachetul man-db
+# Copyright (C) 2003 Free Software Foundation, Inc.
+# Acest fiºier este distribuit sub aceeaºi licenþã ca pachetul man-db
+# Eugen Hoanca <eugenh@urban-grafx.ro>, 2003.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: libpipeline 1.0.0-pre1\n"
+"Project-Id-Version: man-db 2.4.2-pre1\n"
 "Report-Msgid-Bugs-To: Colin Watson <cjwatson@debian.org>\n"
 "POT-Creation-Date: 2010-10-07 07:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2003-10-27 08:40+0200\n"
+"Last-Translator: Eugen Hoanca <eugenh@urban-grafx.ro>\n"
+"Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: lib/pipeline.c:250 lib/pipeline.c:262
 #, c-format
 msgid "badly formed configuration directive: '%s'"
-msgstr ""
+msgstr "directivã de configurare greºit formatã: `%s'"
 
 #: lib/pipeline.c:670 lib/pipeline.c:1129
 #, c-format
 msgid "can't install SIGCHLD handler"
-msgstr ""
+msgstr "nu s-a putut instala instrumentul(handler) SIGCHLD"
 
 #: lib/pipeline.c:678 lib/pipeline.c:1272
 #, c-format
 msgid "fork failed"
-msgstr ""
+msgstr "fork eºuat"
 
 #: lib/pipeline.c:688 lib/pipeline.c:1485
 #, c-format
 msgid "waitpid failed"
-msgstr ""
+msgstr "waitpid eºuat"
 
 #: lib/pipeline.c:703 lib/pipeline.c:1444
 #, c-format
@@ -43,62 +42,62 @@ msgid "%s: %s (core dumped)"
 msgstr ""
 
 #: lib/pipeline.c:708 lib/pipeline.c:1449
-#, c-format
+#, fuzzy, c-format
 msgid "%s: %s"
-msgstr ""
+msgstr "%s: %s%s"
 
 #: lib/pipeline.c:735
 #, c-format
 msgid "can't execute %s"
-msgstr ""
+msgstr "nu pot executa %s"
 
 #: lib/pipeline.c:958
 #, c-format
 msgid "pipeline input not open"
-msgstr ""
+msgstr "intrarea de pipeline nu este deschisã"
 
 #: lib/pipeline.c:971
 #, c-format
 msgid "pipeline output not open"
-msgstr ""
+msgstr "ieºirea de pipeline nu este deschisã"
 
 #: lib/pipeline.c:1224 lib/pipeline.c:1243
 #, c-format
 msgid "pipe failed"
-msgstr ""
+msgstr "legãturã(pipe) eºuatã"
 
 #: lib/pipeline.c:1232
 #, c-format
 msgid "can't open %s"
-msgstr ""
+msgstr "nu se poate deschide %s"
 
 #: lib/pipeline.c:1281 lib/pipeline.c:1290
 #, c-format
 msgid "dup2 failed"
-msgstr ""
+msgstr "dup2 eºuat"
 
 #: lib/pipeline.c:1284 lib/pipeline.c:1293 lib/pipeline.c:1300
 #: lib/pipeline.c:1309 lib/pipeline.c:1336 lib/pipeline.c:1340
 #, c-format
 msgid "close failed"
-msgstr ""
+msgstr "închidere eºuatã"
 
 #: lib/pipeline.c:1377
 #, c-format
 msgid "closing pipeline input stream failed"
-msgstr ""
+msgstr "închiderea secvenþei(stream) de intrare pipeline a eºuat"
 
 #: lib/pipeline.c:1382 lib/pipeline.c:1616
 #, c-format
 msgid "closing pipeline input failed"
-msgstr ""
+msgstr "închiderea intrãrii(input) de pipeline a eºuat"
 
 #: lib/pipeline.c:1389
 #, c-format
 msgid "closing pipeline output stream failed"
-msgstr ""
+msgstr "închiderea secvenþei(stream) de ieºire pipeline a eºuat"
 
 #: lib/pipeline.c:1396 lib/pipeline.c:1641
 #, c-format
 msgid "closing pipeline output failed"
-msgstr ""
+msgstr "închiderea ieºirii(output) de pipeline a eºuat"

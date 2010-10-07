@@ -1,20 +1,30 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Colin Watson <cjwatson@debian.org>
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Simplified Chinese translations for man-db package
+# Copyright (C) 2008 Colin Watson
+# Copyright (C) 2008 Ming Hua
+# This file is distributed under the same license as the man-db package.
+# Ming Hua <minghua-guest@users.alioth.debian.org>, 2007-2008.
 #
-#, fuzzy
+# Okay, the stupid Translation Project Robot requires a fixed format for the
+# file header, so the above lines are written to satisfy it.  The full detail
+# of the copyright is as follows:
+#
+# The original English strings (msgid) are:
+# Copyright © 2008 Colin Watson <cjwatson@debian.org>
+# The translations (msgstr) are:
+# Copyright © 2007-2008 Ming Hua <minghua-guest@users.alioth.debian.org>
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: libpipeline 1.0.0-pre1\n"
+"Project-Id-Version: man-db 2.5.1-pre2\n"
 "Report-Msgid-Bugs-To: Colin Watson <cjwatson@debian.org>\n"
 "POT-Creation-Date: 2010-10-07 07:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2008-01-16 17:49-0600\n"
+"Last-Translator: Ming Hua <minghua-guest@users.alioth.debian.org>\n"
+"Language-Team: Chinese (simplified) <translation-team-zh-cn@lists."
+"sourceforge.net>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: lib/pipeline.c:250 lib/pipeline.c:262
@@ -30,7 +40,7 @@ msgstr ""
 #: lib/pipeline.c:678 lib/pipeline.c:1272
 #, c-format
 msgid "fork failed"
-msgstr ""
+msgstr "fork 失败"
 
 #: lib/pipeline.c:688 lib/pipeline.c:1485
 #, c-format
@@ -70,7 +80,7 @@ msgstr ""
 #: lib/pipeline.c:1232
 #, c-format
 msgid "can't open %s"
-msgstr ""
+msgstr "无法打开 %s"
 
 #: lib/pipeline.c:1281 lib/pipeline.c:1290
 #, c-format
