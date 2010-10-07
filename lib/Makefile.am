@@ -40,3 +40,6 @@ libpipeline_la_LDFLAGS = \
 	-export-symbols-regex '^(command|pipeline)_' \
 	-module \
 	-version-info 1:0:0
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libpipeline.pc

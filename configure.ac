@@ -79,5 +79,6 @@ AC_CONFIG_FILES([Makefile
 	gnulib/lib/Makefile
 	gnulib/po/Makefile.in
 	lib/Makefile
+	lib/libpipeline.pc
 	po/Makefile.in])
 AC_OUTPUT

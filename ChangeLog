@@ -1,3 +1,11 @@
+Thu Oct  7 08:05:41 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/libpipeline.pc.in: New file.
+	* configure.ac (AC_CONFIG_FILES): Add lib/libpipeline.pc.
+	* lib/Makefile.am (pkgconfigdir, pkgconfig_DATA): Install
+	  libpipeline.pc to $(libdir)/pkgconfig.
+	* .bzrignore: Add lib/libpipeline.pc.
+
 Thu Oct  7 07:56:27 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* po/libpipeline.pot: Update.

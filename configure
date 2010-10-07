@@ -23507,7 +23507,7 @@ $as_echo "$as_me: default LIBS = \"$LIBS\"" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: default DBLIBS = \"$DBLIBS\"" >&5
 $as_echo "$as_me: default DBLIBS = \"$DBLIBS\"" >&6;}
 
-ac_config_files="$ac_config_files Makefile gnulib/lib/Makefile gnulib/po/Makefile.in lib/Makefile po/Makefile.in"
+ac_config_files="$ac_config_files Makefile gnulib/lib/Makefile gnulib/po/Makefile.in lib/Makefile lib/libpipeline.pc po/Makefile.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -24540,6 +24540,7 @@ do
     "gnulib/lib/Makefile") CONFIG_FILES="$CONFIG_FILES gnulib/lib/Makefile" ;;
     "gnulib/po/Makefile.in") CONFIG_FILES="$CONFIG_FILES gnulib/po/Makefile.in" ;;
     "lib/Makefile") CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
+    "lib/libpipeline.pc") CONFIG_FILES="$CONFIG_FILES lib/libpipeline.pc" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5 ;;

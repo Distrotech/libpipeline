@@ -23,6 +23,7 @@ gnulib/lib/unistd.h
 gnulib/lib/warn-on-use.h
 gnulib/lib/wchar.h
 gnulib/po
+lib/libpipeline.pc
 po/*.gmo
 po/ChangeLog
 po/Makefile
