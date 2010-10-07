@@ -29,7 +29,8 @@ libpipeline_la_CPPFLAGS = \
 libpipeline_la_SOURCES = \
 	appendstr.c \
 	debug.c \
-	pipeline.c
+	pipeline.c \
+	pipeline-private.h
 
 include_HEADERS = pipeline.h
 
