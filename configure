@@ -13080,6 +13080,17 @@ $as_echo "$pipeline_cv_gcc_warning_no_missing_field_initializers" >&6; }
    CFLAGS="$pipeline_saved_CFLAGS"
  fi
 fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
+$as_echo_n "checking whether ln -s works... " >&6; }
+LN_S=$as_ln_s
+if test "$LN_S" = "ln -s"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, using $LN_S" >&5
+$as_echo "no, using $LN_S" >&6; }
+fi
+
 
 # Check for various header files and associated libraries.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing strerror" >&5
@@ -23507,7 +23518,7 @@ $as_echo "$as_me: default LIBS = \"$LIBS\"" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: default DBLIBS = \"$DBLIBS\"" >&5
 $as_echo "$as_me: default DBLIBS = \"$DBLIBS\"" >&6;}
 
-ac_config_files="$ac_config_files Makefile gnulib/lib/Makefile gnulib/po/Makefile.in lib/Makefile lib/libpipeline.pc po/Makefile.in"
+ac_config_files="$ac_config_files Makefile gnulib/lib/Makefile gnulib/po/Makefile.in lib/Makefile lib/libpipeline.pc man/Makefile po/Makefile.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -24541,6 +24552,7 @@ do
     "gnulib/po/Makefile.in") CONFIG_FILES="$CONFIG_FILES gnulib/po/Makefile.in" ;;
     "lib/Makefile") CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
     "lib/libpipeline.pc") CONFIG_FILES="$CONFIG_FILES lib/libpipeline.pc" ;;
+    "man/Makefile") CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5 ;;

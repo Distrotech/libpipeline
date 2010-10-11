@@ -35,6 +35,7 @@ then
 	PIPELINE_GCC_WARNING([redundant-decls])
 	PIPELINE_GCC_WARNING([no-missing-field-initializers])
 fi
+AC_PROG_LN_S
 
 # Check for various header files and associated libraries.
 AC_ISC_POSIX
@@ -80,5 +81,6 @@ AC_CONFIG_FILES([Makefile
 	gnulib/po/Makefile.in
 	lib/Makefile
 	lib/libpipeline.pc
+	man/Makefile
 	po/Makefile.in])
 AC_OUTPUT

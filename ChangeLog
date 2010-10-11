@@ -1,3 +1,11 @@
+Mon Oct 11 17:51:16 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* Makefile.am (SUBDIRS): Add man.
+	* configure.ac (AC_PROG_LN_S): Add.
+	  (AC_CONFIG_FILES): Add man/Makefile.
+	* man/Makefile.am: New file.
+	* man/libpipeline.3: New file.
+
 Mon Oct 11 16:38:29 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.h (pipeline_pump): Mention in comment that arguments

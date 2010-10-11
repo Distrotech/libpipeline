@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 ## USA
 
-SUBDIRS = gnulib/lib gnulib/po lib po
+SUBDIRS = gnulib/lib gnulib/po lib man po
 
 dist_noinst_DATA = NEWS
 
