@@ -21685,8 +21685,6 @@ $as_echo "$as_me: default CFLAGS = \"$CFLAGS\"" >&6;}
 $as_echo "$as_me: default LDFLAGS = \"$LDFLAGS\"" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: default LIBS = \"$LIBS\"" >&5
 $as_echo "$as_me: default LIBS = \"$LIBS\"" >&6;}
-{ $as_echo "$as_me:${as_lineno-$LINENO}: default DBLIBS = \"$DBLIBS\"" >&5
-$as_echo "$as_me: default DBLIBS = \"$DBLIBS\"" >&6;}
 
 ac_config_files="$ac_config_files Makefile gnulib/lib/Makefile lib/Makefile lib/libpipeline.pc man/Makefile"
 
