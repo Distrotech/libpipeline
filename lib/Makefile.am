@@ -34,7 +34,7 @@ libpipeline_la_SOURCES = \
 
 include_HEADERS = pipeline.h
 
-libpipeline_la_LIBADD = ../gnulib/lib/libgnu.la $(LTLIBOBJS) @LTLIBINTL@
+libpipeline_la_LIBADD = ../gnulib/lib/libgnu.la $(LTLIBOBJS)
 
 libpipeline_la_LDFLAGS = \
 	-export-symbols-regex '^(command|pipeline)_' \

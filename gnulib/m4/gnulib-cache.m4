@@ -15,14 +15,13 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --po-base=gnulib/po --doc-base=doc --tests-base=tests --aux-dir=tools --libtool --macro-prefix=gl --po-domain=libpipeline dirname error gettext lib-ignore setenv sigaction signal sigprocmask strerror strsignal sys_select xalloc xstrndup xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=tools --libtool --macro-prefix=gl dirname error lib-ignore setenv sigaction signal sigprocmask strerror strsignal sys_select xalloc xstrndup xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
 gl_MODULES([
   dirname
   error
-  gettext
   lib-ignore
   setenv
   sigaction
@@ -38,11 +37,11 @@ gl_MODULES([
 gl_AVOID([])
 gl_SOURCE_BASE([gnulib/lib])
 gl_M4_BASE([gnulib/m4])
-gl_PO_BASE([gnulib/po])
+gl_PO_BASE([])
 gl_DOC_BASE([doc])
 gl_TESTS_BASE([tests])
 gl_LIB([libgnu])
 gl_MAKEFILE_NAME([])
 gl_LIBTOOL
 gl_MACRO_PREFIX([gl])
-gl_PO_DOMAIN([libpipeline])
+gl_PO_DOMAIN([])

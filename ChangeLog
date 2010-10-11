@@ -1,3 +1,26 @@
+Tue Oct 12 00:17:53 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	Remove gettext support.  It's overkill for a library considering
+	that we only emit error messages, and it vastly inflates the size of
+	our configuration requirements.
+
+	* Makefile.am (SUBDIRS): Remove gnulib/po and po.
+	  (EXTRA_DIST): Remove everything except gnulib/m4/sockpfaf.m4.
+	* autogen.sh: Remove call to autopoint and removal of po/ChangeLog.
+	* configure.ac: Remove calls to AM_GNU_GETTEXT and
+	  AM_GNU_GETTEXT_VERSION.  Stop substituting LINGUAS.
+	  (AC_CONFIG_FILES): Remove gnulib/po/Makefile.in and
+	  po/Makefile.in.
+	* gnulib/m4/gnulib-cache.m4: Remove --po-base and --po-domain
+	  options.  Remove gettext module.
+	* lib/Makefile.am (libpipeline_la_LIBADD): Remove @LTLIBINTL@.
+	* lib/pipeline.c (command_new_argstr, command_start_child),
+	  pipeline_get_infile, pipeline_get_outfile,
+	  pipeline_install_sigchld, pipeline_start, pipeline_wait,
+	  pipeline_pump): Remove gettext support.
+	* po/*: Remove.
+	* .bzrignore: Remove gnulib/po and po/*.
+
 Mon Oct 11 21:25:37 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* autogen.sh: Remove po/ChangeLog after running autoreconf.

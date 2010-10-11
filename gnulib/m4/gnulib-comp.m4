@@ -40,7 +40,6 @@ AC_DEFUN([gl_EARLY],
   # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module float:
-  # Code from module gettext:
   # Code from module gettext-h:
   # Code from module havelib:
   # Code from module include_next:
@@ -132,9 +131,6 @@ AC_DEFUN([gl_INIT],
   # Code from module extensions:
   # Code from module float:
   gl_FLOAT_H
-  # Code from module gettext:
-  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
-  AM_GNU_GETTEXT_VERSION([0.18.1])
   # Code from module gettext-h:
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
@@ -450,7 +446,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/00gnulib.m4
   m4/alloca.m4
   m4/asm-underscore.m4
-  m4/codeset.m4
   m4/dirname.m4
   m4/dos.m4
   m4/double-slash-root.m4
@@ -459,24 +454,12 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/errno_h.m4
   m4/error.m4
   m4/extensions.m4
-  m4/fcntl-o.m4
   m4/float_h.m4
-  m4/gettext.m4
-  m4/glibc2.m4
-  m4/glibc21.m4
   m4/gnulib-common.m4
-  m4/iconv.m4
   m4/include_next.m4
   m4/inline.m4
-  m4/intdiv0.m4
-  m4/intl.m4
-  m4/intldir.m4
-  m4/intlmacosx.m4
-  m4/intmax.m4
   m4/intmax_t.m4
-  m4/inttypes-pri.m4
   m4/inttypes_h.m4
-  m4/lcmessage.m4
   m4/lib-ignore.m4
   m4/lib-ld.m4
   m4/lib-link.m4
@@ -488,12 +471,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/memchr.m4
   m4/mmap-anon.m4
   m4/multiarch.m4
-  m4/nls.m4
   m4/onceonly.m4
-  m4/po.m4
-  m4/printf-posix.m4
   m4/printf.m4
-  m4/progtest.m4
   m4/setenv.m4
   m4/sigaction.m4
   m4/signal_h.m4
@@ -518,11 +497,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_time_h.m4
   m4/threadlib.m4
   m4/tls.m4
-  m4/uintmax_t.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
-  m4/visibility.m4
   m4/warn-on-use.m4
   m4/wchar_h.m4
   m4/wchar_t.m4

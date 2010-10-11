@@ -37,10 +37,10 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(dist_noinst_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/config.h.in $(top_srcdir)/configure ABOUT-NLS \
-	ChangeLog NEWS tools/compile tools/config.guess \
-	tools/config.rpath tools/config.sub tools/depcomp \
-	tools/install-sh tools/ltmain.sh tools/missing
+	$(srcdir)/config.h.in $(top_srcdir)/configure ChangeLog NEWS \
+	tools/compile tools/config.guess tools/config.rpath \
+	tools/config.sub tools/depcomp tools/install-sh \
+	tools/ltmain.sh tools/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-gcc-warning.m4 \
 	$(top_srcdir)/m4/pipeline-socketpair.m4 \
@@ -56,13 +56,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-gcc-warning.m4 \
 	$(top_srcdir)/gnulib/m4/error.m4 \
 	$(top_srcdir)/gnulib/m4/extensions.m4 \
 	$(top_srcdir)/gnulib/m4/float_h.m4 \
-	$(top_srcdir)/gnulib/m4/gettext.m4 \
 	$(top_srcdir)/gnulib/m4/gnulib-common.m4 \
 	$(top_srcdir)/gnulib/m4/gnulib-comp.m4 \
-	$(top_srcdir)/gnulib/m4/iconv.m4 \
 	$(top_srcdir)/gnulib/m4/include_next.m4 \
 	$(top_srcdir)/gnulib/m4/inline.m4 \
-	$(top_srcdir)/gnulib/m4/intlmacosx.m4 \
 	$(top_srcdir)/gnulib/m4/intmax_t.m4 \
 	$(top_srcdir)/gnulib/m4/inttypes_h.m4 \
 	$(top_srcdir)/gnulib/m4/lib-ignore.m4 \
@@ -81,11 +78,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-gcc-warning.m4 \
 	$(top_srcdir)/gnulib/m4/memchr.m4 \
 	$(top_srcdir)/gnulib/m4/mmap-anon.m4 \
 	$(top_srcdir)/gnulib/m4/multiarch.m4 \
-	$(top_srcdir)/gnulib/m4/nls.m4 \
 	$(top_srcdir)/gnulib/m4/onceonly.m4 \
-	$(top_srcdir)/gnulib/m4/po.m4 \
 	$(top_srcdir)/gnulib/m4/printf.m4 \
-	$(top_srcdir)/gnulib/m4/progtest.m4 \
 	$(top_srcdir)/gnulib/m4/setenv.m4 \
 	$(top_srcdir)/gnulib/m4/sigaction.m4 \
 	$(top_srcdir)/gnulib/m4/signal_h.m4 \
@@ -230,9 +224,6 @@ ERRNO_H = @ERRNO_H@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 FLOAT_H = @FLOAT_H@
-GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
-GMSGFMT = @GMSGFMT@
-GMSGFMT_015 = @GMSGFMT_015@
 GNULIB_ACCEPT = @GNULIB_ACCEPT@
 GNULIB_ACCEPT4 = @GNULIB_ACCEPT4@
 GNULIB_ATOLL = @GNULIB_ATOLL@
@@ -545,11 +536,8 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-INTLLIBS = @INTLLIBS@
-INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
-LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBMULTITHREAD = @LIBMULTITHREAD@
 LIBOBJS = @LIBOBJS@
@@ -558,10 +546,8 @@ LIBPTH_PREFIX = @LIBPTH_PREFIX@
 LIBS = @LIBS@
 LIBTHREAD = @LIBTHREAD@
 LIBTOOL = @LIBTOOL@
-LINGUAS = @LINGUAS@
 LIPO = @LIPO@
 LN_S = @LN_S@
-LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
 LTLIBMULTITHREAD = @LTLIBMULTITHREAD@
 LTLIBOBJS = @LTLIBOBJS@
@@ -570,9 +556,6 @@ LTLIBTHREAD = @LTLIBTHREAD@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
-MSGFMT = @MSGFMT@
-MSGFMT_015 = @MSGFMT_015@
-MSGMERGE = @MSGMERGE@
 NEXT_AS_FIRST_DIRECTIVE_ERRNO_H = @NEXT_AS_FIRST_DIRECTIVE_ERRNO_H@
 NEXT_AS_FIRST_DIRECTIVE_FLOAT_H = @NEXT_AS_FIRST_DIRECTIVE_FLOAT_H@
 NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H = @NEXT_AS_FIRST_DIRECTIVE_SIGNAL_H@
@@ -615,7 +598,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-POSUB = @POSUB@
 PRAGMA_SYSTEM_HEADER = @PRAGMA_SYSTEM_HEADER@
 PTRDIFF_T_SUFFIX = @PTRDIFF_T_SUFFIX@
 RANLIB = @RANLIB@
@@ -719,13 +701,9 @@ STRIP = @STRIP@
 UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
-USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WINT_T_SUFFIX = @WINT_T_SUFFIX@
-XGETTEXT = @XGETTEXT@
-XGETTEXT_015 = @XGETTEXT_015@
-XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -783,20 +761,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = gnulib/lib gnulib/po lib man po
+SUBDIRS = gnulib/lib lib man
 dist_noinst_DATA = NEWS
 
 # These macro files are imported by gnulib-tool, but at present not used. We
 # include them in the distribution anyway for maximum consistency.
 EXTRA_DIST = .bzrignore autogen.sh gnulib/lib/xmalloc.c.orig \
 	gnulib/lib/xmalloc.patch gnulib/m4/gnulib-cache.m4 \
-	gnulib/m4/gnulib-tool.m4 release.sh gnulib/m4/codeset.m4 \
-	gnulib/m4/fcntl-o.m4 gnulib/m4/glibc2.m4 gnulib/m4/glibc21.m4 \
-	gnulib/m4/intdiv0.m4 gnulib/m4/intl.m4 gnulib/m4/intldir.m4 \
-	gnulib/m4/intmax.m4 gnulib/m4/inttypes-pri.m4 \
-	gnulib/m4/lcmessage.m4 gnulib/m4/printf-posix.m4 \
-	gnulib/m4/sockpfaf.m4 gnulib/m4/uintmax_t.m4 \
-	gnulib/m4/visibility.m4
+	gnulib/m4/gnulib-tool.m4 release.sh gnulib/m4/sockpfaf.m4
 
 # Note that autopoint installs into the first directory here. Yes, this
 # means that it installs into gnulib/m4, so we always run gnulib-tool after

@@ -43,11 +43,6 @@ gl_INIT
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([fcntl.h])
 
-# Internationalization support.
-AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.1])
-AC_SUBST([LINGUAS])
-
 # Checks for structures and compiler characteristics.
 AC_C_CONST
 AC_TYPE_PID_T
@@ -78,9 +73,7 @@ PIPELINE_ECHO_VAR(DBLIBS)
 
 AC_CONFIG_FILES([Makefile
 	gnulib/lib/Makefile
-	gnulib/po/Makefile.in
 	lib/Makefile
 	lib/libpipeline.pc
-	man/Makefile
-	po/Makefile.in])
+	man/Makefile])
 AC_OUTPUT

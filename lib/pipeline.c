@@ -45,10 +45,6 @@
 #include "xstrndup.h"
 #include "xvasprintf.h"
 
-#include "gettext.h"
-#include <locale.h>
-#define _(String) gettext (String)
-
 #include "pipeline-private.h"
 #include "error.h"
 #include "pipeline.h"
@@ -247,7 +243,7 @@ command *command_new_argstr (const char *argstr)
 	arg = argstr_get_word (&argstr);
 	if (!arg)
 		error (FATAL, 0,
-		       _("badly formed configuration directive: '%s'"),
+		       "badly formed configuration directive: '%s'",
 		       argstr);
 	if (!strcmp (arg, "exec")) {
 		/* Some old configuration files have "exec command" rather
@@ -259,7 +255,7 @@ command *command_new_argstr (const char *argstr)
 		arg = argstr_get_word (&argstr);
 		if (!arg)
 			error (FATAL, 0,
-			       _("badly formed configuration directive: '%s'"),
+			       "badly formed configuration directive: '%s'",
 			       argstr);
 	}
 	cmd = command_new (arg);
@@ -667,7 +663,7 @@ static void command_start_child (command *cmd)
 			sa.sa_flags = 0;
 			if (sigaction (SIGCHLD, &sa, NULL) == -1)
 				error (FATAL, errno,
-				       _("can't install SIGCHLD handler"));
+				       "can't install SIGCHLD handler");
 
 			for (i = 0; i < cmds->ncommands; ++i) {
 				command *child = cmds->commands[i];
@@ -675,7 +671,7 @@ static void command_start_child (command *cmd)
 				int status;
 
 				if (pid < 0)
-					error (FATAL, errno, _("fork failed"));
+					error (FATAL, errno, "fork failed");
 				if (pid == 0)
 					command_start_child (child);
 				debug ("Started \"%s\", pid %d\n",
@@ -684,8 +680,7 @@ static void command_start_child (command *cmd)
 				while (waitpid (pid, &status, 0) < 0) {
 					if (errno == EINTR)
 						continue;
-					error (FATAL, errno,
-					       _("waitpid failed"));
+					error (FATAL, errno, "waitpid failed");
 				}
 
 				debug ("  \"%s\" (%d) -> %d\n",
@@ -700,12 +695,11 @@ static void command_start_child (command *cmd)
 #endif /* SIGPIPE */
 					if (WCOREDUMP (status))
 						error (0, 0,
-						       _("%s: %s "
-							 "(core dumped)"),
+						       "%s: %s (core dumped)",
 						       child->name,
 						       strsignal (sig));
 					else
-						error (0, 0, _("%s: %s"),
+						error (0, 0, "%s: %s",
 						       child->name,
 						       strsignal (sig));
 				} else if (!WIFEXITED (status))
@@ -731,8 +725,7 @@ static void command_start_child (command *cmd)
 		}
 	}
 
-	error (EXEC_FAILED_EXIT_STATUS, errno,
-	       _("can't execute %s"), cmd->name);
+	error (EXEC_FAILED_EXIT_STATUS, errno, "can't execute %s", cmd->name);
 	/* Never called, but gcc doesn't realise that error with non-zero
 	 * status always exits.
 	 */
@@ -955,7 +948,7 @@ FILE *pipeline_get_infile (pipeline *p)
 	if (p->infile)
 		return p->infile;
 	else if (p->infd == -1) {
-		error (0, 0, _("pipeline input not open"));
+		error (0, 0, "pipeline input not open");
 		return NULL;
 	} else
 		return p->infile = fdopen (p->infd, "w");
@@ -968,7 +961,7 @@ FILE *pipeline_get_outfile (pipeline *p)
 	if (p->outfile)
 		return p->outfile;
 	else if (p->outfd == -1) {
-		error (0, 0, _("pipeline output not open"));
+		error (0, 0, "pipeline output not open");
 		return NULL;
 	} else
 		return p->outfile = fdopen (p->outfd, "r");
@@ -1126,7 +1119,7 @@ static void pipeline_install_sigchld (void)
 	act.sa_flags |= SA_RESTART;
 #endif
 	if (sigaction (SIGCHLD, &act, NULL) == -1)
-		error (FATAL, errno, _("can't install SIGCHLD handler"));
+		error (FATAL, errno, "can't install SIGCHLD handler");
 
 	installed = 1;
 }
@@ -1221,7 +1214,7 @@ void pipeline_start (pipeline *p)
 
 	if (p->want_in < 0) {
 		if (pipe (infd) < 0)
-			error (FATAL, errno, _("pipe failed"));
+			error (FATAL, errno, "pipe failed");
 		last_input = infd[0];
 		p->infd = infd[1];
 	} else if (p->want_in > 0)
@@ -1229,8 +1222,7 @@ void pipeline_start (pipeline *p)
 	else if (p->want_infile) {
 		last_input = open (p->want_infile, O_RDONLY);
 		if (last_input < 0)
-			error (FATAL, errno, _("can't open %s"),
-			       p->want_infile);
+			error (FATAL, errno, "can't open %s", p->want_infile);
 	}
 
 	for (i = 0; i < p->ncommands; i++) {
@@ -1240,7 +1232,7 @@ void pipeline_start (pipeline *p)
 
 		if (i != p->ncommands - 1 || p->want_out < 0) {
 			if (pipe (pdes) < 0)
-				error (FATAL, errno, _("pipe failed"));
+				error (FATAL, errno, "pipe failed");
 			if (i == p->ncommands - 1)
 				p->outfd = pdes[0];
 			output_read = pdes[0];
@@ -1269,7 +1261,7 @@ void pipeline_start (pipeline *p)
 
 		pid = fork ();
 		if (pid < 0)
-			error (FATAL, errno, _("fork failed"));
+			error (FATAL, errno, "fork failed");
 		if (pid == 0) {
 			/* child */
 			if (post_fork)
@@ -1278,26 +1270,23 @@ void pipeline_start (pipeline *p)
 			/* input, reading side */
 			if (last_input != -1) {
 				if (dup2 (last_input, 0) < 0)
-					error (FATAL, errno, _("dup2 failed"));
+					error (FATAL, errno, "dup2 failed");
 				if (close (last_input) < 0)
-					error (FATAL, errno,
-					       _("close failed"));
+					error (FATAL, errno, "close failed");
 			}
 
 			/* output, writing side */
 			if (output_write != -1) {
 				if (dup2 (output_write, 1) < 0)
-					error (FATAL, errno, _("dup2 failed"));
+					error (FATAL, errno, "dup2 failed");
 				if (close (output_write) < 0)
-					error (FATAL, errno,
-					       _("close failed"));
+					error (FATAL, errno, "close failed");
 			}
 
 			/* output, reading side */
 			if (output_read != -1)
 				if (close (output_read))
-					error (FATAL, errno,
-					       _("close failed"));
+					error (FATAL, errno, "close failed");
 
 			/* input from first command, writing side; must close
 			 * it in every child because it has to be created
@@ -1305,8 +1294,7 @@ void pipeline_start (pipeline *p)
 			 */
 			if (p->infd != -1)
 				if (close (p->infd))
-					error (FATAL, errno,
-					       _("close failed"));
+					error (FATAL, errno, "close failed");
 
 			/* inputs and outputs from other active pipelines */
 			for (j = 0; j < n_active_pipelines; ++j) {
@@ -1333,11 +1321,11 @@ void pipeline_start (pipeline *p)
 		/* in the parent */
 		if (last_input != -1) {
 			if (close (last_input) < 0)
-				error (FATAL, errno, _("close failed"));
+				error (FATAL, errno, "close failed");
 		}
 		if (output_write != -1) {
 			if (close (output_write) < 0)
-				error (FATAL, errno, _("close failed"));
+				error (FATAL, errno, "close failed");
 		}
 		if (output_read != -1)
 			last_input = output_read;
@@ -1374,26 +1362,26 @@ int pipeline_wait (pipeline *p)
 	if (p->infile) {
 		if (fclose (p->infile))
 			error (0, errno,
-			       _("closing pipeline input stream failed"));
+			       "closing pipeline input stream failed");
 		p->infile = NULL;
 		p->infd = -1;
 	} else if (p->infd != -1) {
 		if (close (p->infd))
-			error (0, errno, _("closing pipeline input failed"));
+			error (0, errno, "closing pipeline input failed");
 		p->infd = -1;
 	}
 
 	if (p->outfile) {
 		if (fclose (p->outfile)) {
 			error (0, errno,
-			       _("closing pipeline output stream failed"));
+			       "closing pipeline output stream failed");
 			ret = 1;
 		}
 		p->outfile = NULL;
 		p->outfd = -1;
 	} else if (p->outfd != -1) {
 		if (close (p->outfd)) {
-			error (0, errno, _("closing pipeline output failed"));
+			error (0, errno, "closing pipeline output failed");
 			ret = 1;
 		}
 		p->outfd = -1;
@@ -1441,12 +1429,11 @@ int pipeline_wait (pipeline *p)
 						raise_signal = sig;
 					else if (WCOREDUMP (status))
 						error (0, 0,
-						       _("%s: %s "
-							 "(core dumped)"),
+						       "%s: %s (core dumped)",
 						       p->commands[i]->name,
 						       strsignal (sig));
 					else
-						error (0, 0, _("%s: %s"),
+						error (0, 0, "%s: %s",
 						       p->commands[i]->name,
 						       strsignal (sig));
 #ifdef SIGPIPE
@@ -1482,7 +1469,7 @@ int pipeline_wait (pipeline *p)
 			/* Eh? The pipeline was allegedly still running, so
 			 * we shouldn't have got ECHILD.
 			 */
-			error (FATAL, errno, _("waitpid failed"));
+			error (FATAL, errno, "waitpid failed");
 	}
 
 	queue_sigchld = 0;
@@ -1613,8 +1600,8 @@ void pipeline_pump (pipeline *p, ...)
 				    pieces[j]->infd != -1) {
 					if (close (pieces[j]->infd))
 						error (0, errno,
-						       _("closing pipeline "
-							 "input failed"));
+						       "closing pipeline "
+						       "input failed");
 					pieces[j]->infd = -1;
 				}
 			}
@@ -1638,7 +1625,7 @@ void pipeline_pump (pipeline *p, ...)
 				continue;
 			if (close (pieces[i]->outfd))
 				error (0, errno,
-				       _("closing pipeline output failed"));
+				       "closing pipeline output failed");
 			pieces[i]->outfd = -1;
 		}
 
