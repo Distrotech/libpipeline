@@ -1,3 +1,8 @@
+Mon Oct 11 16:38:29 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (pipeline_pump): Mention in comment that arguments
+	  must be NULL-terminated.
+
 Mon Oct 11 14:10:54 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.h (pipeline_new_commandv): Fix comment.

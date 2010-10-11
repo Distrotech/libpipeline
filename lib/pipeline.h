@@ -313,7 +313,7 @@ int pipeline_wait (pipeline *p);
  * supplied: that is, no pipeline that has been connected to a source
  * pipeline may be supplied unless that source pipeline is also supplied.
  * Automatically starts all pipelines if they are not already started, but
- * does not wait for them.
+ * does not wait for them. Terminate arguments with NULL.
  */
 void pipeline_pump (pipeline *p, ...) ATTRIBUTE_SENTINEL;
 
