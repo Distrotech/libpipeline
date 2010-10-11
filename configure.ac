@@ -12,10 +12,6 @@ AC_CONFIG_SRCDIR([lib/pipeline.c])
 AC_GNU_SOURCE
 LT_INIT([disable-static])
 
-if test ! -f "$srcdir/gnulib/po/Makefile.in.in"; then
-	AC_MSG_ERROR([you must run ./autogen.sh before ./configure when building from revision control])
-fi
-
 AC_CONFIG_HEADER([config.h])
 AC_CANONICAL_HOST
 

@@ -11375,10 +11375,6 @@ CC="$lt_save_CC"
 
 
 
-if test ! -f "$srcdir/gnulib/po/Makefile.in.in"; then
-	as_fn_error $? "you must run ./autogen.sh before ./configure when building from revision control" "$LINENO" 5
-fi
-
 ac_config_headers="$ac_config_headers config.h"
 
 
