@@ -1,3 +1,7 @@
+Mon Oct 11 14:10:54 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (pipeline_new_commandv): Fix comment.
+
 Thu Oct  7 08:05:41 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/libpipeline.pc.in: New file.

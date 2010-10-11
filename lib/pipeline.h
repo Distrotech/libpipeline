@@ -224,7 +224,7 @@ void command_free (command *cmd);
 /* Construct a new pipeline. */
 pipeline *pipeline_new (void);
 
-/* Convenience constructor wrapping pipeline_new() and pipeline_command().
+/* Convenience constructors wrapping pipeline_new() and pipeline_command().
  * Terminate commands with NULL.
  */
 pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
