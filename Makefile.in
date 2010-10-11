@@ -790,7 +790,8 @@ dist_noinst_DATA = NEWS
 # include them in the distribution anyway for maximum consistency.
 EXTRA_DIST = .bzrignore autogen.sh gnulib/lib/xmalloc.c.orig \
 	gnulib/lib/xmalloc.patch gnulib/m4/gnulib-cache.m4 \
-	gnulib/m4/gnulib-tool.m4 release.sh gnulib/m4/glibc2.m4 \
+	gnulib/m4/gnulib-tool.m4 release.sh gnulib/m4/codeset.m4 \
+	gnulib/m4/fcntl-o.m4 gnulib/m4/glibc2.m4 gnulib/m4/glibc21.m4 \
 	gnulib/m4/intdiv0.m4 gnulib/m4/intl.m4 gnulib/m4/intldir.m4 \
 	gnulib/m4/intmax.m4 gnulib/m4/inttypes-pri.m4 \
 	gnulib/m4/lcmessage.m4 gnulib/m4/printf-posix.m4 \

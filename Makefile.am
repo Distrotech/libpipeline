@@ -35,7 +35,10 @@ EXTRA_DIST = \
 # These macro files are imported by gnulib-tool, but at present not used. We
 # include them in the distribution anyway for maximum consistency.
 EXTRA_DIST += \
+	gnulib/m4/codeset.m4 \
+	gnulib/m4/fcntl-o.m4 \
 	gnulib/m4/glibc2.m4 \
+	gnulib/m4/glibc21.m4 \
 	gnulib/m4/intdiv0.m4 \
 	gnulib/m4/intl.m4 \
 	gnulib/m4/intldir.m4 \

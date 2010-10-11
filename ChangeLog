@@ -1,3 +1,13 @@
+Mon Oct 11 21:25:37 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* autogen.sh: Remove po/ChangeLog after running autoreconf.
+	* .bzrignore: Remove po/ChangeLog.
+
+	* Makefile.am (EXTRA_DIST): Add gnulib/m4/codeset.m4,
+	  gnulib/m4/fcntl-o.m4, and gnulib/m4/glibc21.m4.
+
+	* po/LINGUAS: New file.
+
 Mon Oct 11 18:19:37 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/Makefile.am (man3_MANS): Move to ...

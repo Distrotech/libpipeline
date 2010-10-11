@@ -8,3 +8,4 @@ if type gnulib-tool >/dev/null 2>&1; then
 fi
 export LIBTOOLIZE_OPTIONS=--quiet
 autoreconf -fi "$@"
+rm -f po/ChangeLog
