@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 ## USA
 
-man3_MANS = libpipeline.3
+dist_man3_MANS = libpipeline.3
 
 FUNCTIONS = \
 	command_new \
