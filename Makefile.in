@@ -35,10 +35,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(dist_noinst_DATA) \
+DIST_COMMON = README $(am__configure_deps) $(dist_noinst_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure COPYING \
-	ChangeLog NEWS tools/compile tools/config.guess \
+	ChangeLog INSTALL NEWS tools/compile tools/config.guess \
 	tools/config.rpath tools/config.sub tools/depcomp \
 	tools/install-sh tools/ltmain.sh tools/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
