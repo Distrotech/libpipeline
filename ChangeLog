@@ -1,3 +1,10 @@
+Thu Oct 14 00:49:34 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* README (Copyright and licensing): Bump to GPLv3 or later, for
+	  clarity.  (lib/* remains licensed under GPLv2 or later, but the
+	  work as a whole is GPLv3 or later.)  Move further advice to ...
+	  (Note on GPL versions): ... here, and expand.
+
 Tue Oct 12 01:12:13 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* README: New file.

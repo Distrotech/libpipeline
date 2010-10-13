@@ -20,7 +20,7 @@ Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Colin Watson.
 
 libpipeline is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or (at
+the Free Software Foundation; either version 3 of the License, or (at
 your option) any later version.
 
 libpipeline is distributed in the hope that it will be useful, but
@@ -33,11 +33,33 @@ along with libpipeline; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 USA.
 
-In addition, libpipeline incorporates Gnulib, copyrighted by the Free
-Software Foundation and others.  Note that much of Gnulib is distributed
-under the GNU General Public License version 3 or later.  This means that,
-although libpipeline's own source code is licensed under GPL v2 or later,
-the work as a whole falls under the terms of the GPL v3 or later.  Unless
-you take special pains to remove the GPL v3 portions, you must therefore
-follow the terms and conditions of the GPL v3 or later when distributing or
-linking against libpipeline.
+Note on GPL versions
+--------------------
+
+(This note is informative, and if it conflicts with the terms of the licence
+then the licence is correct.  See the full text of the licence in the
+COPYING file for precise details.)
+
+The core source code of libpipeline is licensed under GPL v2 or later.
+However, libpipeline incorporates parts of the Gnulib portability library,
+copyrighted by the Free Software Foundation and others, and much of Gnulib
+is distributed under GPL v3 or later.  This means that libpipeline as a
+whole falls under the terms of the GPL v3 or later.  Unless you take special
+pains to remove the GPL v3 portions, you must therefore follow the terms and
+conditions of the GPL v3 or later when distributing libpipeline itself, or
+distributing code linked against it.
+
+Note that this does not require that your own source code be licensed under
+the GPL v3, contrary to popular misunderstanding.  However, you must be
+prepared to distribute your work as a whole under the terms of the GPL v3 or
+later, which requires that your licence be compatible with the GPL v3.  See
+http://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses if you
+need advice on compatibility.
+
+The GPL mainly restricts distribution ("conveying", in the specific language
+of GPL v3), and is careful not to restrict private use.  Therefore, you may
+write programs for your own use that use libpipeline without needing to
+license them under GPL v3-compatible terms.  If you distribute these
+programs to others, then you must take care to use compatible licensing.
+
+ -- Colin Watson <cjwatson@debian.org>
