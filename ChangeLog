@@ -1,3 +1,8 @@
+Fri Oct 15 10:26:02 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/libpipeline.pc.in: Add copyright/licensing comment.
+	* man/libpipeline.3: Add brief licensing comment.
+
 Thu Oct 14 00:49:34 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* README (Copyright and licensing): Bump to GPLv3 or later, for
