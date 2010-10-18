@@ -1,3 +1,11 @@
+Mon Oct 18 11:29:11 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_new_command_args): New function.
+	* lib/pipeline.h (pipeline_new_command_args): Add prototype.
+	* man/libpipeline.3 (Functions to build pipelines): Add
+	  pipeline_new_command_args.
+	  (EXAMPLES): Use this to describe the simplest case.
+
 Mon Oct 18 11:10:27 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_run): New function.

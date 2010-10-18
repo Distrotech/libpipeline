@@ -213,6 +213,10 @@ Construct a new pipeline consisting of the given list of commands.
 Terminate commands with
 .Li NULL .
 .Pp
+.It Ft "pipeline *" Ns Fn pipeline_new_command_args "const char *name" ...
+.Pp
+Construct a new pipeline and add a single command to it.
+.Pp
 .It Ft "pipeline *" Ns Fn pipeline_join "pipeline *p1" "pipeline *p2"
 .Pp
 Joins two pipelines, neither of which are allowed to be started.
@@ -537,6 +541,17 @@ or
 are real
 .Nm
 functions, while any other function names are pseudocode.
+.Pp
+The simplest case is simple.
+To run a single command, such as
+.Ic mv
+.Pa source
+.Pa dest :
+.Bd -literal -offset indent
+pipeline *p = pipeline_new_command_args ("mv", source, dest, NULL);
+int status = pipeline_run (p);
+pipeline_free (p);
+.Ed
 .Pp
 .Nm
 is often used to mimic shell pipelines, such as the following example:

@@ -820,6 +820,21 @@ pipeline *pipeline_new_commands (command *cmd1, ...)
 	return p;
 }
 
+pipeline *pipeline_new_command_args (const char *name, ...)
+{
+	va_list argv;
+	pipeline *p;
+	command *cmd;
+
+	p = pipeline_new ();
+	va_start (argv, name);
+	cmd = command_new_argv (name, argv);
+	va_end (argv);
+	pipeline_command (p, cmd);
+
+	return p;
+}
+
 pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 {
 	pipeline *p = XMALLOC (pipeline);

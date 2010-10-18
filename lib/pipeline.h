@@ -230,6 +230,9 @@ pipeline *pipeline_new (void);
 pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
 pipeline *pipeline_new_commands (command *cmd1, ...) ATTRIBUTE_SENTINEL;
 
+/* Construct a new pipeline and add a single command to it. */
+pipeline *pipeline_new_command_args (const char *name, ...) ATTRIBUTE_SENTINEL;
+
 /* Joins two pipelines, neither of which are allowed to be started. Discards
  * want_out, want_outfile, and outfd from p1, and want_in, want_infile, and
  * infd from p2.
