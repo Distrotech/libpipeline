@@ -1495,6 +1495,12 @@ int pipeline_wait (pipeline *p)
 	return ret;
 }
 
+int pipeline_run (pipeline *p)
+{
+	pipeline_start (p);
+	return pipeline_wait (p);
+}
+
 void pipeline_pump (pipeline *p, ...)
 {
 	va_list argv;
