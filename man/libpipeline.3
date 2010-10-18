@@ -189,6 +189,7 @@ Return a string representation of a command.
 The caller should free the result.
 .Pp
 .It Ft void Fn command_free "command *cmd"
+.Pp
 Destroy a command.
 Safely does nothing if
 .Va cmd
@@ -255,9 +256,11 @@ which case the pipelines cannot simply be concatenated into one.
 .It Ft void Fn pipeline_command "pipeline *p" "command *cmd"
 .Pp
 Add a command to a pipeline.
+.Pp
 .It Ft void Fn pipeline_command_args "pipeline *p" "const char *name" ...
 .Pp
 Construct a new command and add it to a pipeline in one go.
+.Pp
 .It Ft void Fn pipeline_command_argstr "pipeline *p" "const char *argstr"
 .Pp
 Construct a new command from a shell-quoted string and add it to a pipeline
@@ -367,6 +370,7 @@ is updated with the number of bytes read.
 The starting position of the next read or peek is not affected by this call.
 .Pp
 .It Ft size_t Fn pipeline_peek_size "pipeline *p"
+.Pp
 Return the number of bytes of data that can be read using
 .Fn pipeline_read
 or
