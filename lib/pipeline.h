@@ -310,7 +310,7 @@ void pipeline_start (pipeline *p);
 /* Wait for a pipeline to complete and return the exit status. */
 int pipeline_wait (pipeline *p);
 
-/* Shorthand for pipeline_start followed by pipeline_wait. */
+/* Start a pipeline, wait for it to complete, and free it, all in one go. */
 int pipeline_run (pipeline *p);
 
 /* Pump data among one or more pipelines connected using pipeline_connect()

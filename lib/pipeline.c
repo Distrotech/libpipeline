@@ -1512,8 +1512,13 @@ int pipeline_wait (pipeline *p)
 
 int pipeline_run (pipeline *p)
 {
+	int status;
+
 	pipeline_start (p);
-	return pipeline_wait (p);
+	status = pipeline_wait (p);
+	pipeline_free (p);
+
+	return status;
 }
 
 void pipeline_pump (pipeline *p, ...)

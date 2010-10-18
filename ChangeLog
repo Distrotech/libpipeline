@@ -1,3 +1,14 @@
+Mon Oct 18 11:32:52 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_run): This would be a more convenient
+	  wrapper for the common case if it freed the pipeline as well, so
+	  do that.  (Callers that don't want this should call pipeline_start
+	  and pipeline_wait separately.)
+	* lib/pipeline.h (pipeline_run): Update comment.
+	* man/libpipeline.3 (Functions to build pipelines): Update
+	  pipeline_run documentation.
+	  (EXAMPLES): Remove now-unnecessary calls to pipeline_free.
+
 Mon Oct 18 11:29:11 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_new_command_args): New function.
