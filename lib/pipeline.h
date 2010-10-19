@@ -29,6 +29,51 @@
 #include <stdarg.h>
 #include <sys/types.h>
 
+/* GCC version checking borrowed from glibc. */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#  define PIPELINE_GNUC_PREREQ(maj,min) \
+	((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
+#  define PIPELINE_GNUC_PREREQ(maj,min) 0
+#endif
+
+/* Does this compiler support format string checking? */
+#if PIPELINE_GNUC_PREREQ(2,0)
+#  define PIPELINE_ATTR_FORMAT_PRINTF(a,b) \
+	__attribute__ ((__format__ (__printf__, a, b)))
+#else
+#  define PIPELINE_ATTR_FORMAT_PRINTF(a,b)
+#endif
+
+/* Does this compiler support marking variables as unused? */
+#if PIPELINE_GNUC_PREREQ(2,4)
+#  define PIPELINE_ATTR_UNUSED __attribute__ ((__unused__))
+#else
+#  define PIPELINE_ATTR_UNUSED
+#endif
+
+/* Does this compiler support marking functions as non-returning? */
+#if PIPELINE_GNUC_PREREQ(2,5)
+#  define PIPELINE_ATTR_NORETURN __attribute__ ((__noreturn__))
+#else
+#  define PIPELINE_ATTR_NORETURN
+#endif
+
+/* Does this compiler support unused result checking? */
+#if PIPELINE_GNUC_PREREQ(3,4)
+#  define PIPELINE_ATTR_WARN_UNUSED_RESULT \
+	__attribute__ ((__warn_unused_result__))
+#else
+#  define PIPELINE_ATTR_WARN_UNUSED_RESULT
+#endif
+
+/* Does this compiler support sentinel checking? */
+#if PIPELINE_GNUC_PREREQ(4,0)
+#  define PIPELINE_ATTR_SENTINEL __attribute__ ((__sentinel__))
+#else
+#  define PIPELINE_ATTR_SENTINEL
+#endif
+
 enum command_tag {
 	COMMAND_PROCESS,
 	COMMAND_FUNCTION,
@@ -142,7 +187,7 @@ command *command_new (const char *name);
  * Terminate arguments with NULL.
  */
 command *command_new_argv (const char *name, va_list argv);
-command *command_new_args (const char *name, ...) ATTRIBUTE_SENTINEL;
+command *command_new_args (const char *name, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Split argstr on whitespace to construct a command and arguments,
  * honouring shell-style single-quoting, double-quoting, and backslashes,
@@ -171,7 +216,7 @@ command *command_new_function (const char *name,
  * command_* functions that deal with arguments cannot be used with the
  * command returned by this function.
  */
-command *command_new_sequence (const char *name, ...) ATTRIBUTE_SENTINEL;
+command *command_new_sequence (const char *name, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Return a new command that just passes data from its input to its output. */
 command *command_new_passthrough (void);
@@ -184,13 +229,13 @@ void command_arg (command *cmd, const char *arg);
 
 /* Convenience function to add an argument with printf substitutions. */
 void command_argf (command *cmd, const char *format, ...)
-	ATTRIBUTE_FORMAT_PRINTF(2, 3);
+	PIPELINE_ATTR_FORMAT_PRINTF(2, 3);
 
 /* Convenience functions wrapping command_arg().
  * Terminate arguments with NULL.
  */
 void command_argv (command *cmd, va_list argv);
-void command_args (command *cmd, ...) ATTRIBUTE_SENTINEL;
+void command_args (command *cmd, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Split argstr on whitespace to add a list of arguments, honouring
  * shell-style single-quoting, double-quoting, and backslashes, but not
@@ -228,10 +273,11 @@ pipeline *pipeline_new (void);
  * Terminate commands with NULL.
  */
 pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
-pipeline *pipeline_new_commands (command *cmd1, ...) ATTRIBUTE_SENTINEL;
+pipeline *pipeline_new_commands (command *cmd1, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Construct a new pipeline and add a single command to it. */
-pipeline *pipeline_new_command_args (const char *name, ...) ATTRIBUTE_SENTINEL;
+pipeline *pipeline_new_command_args (const char *name, ...)
+	PIPELINE_ATTR_SENTINEL;
 
 /* Joins two pipelines, neither of which are allowed to be started. Discards
  * want_out, want_outfile, and outfd from p1, and want_in, want_infile, and
@@ -252,14 +298,14 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2);
  * cannot simply be concatenated into one.
  */
 void pipeline_connect (pipeline *source, pipeline *sink, ...)
-	ATTRIBUTE_SENTINEL;
+	PIPELINE_ATTR_SENTINEL;
 
 /* Add a command to a pipeline. */
 void pipeline_command (pipeline *p, command *cmd);
 
 /* Construct a new command and add it to a pipeline in one go. */
 void pipeline_command_args (pipeline *p, const char *name, ...)
-	ATTRIBUTE_SENTINEL;
+	PIPELINE_ATTR_SENTINEL;
 
 /* Construct a new command from a shell-quoted string and add it to a
  * pipeline in one go. See the comment against command_new_argstr() above if
@@ -271,7 +317,7 @@ void pipeline_command_argstr (pipeline *p, const char *argstr);
  * Terminate commands with NULL.
  */
 void pipeline_commandv (pipeline *p, va_list cmdv);
-void pipeline_commands (pipeline *p, ...) ATTRIBUTE_SENTINEL;
+void pipeline_commands (pipeline *p, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Get streams corresponding to infd and outfd respectively. The pipeline
  * must be started.
@@ -321,7 +367,7 @@ int pipeline_run (pipeline *p);
  * Automatically starts all pipelines if they are not already started, but
  * does not wait for them. Terminate arguments with NULL.
  */
-void pipeline_pump (pipeline *p, ...) ATTRIBUTE_SENTINEL;
+void pipeline_pump (pipeline *p, ...) PIPELINE_ATTR_SENTINEL;
 
 /* ---------------------------------------------------------------------- */
 

@@ -1,3 +1,9 @@
+Tue Oct 19 01:39:54 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline-private.h: Move attribute macros to ...
+	* lib/pipeline.h: ... here, and make them namespace-safe.  Update
+	  all users.
+
 Mon Oct 18 11:32:52 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_run): This would be a more convenient

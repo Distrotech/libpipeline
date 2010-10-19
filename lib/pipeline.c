@@ -328,7 +328,7 @@ command *command_new_sequence (const char *name, ...)
 	return cmd;
 }
 
-static void passthrough (void *data ATTRIBUTE_UNUSED)
+static void passthrough (void *data PIPELINE_ATTR_UNUSED)
 {
 	for (;;) {
 		char buffer[4096];
@@ -608,7 +608,7 @@ char *command_tostring (command *cmd)
 /* Start a command. This is called in the forked child process, with file
  * descriptors already set up.
  */
-static void command_start_child (command *cmd) ATTRIBUTE_NORETURN;
+static void command_start_child (command *cmd) PIPELINE_ATTR_NORETURN;
 static void command_start_child (command *cmd)
 {
 	int i;
