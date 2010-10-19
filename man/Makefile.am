@@ -68,5 +68,11 @@ FUNCTIONS = \
 
 install-data-hook:
 	set -e; cd "$(DESTDIR)$(man3dir)"; for function in $(FUNCTIONS); do \
-		ln -s libpipeline.3 $$function.3; \
+		rm -f $$function.3; \
+		$(LN_S) libpipeline.3 $$function.3; \
+	done
+
+uninstall-hook:
+	set -e; cd "$(DESTDIR)$(man3dir)"; for function in $(FUNCTIONS); do \
+		rm -f $$function.3; \
 	done

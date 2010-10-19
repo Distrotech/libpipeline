@@ -995,10 +995,11 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-man
-
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 uninstall-man: uninstall-man3
 
-.MAKE: install-am install-data-am install-strip
+.MAKE: install-am install-data-am install-strip uninstall-am
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
@@ -1010,12 +1011,19 @@ uninstall-man: uninstall-man3
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am uninstall uninstall-am uninstall-man uninstall-man3
+	ps ps-am uninstall uninstall-am uninstall-hook uninstall-man \
+	uninstall-man3
 
 
 install-data-hook:
 	set -e; cd "$(DESTDIR)$(man3dir)"; for function in $(FUNCTIONS); do \
-		ln -s libpipeline.3 $$function.3; \
+		rm -f $$function.3; \
+		$(LN_S) libpipeline.3 $$function.3; \
+	done
+
+uninstall-hook:
+	set -e; cd "$(DESTDIR)$(man3dir)"; for function in $(FUNCTIONS); do \
+		rm -f $$function.3; \
 	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
