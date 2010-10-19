@@ -1,3 +1,13 @@
+Tue Oct 19 01:43:29 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	Make debugging work properly in a library context.
+
+	* lib/debug.c (init_debug): Check whether we've already been
+	  initialised.
+	  (debug): Call init_debug.
+	* lib/pipeline-private.h (init_debug): Add prototype.
+	* lib/pipeline.c (pipeline_start, pipeline_wait): Call init_debug.
+
 Tue Oct 19 01:42:47 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/libpipeline.3: Bump licence header to GPLv3, since that more

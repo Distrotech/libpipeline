@@ -1165,6 +1165,7 @@ void pipeline_start (pipeline *p)
 	assert (!p->pids);	/* pipeline not started already */
 	assert (!p->statuses);
 
+	init_debug ();
 	if (debug_level) {
 		debug ("Starting pipeline: ");
 		pipeline_dump (p, stderr);
@@ -1366,6 +1367,7 @@ int pipeline_wait (pipeline *p)
 	int i;
 	int raise_signal = 0;
 
+	init_debug ();
 	if (debug_level) {
 		debug ("Waiting for pipeline: ");
 		pipeline_dump (p, stderr);

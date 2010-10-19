@@ -32,6 +32,7 @@
 extern char *appendstr (char *, ...)
 	PIPELINE_ATTR_SENTINEL PIPELINE_ATTR_WARN_UNUSED_RESULT;
 
+extern void init_debug (void);
 extern int debug_level;
 extern void debug (const char *message, ...) PIPELINE_ATTR_FORMAT_PRINTF(1, 2);
 

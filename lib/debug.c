@@ -36,7 +36,14 @@ int debug_level = 0;
 
 void init_debug (void)
 {
-	const char *pipeline_debug = getenv ("PIPELINE_DEBUG");
+	static int inited = 0;
+	const char *pipeline_debug;
+
+	if (inited)
+		return;
+	inited = 1;
+
+	pipeline_debug = getenv ("PIPELINE_DEBUG");
 	if (pipeline_debug && !strcmp (pipeline_debug, "1"))
 		debug_level = 1;
 }
@@ -49,6 +56,8 @@ static void vdebug (const char *message, va_list args)
 
 void debug (const char *message, ...)
 {
+	init_debug ();
+
 	if (debug_level) {
 		va_list args;
 
