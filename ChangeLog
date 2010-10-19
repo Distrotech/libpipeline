@@ -1,3 +1,8 @@
+Tue Oct 19 01:42:47 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* man/libpipeline.3: Bump licence header to GPLv3, since that more
+	  accurately describes the whole package.
+
 Tue Oct 19 01:41:59 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/Makefile.am (install-data-hook): Handle repeated
