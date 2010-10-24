@@ -1,3 +1,39 @@
+Sun Oct 24 22:21:20 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	Make command and pipeline opaque types.
+
+	* lib/pipeline.c (command_nice, command_discard_err,
+	  pipeline_get_ncommands, pipeline_get_command,
+	  pipeline_set_command, pipeline_want_in, pipeline_want_out,
+	  pipeline_want_infile, pipeline_want_outfile,
+	  pipeline_ignore_signals): New functions.
+	* lib/pipeline.h (command_nice, command_discard_err,
+	  pipeline_get_ncommands, pipeline_get_command,
+	  pipeline_set_command, pipeline_want_in, pipeline_want_out,
+	  pipeline_want_infile, pipeline_want_outfile,
+	  pipeline_ignore_signals): Add prototypes.
+	* man/libpipeline.3 (DESCRIPTION): Document new functions.
+
+	* lib/pipeline.h (enum command_tag, struct command_env, struct
+	  command, struct pipeline): Move to ...
+	* lib/pipeline-private.h (enum command_tag, struct command_env,
+	  struct command, struct pipeline): ... here.
+	* man/libpipeline.3 (Public command fields, Public pipeline fields):
+	  Remove.
+
+	Redirections are now handled slightly differently internally,
+	allowing redirection from/to fd 0.
+
+	* lib/pipeline.c (pipeline_new, pipeline_join): Set redirect_in and
+	  redirect_out.
+	  (pipeline_connect): Use pipeline_want_in and pipeline_want_out.
+	  Check source->redirect_out.
+	  (pipeline_start): Handle new redirection semantics.
+	* man/libpipeline.3 (EXAMPLES): Use pipeline_want_infile.
+
+	* man/libpipeline.3 (DESCRIPTION): Document string copying.
+	  (Reaping of child processes): New subsection.
+
 Tue Oct 19 01:43:29 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	Make debugging work properly in a library context.

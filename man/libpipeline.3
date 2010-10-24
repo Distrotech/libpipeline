@@ -57,6 +57,10 @@ priority, as well as properties of the entire pipeline such as its input and
 output and the way signals are handled while executing it.
 The calling program may then start the pipeline, read output from it, wait
 for it to complete, and gather its exit status.
+.Pp
+Strings passed as
+.Vt const char *
+function arguments will be copied by the library.
 .Ss Functions to build individual commands
 .Bl -tag -width 4n -compact
 .It Ft "command *" Ns Fn command_new "const char *name"
@@ -163,6 +167,23 @@ While it is safer than
 it still involves significant string parsing which is inherently riskier
 than avoiding it altogether.
 Please try to avoid using it in new code.
+.Pp
+.It Ft void Fn command_nice "command *cmd" "int value"
+.Pp
+Set the
+.Xr nice 3
+value for this command.
+Defaults to 0.
+Errors while attempting to set the nice value are ignored, aside from
+emitting a debug message.
+.Pp
+.It Ft void Fn command_discard_err "command *cmd" "int discard_err"
+.Pp
+If
+.Va discard_err
+is non-zero, redirect this command's standard error to
+.Pa /dev/null .
+Otherwise, and by default, pass it through.
 .Pp
 .It Xo Ft void
 .Fn command_setenv "command *cmd" "const char *name" "const char *value"
@@ -281,6 +302,92 @@ Convenience functions wrapping
 to add multiple commands at once.
 Terminate arguments with
 .Li NULL .
+.Pp
+.It Ft void Fn pipeline_want_in "pipeline *p" "int fd"
+.It Ft void Fn pipeline_want_out "pipeline *p" "int fd"
+.Pp
+Set file descriptors to use as the input and output of the whole pipeline.
+If non-negative,
+.Va fd
+is used directly as a file descriptor.
+If negative,
+.Fn pipeline_start
+will create pipes and store the input writing half and the output reading
+half in the pipeline's
+.Fa infd
+or
+.Fa outfd
+field as appropriate.
+The default is to leave input and output as stdin and stdout unless
+.Fn pipeline_want_infile
+or
+.Fn pipeline_want_outfile
+respectively has been called.
+.Pp
+Calling these functions supersedes any previous call to
+.Fn pipeline_want_infile
+or
+.Fn pipeline_want_outfile
+respectively.
+.Pp
+.It Ft void Fn pipeline_want_infile "pipeline *p" "const char *file"
+.It Ft void Fn pipeline_want_outfile "pipeline *p" "const char *file"
+.Pp
+Set file names to open and use as the input and output of the whole
+pipeline.
+This may be more convenient than supplying file descriptors, and guarantees
+that the files are opened with the same privileges under which the pipeline
+is run.
+.Pp
+Calling these functions (even with
+.Li NULL ,
+which returns to the default of leaving input and output as stdin and
+stdout) supersedes any previous call to
+.Fn pipeline_want_in
+or
+.Fn pipeline_want_outfile
+respectively.
+.Pp
+.It Ft void Fn pipeline_ignore_signals "pipeline *p" "int ignore_signals"
+.Pp
+If
+.Va ignore_signals
+is non-zero (which is the default), ignore
+.Li SIGINT
+and
+.Li SIGQUIT
+while the pipeline is running, like
+.Xr system 3 .
+Otherwise, leave their dispositions unchanged.
+.Pp
+.It Ft int Fn pipeline_get_ncommands "pipeline *p"
+.Pp
+Return the number of commands in this pipeline.
+.Pp
+.It Ft "command *" Ns Fn pipeline_get_command "pipeline *p" "int n"
+.Pp
+Return command number
+.Va n
+from this pipeline, counting from zero, or
+.Li NULL
+if
+.Va n
+is out of range.
+.Pp
+.It Xo Ft "command *" Ns
+.Fn pipeline_set_command "pipeline *p" "int n" "command *cmd"
+.Xc
+.Pp
+Set command number
+.Va n
+in this pipeline, counting from zero, to
+.Va cmd ,
+and return the previous command in that position.
+Do nothing and return
+.Li NULL
+if
+.Va n
+is out of range.
 .Pp
 .It Ft "FILE *" Ns Fn pipeline_get_infile "pipeline *p"
 .It Ft "FILE *" Ns Fn pipeline_get_outfile "pipeline *p"
@@ -405,88 +512,6 @@ Read a line of data from the pipeline, returning it.
 Look ahead in the pipeline's output for a line of data, returning it.
 The starting position of the next read or peek is not affected by this call.
 .El
-.Ss Public command fields
-Several elements of the
-.Vt command
-structure may be read or modified directly by applications.
-These are as follows:
-.Pp
-.Bl -tag -width 4n -compact
-.It Fa nice
-.Pp
-The
-.Xr nice 3
-value for this command.
-Defaults to 0.
-Errors while attempting to set the nice value are ignored, aside from
-emitting a debug message.
-.Pp
-.It Fa discard_err
-.Pp
-If non-zero, redirect this command's standard error to
-.Pa /dev/null .
-Defaults to 0.
-.El
-.Pp
-Any fields not listed here should be considered private.
-.Ss Public pipeline fields
-Several elements of the
-.Vt pipeline
-structure may be read or modified directly by applications.
-These are as follows:
-.Pp
-.Bl -tag -width 4n -compact
-.It Fa want_in
-.It Fa want_out
-.Pp
-To be set by the caller; default to 0.
-If positive, these contain caller-supplied file descriptors for the input
-and output of the whole pipeline.
-If negative,
-.Fn pipeline_start
-will create pipes and store the input writing half and the output reading
-half in
-.Fa infd
-and
-.Fa outfd
-as appropriate.
-If zero, input and output will be left as standard input and standard output
-unless
-.Fa want_infile
-or
-.Fa want_outfile
-respectively is set.
-.Pp
-.It Fa want_infile
-.It Fa want_outfile
-.Pp
-To be set (and freed) by the caller; default to
-.Li NULL .
-If
-.No non- Li NULL ,
-these contain files to open and use as the input and output of the whole
-pipeline.
-These are only used if
-.Fa want_in
-or
-.Fa want_out
-respectively is zero.
-The value of using these rather than simply opening the files before
-starting the pipeline is that the files will be opened with the same
-privileges under which the pipeline is being run.
-.Pp
-.It Fa ignore_signals
-.Pp
-If set, ignore
-.Li SIGINT
-and
-.Li SIGQUIT
-while the pipeline is running, like
-.Xr system 3 .
-Defaults to 1.
-.El
-.Pp
-Any fields not listed here should be considered private.
 .Ss Signal handling
 .Nm
 installs a signal handler for
@@ -522,6 +547,26 @@ It ignores
 .Li SIGPIPE
 in the parent process while running
 .Fn pipeline_pump .
+.Ss Reaping of child processes
+.Nm
+installs a
+.Li SIGCHLD
+handler that will attempt to reap child processes which have exited.
+This calls
+.Xr waitpid 2
+with
+.Li \-1 ,
+so it will reap any child process, not merely those created by way of this
+library.
+At present, this means that if the calling program which forks other child
+processes which may exit while a pipeline is running, the program is not
+guaranteed to be able to collect exit statuses of those processes.
+.Pp
+You should not rely on this behaviour, and in future it may be modified
+either to reap only child processes created by this library or to provide a
+way to return foreign statuses to the application.
+Please contact the author if you have an example application and would like
+to help design such an interface.
 .Sh ENVIRONMENT
 If the
 .Ev PIPELINE_DEBUG
@@ -560,7 +605,7 @@ pipeline *p;
 int status;
 
 p = pipeline_new ();
-p->want_infile = "input-file";
+pipeline_want_infile (p, "input-file");
 pipeline_command_args (p, "zsoelim", NULL);
 pipeline_command_args (p, "tbl", NULL);
 pipeline_command_args (p, "nroff", "-mandoc", "-Tutf8", NULL);

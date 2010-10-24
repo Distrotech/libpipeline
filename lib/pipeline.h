@@ -74,107 +74,14 @@
 #  define PIPELINE_ATTR_SENTINEL
 #endif
 
-enum command_tag {
-	COMMAND_PROCESS,
-	COMMAND_FUNCTION,
-	COMMAND_SEQUENCE
-};
-
 typedef void command_function_type (void *);
 typedef void command_function_free_type (void *);
 
-struct command_env {
-	char *name;
-	char *value;
-};
+struct command;
+typedef struct command command;
 
-typedef struct command {
-	enum command_tag tag;
-	char *name;
-	int nice;
-	int discard_err;	/* discard stderr? */
-	int nenv;
-	int env_max;		/* size of allocated array */
-	struct command_env *env;
-	union {
-		struct command_process {
-			int argc;
-			int argv_max;	/* size of allocated array */
-			char **argv;
-		} process;
-		struct command_function {
-			command_function_type *func;
-			command_function_free_type *free_func;
-			void *data;
-		} function;
-		struct command_sequence {
-			int ncommands;
-			int commands_max;
-			struct command **commands;
-		} sequence;
-	} u;
-} command;
-
-typedef struct pipeline {
-	int ncommands;
-	int commands_max;	/* size of allocated array */
-	command **commands;
-	pid_t *pids;
-	int *statuses;		/* -1 until command exits */
-
-	/* To be set by the caller. If positive, these contain
-	 * caller-supplied file descriptors for the input and output of the
-	 * whole pipeline. If negative, pipeline_start() will create pipes
-	 * and store the input writing half and the output reading half in
-	 * infd and outfd as appropriate. If zero, input and output will be
-	 * left as stdin and stdout unless want_infile or want_outfile
-	 * respectively is set.
-	 */
-	int want_in, want_out;
-
-	/* To be set (and freed) by the caller. If non-NULL, these contain
-	 * files to open and use as the input and output of the whole
-	 * pipeline. These are only used if want_in or want_out respectively
-	 * is zero. The value of using these rather than simply opening the
-	 * files before starting the pipeline is that the files will be
-	 * opened with the same privileges under which the pipeline is being
-	 * run.
-	 */
-	const char *want_infile, *want_outfile;
-
-	/* See above. Default to -1. The caller should consider these
-	 * read-only.
-	 */
-	int infd, outfd;
-
-	/* Set by pipeline_get_infile() and pipeline_get_outfile()
-	 * respectively. Default to NULL.
-	 */
-	FILE *infile, *outfile;
-
-	/* Set by pipeline_connect() to record that this pipeline reads its
-	 * input from another pipeline. Defaults to NULL.
-	 */
-	struct pipeline *source;
-
-	/* Private buffer for use by read/peek functions. */
-	char *buffer;
-	size_t buflen, bufmax;
-
-	/* The last line returned by readline/peekline. Private. */
-	char *line_cache;
-
-	/* The amount of data at the end of buffer which has been
-	 * read-ahead, either by an explicit peek or by readline/peekline
-	 * reading a block at a time to save work. Private.
-	 */
-	size_t peek_offset;
-
-	/* If set, ignore SIGINT and SIGQUIT while the pipeline is running,
-	 * like system(). Defaults to 1.
-	 */
-	int ignore_signals;
-} pipeline;
+struct pipeline;
+typedef struct pipeline pipeline;
 
 /* ---------------------------------------------------------------------- */
 
@@ -244,6 +151,17 @@ void command_args (command *cmd, ...) PIPELINE_ATTR_SENTINEL;
  * please try to avoid using it in new code.
  */
 void command_argstr (command *cmd, const char *argstr);
+
+/* Set the nice(3) value for this command.  Defaults to 0.  Errors while
+ * attempting to set the nice value are ignored, aside from emitting a debug
+ * message.
+ */
+void command_nice (command *cmd, int nice);
+
+/* If discard_err is non-zero, redirect this command's standard error to
+ * /dev/null.  Otherwise, and by default, pass it through.
+ */
+void command_discard_err (command *cmd, int discard_err);
 
 /* Set an environment variable while running this command. */
 void command_setenv (command *cmd, const char *name, const char *value);
@@ -318,6 +236,52 @@ void pipeline_command_argstr (pipeline *p, const char *argstr);
  */
 void pipeline_commandv (pipeline *p, va_list cmdv);
 void pipeline_commands (pipeline *p, ...) PIPELINE_ATTR_SENTINEL;
+
+/* Return the number of commands in this pipeline. */
+int pipeline_get_ncommands (pipeline *p);
+
+/* Return command number n from this pipeline, counting from zero, or NULL
+ * if n is out of range.
+ */
+command *pipeline_get_command (pipeline *p, int n);
+
+/* Set command number n in this pipeline, counting from zero, to cmd, and
+ * return the previous command in that position.  Do nothing and return NULL
+ * if n is out of range.
+ */
+command *pipeline_set_command (pipeline *p, int n, command *cmd);
+
+/* Set file descriptors to use as the input and output of the whole
+ * pipeline.  If non-negative, fd is used directly as a file descriptor.  If
+ * negative, pipeline_start will create pipes and store the input writing
+ * half and the output reading half in the pipeline's infd or outfd field as
+ * appropriate.  The default is to leave input and output as stdin and
+ * stdout unless pipeline_want_infile or pipeline_want_outfile respectively
+ * has been called.
+ *
+ * Calling these functions supersedes any previous call to
+ * pipeline_want_infile or pipeline_want_outfile respectively.
+ */
+void pipeline_want_in (pipeline *p, int fd);
+void pipeline_want_out (pipeline *p, int fd);
+
+/* Set file names to open and use as the input and output of the whole
+ * pipeline.  This may be more convenient than supplying file descriptors,
+ * and guarantees that the files are opened with the same privileges under
+ * which the pipeline is run.
+ *
+ * Calling these functions (even with NULL, which returns to the default of
+ * leaving input and output as stdin and stdout) supersedes any previous
+ * call to pipeline_want_in or pipeline_want_outfile respectively.
+ */
+void pipeline_want_infile (pipeline *p, const char *file);
+void pipeline_want_outfile (pipeline *p, const char *file);
+
+/* If ignore_signals is non-zero (which is the default), ignore SIGINT and
+ * SIGQUIT while the pipeline is running, like system().  Otherwise, leave
+ * their dispositions unchanged.
+ */
+void pipeline_ignore_signals (pipeline *p, int ignore_signals);
 
 /* Get streams corresponding to infd and outfd respectively. The pipeline
  * must be started.

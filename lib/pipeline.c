@@ -483,6 +483,16 @@ void command_argstr (command *cmd, const char *argstr)
 	}
 }
 
+void command_nice (command *cmd, int value)
+{
+	cmd->nice = value;
+}
+
+void command_discard_err (command *cmd, int discard_err)
+{
+	cmd->discard_err = discard_err;
+}
+
 void command_setenv (command *cmd, const char *name, const char *value)
 {
 	if (cmd->nenv >= cmd->env_max) {
@@ -787,6 +797,7 @@ pipeline *pipeline_new (void)
 	p->commands = xnmalloc (p->commands_max, sizeof *p->commands);
 	p->pids = NULL;
 	p->statuses = NULL;
+	p->redirect_in = p->redirect_out = REDIRECT_NONE;
 	p->want_in = p->want_out = 0;
 	p->want_infile = p->want_outfile = NULL;
 	p->infd = p->outfd = -1;
@@ -850,8 +861,10 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->commands = xnmalloc (p->commands_max, sizeof *p->commands);
 	p->pids = NULL;
 	p->statuses = NULL;
+	p->redirect_in = p1->redirect_in;
 	p->want_in = p1->want_in;
 	p->want_infile = p1->want_infile;
+	p->redirect_out = p2->redirect_out;
 	p->want_out = p2->want_out;
 	p->want_outfile = p2->want_outfile;
 	p->infd = p1->infd;
@@ -881,19 +894,16 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 	/* We must be in control of output from the source pipeline. If the
 	 * source isn't started, we can force this.
 	 */
-	if (!source->pids) {
-		source->want_out = -1;
-		source->want_outfile = NULL;
-	}
+	if (!source->pids)
+		pipeline_want_out (source, -1);
+	assert (source->redirect_out == REDIRECT_FD);
 	assert (source->want_out < 0);
-	assert (!source->want_outfile);
 
 	va_start (argv, sink);
 	for (arg = sink; arg; arg = va_arg (argv, pipeline *)) {
 		assert (!arg->pids); /* not started */
 		arg->source = source;
-		arg->want_in = -1;
-		arg->want_infile = NULL;
+		pipeline_want_in (arg, -1);
 
 		/* Zero-command sinks should represent data being passed
 		 * straight through from the input to the output.
@@ -954,6 +964,61 @@ void pipeline_commands (pipeline *p, ...)
 	va_start (cmdv, p);
 	pipeline_commandv (p, cmdv);
 	va_end (cmdv);
+}
+
+int pipeline_get_ncommands (pipeline *p)
+{
+	return p->ncommands;
+}
+
+command *pipeline_get_command (pipeline *p, int n)
+{
+	if (n < 0 || n >= p->ncommands)
+		return NULL;
+	return p->commands[n];
+}
+
+command *pipeline_set_command (pipeline *p, int n, command *cmd)
+{
+	command *prev;
+	if (n < 0 || n >= p->ncommands)
+		return NULL;
+	prev = p->commands[n];
+	p->commands[n] = cmd;
+	return prev;
+}
+
+void pipeline_want_in (pipeline *p, int fd)
+{
+	p->redirect_in = REDIRECT_FD;
+	p->want_in = fd;
+	p->want_infile = NULL;
+}
+
+void pipeline_want_out (pipeline *p, int fd)
+{
+	p->redirect_out = REDIRECT_FD;
+	p->want_out = fd;
+	p->want_outfile = NULL;
+}
+
+void pipeline_want_infile (pipeline *p, const char *file)
+{
+	p->redirect_in = (file != NULL) ? REDIRECT_FILE_NAME : REDIRECT_NONE;
+	p->want_in = 0;
+	p->want_infile = file;
+}
+
+void pipeline_want_outfile (pipeline *p, const char *file)
+{
+	p->redirect_out = (file != NULL) ? REDIRECT_FILE_NAME : REDIRECT_NONE;
+	p->want_out = 0;
+	p->want_outfile = file;
+}
+
+void pipeline_ignore_signals (pipeline *p, int ignore_signals)
+{
+	p->ignore_signals = ignore_signals;
 }
 
 FILE *pipeline_get_infile (pipeline *p)
@@ -1228,14 +1293,15 @@ void pipeline_start (pipeline *p)
 	while (sigprocmask (SIG_SETMASK, &oset, NULL) == -1 && errno == EINTR)
 		;
 
-	if (p->want_in < 0) {
+	if (p->redirect_in == REDIRECT_FD && p->want_in < 0) {
 		if (pipe (infd) < 0)
 			error (FATAL, errno, "pipe failed");
 		last_input = infd[0];
 		p->infd = infd[1];
-	} else if (p->want_in > 0)
+	} else if (p->redirect_in == REDIRECT_FD)
 		last_input = p->want_in;
-	else if (p->want_infile) {
+	else if (p->redirect_out == REDIRECT_FILE_NAME) {
+		assert (p->want_infile);
 		last_input = open (p->want_infile, O_RDONLY);
 		if (last_input < 0)
 			error (FATAL, errno, "can't open %s", p->want_infile);
@@ -1246,7 +1312,8 @@ void pipeline_start (pipeline *p)
 		pid_t pid;
 		int output_read = -1, output_write = -1;
 
-		if (i != p->ncommands - 1 || p->want_out < 0) {
+		if (i != p->ncommands - 1 ||
+		    (p->redirect_out == REDIRECT_FD && p->want_out < 0)) {
 			if (pipe (pdes) < 0)
 				error (FATAL, errno, "pipe failed");
 			if (i == p->ncommands - 1)
@@ -1254,9 +1321,10 @@ void pipeline_start (pipeline *p)
 			output_read = pdes[0];
 			output_write = pdes[1];
 		} else if (i == p->ncommands - 1) {
-			if (p->want_out > 0)
+			if (p->redirect_out == REDIRECT_FD)
 				output_write = p->want_out;
-			else if (p->want_outfile) {
+			else if (p->redirect_out == REDIRECT_FILE_NAME) {
+				assert (p->want_outfile);
 				output_write = open (p->want_outfile,
 						     O_WRONLY);
 				if (output_write < 0)

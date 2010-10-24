@@ -36,4 +36,112 @@ extern void init_debug (void);
 extern int debug_level;
 extern void debug (const char *message, ...) PIPELINE_ATTR_FORMAT_PRINTF(1, 2);
 
+enum command_tag {
+	COMMAND_PROCESS,
+	COMMAND_FUNCTION,
+	COMMAND_SEQUENCE
+};
+
+struct command_env {
+	char *name;
+	char *value;
+};
+
+struct command {
+	enum command_tag tag;
+	char *name;
+	int nice;
+	int discard_err;	/* discard stderr? */
+	int nenv;
+	int env_max;		/* size of allocated array */
+	struct command_env *env;
+	union {
+		struct command_process {
+			int argc;
+			int argv_max;	/* size of allocated array */
+			char **argv;
+		} process;
+		struct command_function {
+			command_function_type *func;
+			command_function_free_type *free_func;
+			void *data;
+		} function;
+		struct command_sequence {
+			int ncommands;
+			int commands_max;
+			struct command **commands;
+		} sequence;
+	} u;
+};
+
+enum pipeline_redirect {
+	REDIRECT_NONE,
+	REDIRECT_FD,
+	REDIRECT_FILE_NAME
+};
+
+struct pipeline {
+	int ncommands;
+	int commands_max;	/* size of allocated array */
+	command **commands;
+	pid_t *pids;
+	int *statuses;		/* -1 until command exits */
+
+	/* REDIRECT_NONE for no redirection; REDIRECT_FD for redirection
+	 * from/to file descriptor; REDIRECT_FILE_NAME for redirection
+	 * from/to file name.
+	 */
+	enum pipeline_redirect redirect_in, redirect_out;
+
+	/* If non-negative, these contain caller-supplied file descriptors
+	 * for the input and output of the whole pipeline.  If negative,
+	 * pipeline_start() will create pipes and store the input writing
+	 * half and the output reading half in infd and outfd as
+	 * appropriate.
+	 */
+	int want_in, want_out;
+
+	/* If non-NULL, these contain files to open and use as the input and
+	 * output of the whole pipeline.  These are only used if want_in or
+	 * want_out respectively is zero.  The value of using these rather
+	 * than simply opening the files before starting the pipeline is
+	 * that the files will be opened with the same privileges under
+	 * which the pipeline is being run.
+	 */
+	const char *want_infile, *want_outfile;
+
+	/* See above. Default to -1. The caller should consider these
+	 * read-only.
+	 */
+	int infd, outfd;
+
+	/* Set by pipeline_get_infile() and pipeline_get_outfile()
+	 * respectively. Default to NULL.
+	 */
+	FILE *infile, *outfile;
+
+	/* Set by pipeline_connect() to record that this pipeline reads its
+	 * input from another pipeline. Defaults to NULL.
+	 */
+	struct pipeline *source;
+
+	/* Private buffer for use by read/peek functions. */
+	char *buffer;
+	size_t buflen, bufmax;
+
+	/* The last line returned by readline/peekline. Private. */
+	char *line_cache;
+
+	/* The amount of data at the end of buffer which has been
+	 * read-ahead, either by an explicit peek or by readline/peekline
+	 * reading a block at a time to save work. Private.
+	 */
+	size_t peek_offset;
+
+	/* If set, ignore SIGINT and SIGQUIT while the pipeline is running,
+	 * like system(). Defaults to 1.
+	 */
+	int ignore_signals;
+};
+
 #endif /* PIPELINE_PRIVATE_H */
