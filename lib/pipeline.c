@@ -626,7 +626,7 @@ static void command_start_child (command *cmd)
 	if (cmd->nice)
 		if (nice (cmd->nice) < 0)
 			/* Don't worry too much. */
-			debug ("nice failed: %s", strerror (errno));
+			debug ("nice failed: %s\n", strerror (errno));
 
 	if (cmd->discard_err) {
 		int devnull = open ("/dev/null", O_WRONLY);
