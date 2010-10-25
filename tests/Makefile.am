@@ -19,30 +19,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 ## USA
 
-SUBDIRS = gnulib/lib lib man
-if RUN_TESTS
-SUBDIRS += tests
-endif
+TESTS = \
+	basic
+check_PROGRAMS = $(TESTS)
 
-dist_noinst_DATA = NEWS
+LIBPIPELINE = $(top_builddir)/lib/libpipeline.la
 
-EXTRA_DIST = \
-	.bzrignore \
-	autogen.sh \
-	gnulib/lib/xmalloc.c.orig \
-	gnulib/lib/xmalloc.patch \
-	gnulib/m4/gnulib-cache.m4 \
-	gnulib/m4/gnulib-tool.m4 \
-	release.sh
+AM_CPPFLAGS = -I$(top_srcdir)/lib
+AM_CFLAGS = @CHECK_CFLAGS@
 
-# These macro files are imported by gnulib-tool, but at present not used. We
-# include them in the distribution anyway for maximum consistency.
-EXTRA_DIST += \
-	gnulib/m4/sockpfaf.m4
-
-# Note that autopoint installs into the first directory here. Yes, this
-# means that it installs into gnulib/m4, so we always run gnulib-tool after
-# autopoint, at least for now. See
-# http://lists.gnu.org/archive/html/bug-gnulib/2009-03/msg00154.html and
-# thread.
-ACLOCAL_AMFLAGS = -I gnulib/m4 -I m4
+basic_SOURCES = basic.c
+basic_LDADD = $(LIBPIPELINE) @CHECK_LIBS@

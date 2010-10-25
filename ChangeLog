@@ -1,3 +1,17 @@
+Mon Oct 25 13:38:40 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	Start test suite.
+
+	* lib/Makefile.am (libpipeline_la_LDFLAGS): Remove -module; this
+	  introduces too many complications for now.
+
+	* configure.ac: Test for check >= 0.9.4.
+	  (AC_CONFIG_FILES): Add tests/Makefile.
+	* Makefile.am (SUBDIRS): Add tests if check was found.
+	* tests/Makefile.am: New file.
+	* tests/basic.c: New file.
+	* .bzrignore: Add tests/basic.
+
 Sun Oct 24 22:22:21 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (command_start_child): Add trailing newline to

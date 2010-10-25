@@ -52,6 +52,8 @@ then
 	PIPELINE_GCC_WARNING([no-missing-field-initializers])
 fi
 AC_PROG_LN_S
+PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [run_tests=yes], [run_tests=no])
+AM_CONDITIONAL([RUN_TESTS], [test "x$run_tests" = xyes])
 
 # Check for various header files and associated libraries.
 AC_ISC_POSIX
@@ -90,5 +92,6 @@ AC_CONFIG_FILES([Makefile
 	gnulib/lib/Makefile
 	lib/Makefile
 	lib/libpipeline.pc
-	man/Makefile])
+	man/Makefile
+	tests/Makefile])
 AC_OUTPUT
