@@ -796,13 +796,26 @@ GNULIB_BTOWC
 HAVE_UNISTD_H
 NEXT_AS_FIRST_DIRECTIVE_UNISTD_H
 NEXT_UNISTD_H
-NEXT_AS_FIRST_DIRECTIVE_SYS_TIME_H
-NEXT_SYS_TIME_H
-REPLACE_GETTIMEOFDAY
-HAVE_SYS_TIME_H
-HAVE_STRUCT_TIMEVAL
-HAVE_GETTIMEOFDAY
-GNULIB_GETTIMEOFDAY
+PTHREAD_H_DEFINES_STRUCT_TIMESPEC
+SYS_TIME_H_DEFINES_STRUCT_TIMESPEC
+TIME_H_DEFINES_STRUCT_TIMESPEC
+NEXT_AS_FIRST_DIRECTIVE_TIME_H
+NEXT_TIME_H
+REPLACE_TIMEGM
+REPLACE_NANOSLEEP
+REPLACE_MKTIME
+REPLACE_LOCALTIME_R
+HAVE_TIMEGM
+HAVE_STRPTIME
+HAVE_NANOSLEEP
+HAVE_LOCALTIME_R
+GNULIB_TIME_R
+GNULIB_TIMEGM
+GNULIB_STRPTIME
+GNULIB_NANOSLEEP
+GNULIB_MKTIME
+NEXT_AS_FIRST_DIRECTIVE_SYS_STAT_H
+NEXT_SYS_STAT_H
 HAVE_SYS_SELECT_H
 NEXT_AS_FIRST_DIRECTIVE_SYS_SELECT_H
 NEXT_SYS_SELECT_H
@@ -1088,6 +1101,38 @@ GNULIB_CANONICALIZE_FILE_NAME
 GNULIB_CALLOC_POSIX
 GNULIB_ATOLL
 HAVE_MALLOC_POSIX
+REPLACE_UTIMENSAT
+REPLACE_STAT
+REPLACE_MKNOD
+REPLACE_MKFIFO
+REPLACE_MKDIR
+REPLACE_LSTAT
+REPLACE_FUTIMENS
+REPLACE_FSTATAT
+REPLACE_FSTAT
+HAVE_UTIMENSAT
+HAVE_MKNODAT
+HAVE_MKNOD
+HAVE_MKFIFOAT
+HAVE_MKFIFO
+HAVE_MKDIRAT
+HAVE_LSTAT
+HAVE_LCHMOD
+HAVE_FUTIMENS
+HAVE_FSTATAT
+HAVE_FCHMODAT
+GNULIB_UTIMENSAT
+GNULIB_STAT
+GNULIB_MKNODAT
+GNULIB_MKNOD
+GNULIB_MKFIFOAT
+GNULIB_MKFIFO
+GNULIB_MKDIRAT
+GNULIB_LSTAT
+GNULIB_LCHMOD
+GNULIB_FUTIMENS
+GNULIB_FSTATAT
+GNULIB_FCHMODAT
 LTLIBMULTITHREAD
 LIBMULTITHREAD
 LTLIBTHREAD
@@ -1096,6 +1141,13 @@ LIBPTH_PREFIX
 LTLIBPTH
 LIBPTH
 IGNORE_UNUSED_LIBRARIES_CFLAGS
+NEXT_AS_FIRST_DIRECTIVE_SYS_TIME_H
+NEXT_SYS_TIME_H
+REPLACE_GETTIMEOFDAY
+HAVE_SYS_TIME_H
+HAVE_STRUCT_TIMEVAL
+HAVE_GETTIMEOFDAY
+GNULIB_GETTIMEOFDAY
 LTLIBINTL
 LIBINTL
 FLOAT_H
@@ -1349,6 +1401,7 @@ enable_libtool_lock
 enable_threads
 enable_rpath
 with_libpth_prefix
+enable_largefile
 enable_socketpair_pipe
 '
       ac_precious_vars='build_alias
@@ -2000,6 +2053,7 @@ Optional Features:
                           specify multithreading API
   --disable-threads       build without multithread safety
   --disable-rpath         do not hardcode runtime library paths
+  --disable-largefile     omit support for large files
   --enable-socketpair-pipe
                           Use socketpair(2) as fast replacement for pipe(2)
 
@@ -3083,9 +3137,13 @@ fi
 
 gl_header_list="$gl_header_list errno.h"
 gl_header_list="$gl_header_list float.h"
+gl_header_list="$gl_header_list sys/time.h"
+gl_func_list="$gl_func_list gettimeofday"
+gl_func_list="$gl_func_list lstat"
 gl_header_list="$gl_header_list sys/mman.h"
 gl_func_list="$gl_func_list mprotect"
 gl_func_list="$gl_func_list memchr"
+gl_func_list="$gl_func_list mkstemp"
 gl_func_list="$gl_func_list setenv"
 gl_header_list="$gl_header_list unistd.h"
 gl_func_list="$gl_func_list sigaction"
@@ -3102,7 +3160,8 @@ gl_header_list="$gl_header_list sys/socket.h"
 gl_header_list="$gl_header_list string.h"
 gl_func_list="$gl_func_list strndup"
 gl_header_list="$gl_header_list sys/select.h"
-gl_header_list="$gl_header_list sys/time.h"
+gl_header_list="$gl_header_list sys/stat.h"
+gl_header_list="$gl_header_list time.h"
 gl_func_list="$gl_func_list vasnprintf"
 # Check that the precious variables saved in the cache have kept the same
 # value.
@@ -5716,13 +5775,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:5719: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:5778: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5722: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:5781: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5725: output\"" >&5)
+  (eval echo "\"\$as_me:5784: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -6927,7 +6986,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6930 "configure"' > conftest.$ac_ext
+  echo '#line 6989 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8188,11 +8247,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8191: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8250: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8195: \$? = $ac_status" >&5
+   echo "$as_me:8254: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8527,11 +8586,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8530: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8589: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8534: \$? = $ac_status" >&5
+   echo "$as_me:8593: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8632,11 +8691,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8635: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8694: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8639: \$? = $ac_status" >&5
+   echo "$as_me:8698: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8687,11 +8746,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8690: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8749: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8694: \$? = $ac_status" >&5
+   echo "$as_me:8753: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11071,7 +11130,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11074 "configure"
+#line 11133 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11167,7 +11226,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11170 "configure"
+#line 11229 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12649,15 +12708,18 @@ fi
 
   # Code from module float:
   # Code from module gettext-h:
+  # Code from module gettimeofday:
   # Code from module havelib:
   # Code from module include_next:
   # Code from module inline:
   # Code from module intprops:
   # Code from module lib-ignore:
   # Code from module lock:
+  # Code from module lstat:
   # Code from module malloc-posix:
   # Code from module malloca:
   # Code from module memchr:
+  # Code from module mkstemp:
   # Code from module multiarch:
   # Code from module setenv:
   # Code from module sigaction:
@@ -12665,6 +12727,7 @@ fi
   # Code from module sigprocmask:
   # Code from module size_max:
   # Code from module snprintf:
+  # Code from module stat:
   # Code from module stdarg:
 
   # Code from module stdbool:
@@ -12679,11 +12742,14 @@ fi
   # Code from module strsignal:
   # Code from module sys_select:
   # Code from module sys_socket:
+  # Code from module sys_stat:
   # Code from module sys_time:
+  # Code from module tempname:
   # Code from module threadlib:
 
 
 
+  # Code from module time:
   # Code from module tls:
   # Code from module unistd:
   # Code from module vasnprintf:
@@ -14433,6 +14499,239 @@ esac
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
+$as_echo_n "checking for C/C++ restrict keyword... " >&6; }
+if test "${ac_cv_c_restrict+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_c_restrict=no
+   # The order here caters to the fact that C++ does not require restrict.
+   for ac_kw in __restrict __restrict__ _Restrict restrict; do
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+typedef int * int_ptr;
+	int foo (int_ptr $ac_kw ip) {
+	return ip[0];
+       }
+int
+main ()
+{
+int s[1];
+	int * $ac_kw t = s;
+	t[0] = 0;
+	return foo(t)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_restrict=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+     test "$ac_cv_c_restrict" != no && break
+   done
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_restrict" >&5
+$as_echo "$ac_cv_c_restrict" >&6; }
+
+ case $ac_cv_c_restrict in
+   restrict) ;;
+   no) $as_echo "#define restrict /**/" >>confdefs.h
+ ;;
+   *)  cat >>confdefs.h <<_ACEOF
+#define restrict $ac_cv_c_restrict
+_ACEOF
+ ;;
+ esac
+
+
+  GNULIB_GETTIMEOFDAY=0;
+    HAVE_GETTIMEOFDAY=1;
+  HAVE_STRUCT_TIMEVAL=1;
+  HAVE_SYS_TIME_H=1;
+  REPLACE_GETTIMEOFDAY=0;
+
+
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+
+
+     if test $gl_cv_have_include_next = yes; then
+       gl_cv_next_sys_time_h='<'sys/time.h'>'
+     else
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking absolute name of <sys/time.h>" >&5
+$as_echo_n "checking absolute name of <sys/time.h>... " >&6; }
+if test "${gl_cv_next_sys_time_h+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+
+          if test $ac_cv_header_sys_time_h = yes; then
+            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/time.h>
+
+_ACEOF
+                                                                                                case "$host_os" in
+              aix*) gl_absname_cpp="$ac_cpp -C" ;;
+              *)    gl_absname_cpp="$ac_cpp" ;;
+            esac
+                                                gl_cv_next_sys_time_h='"'`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&5 |
+               sed -n '\#/sys/time.h#{
+                 s#.*"\(.*/sys/time.h\)".*#\1#
+                 s#^/[^/]#//&#
+                 p
+                 q
+               }'`'"'
+          else
+            gl_cv_next_sys_time_h='<'sys/time.h'>'
+          fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_next_sys_time_h" >&5
+$as_echo "$gl_cv_next_sys_time_h" >&6; }
+     fi
+     NEXT_SYS_TIME_H=$gl_cv_next_sys_time_h
+
+     if test $gl_cv_have_include_next = yes || test $gl_cv_have_include_next = buggy; then
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include_next'
+       gl_next_as_first_directive='<'sys/time.h'>'
+     else
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include'
+       gl_next_as_first_directive=$gl_cv_next_sys_time_h
+     fi
+     NEXT_AS_FIRST_DIRECTIVE_SYS_TIME_H=$gl_next_as_first_directive
+
+
+
+
+  if test $ac_cv_header_sys_time_h != yes; then
+    HAVE_SYS_TIME_H=0
+  fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct timeval" >&5
+$as_echo_n "checking for struct timeval... " >&6; }
+if test "${gl_cv_sys_struct_timeval+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if HAVE_SYS_TIME_H
+             #include <sys/time.h>
+            #endif
+            #include <time.h>
+
+int
+main ()
+{
+static struct timeval x; x.tv_sec = x.tv_usec;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_sys_struct_timeval=yes
+else
+  gl_cv_sys_struct_timeval=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_struct_timeval" >&5
+$as_echo "$gl_cv_sys_struct_timeval" >&6; }
+  if test $gl_cv_sys_struct_timeval != yes; then
+    HAVE_STRUCT_TIMEVAL=0
+  fi
+
+
+    for gl_func in gettimeofday; do
+    as_gl_Symbol=`$as_echo "gl_cv_have_raw_decl_$gl_func" | $as_tr_sh`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $gl_func is declared without a macro" >&5
+$as_echo_n "checking whether $gl_func is declared without a macro... " >&6; }
+if eval "test \"\${$as_gl_Symbol+set}\"" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#if HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+#include <time.h>
+
+int
+main ()
+{
+#undef $gl_func
+  (void) $gl_func;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_gl_Symbol=yes"
+else
+  eval "$as_gl_Symbol=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$as_gl_Symbol
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+     if eval test \"x\$"$as_gl_Symbol"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_RAW_DECL_$gl_func" | $as_tr_cpp` 1
+_ACEOF
+
+                     eval ac_cv_have_decl_$gl_func=yes
+fi
+      done
+
+
+
+
+
+
+
+
+
+  for ac_func in $gl_func_list
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+
+
+
 
       if test "X$prefix" = "XNONE"; then
     acl_final_prefix="$ac_default_prefix"
@@ -15561,6 +15860,111 @@ $as_echo "$gl_threads_api" >&6; }
 
 
 
+     GNULIB_FCHMODAT=0;
+  GNULIB_FSTATAT=0;
+  GNULIB_FUTIMENS=0;
+  GNULIB_LCHMOD=0;
+  GNULIB_LSTAT=0;
+  GNULIB_MKDIRAT=0;
+  GNULIB_MKFIFO=0;
+  GNULIB_MKFIFOAT=0;
+  GNULIB_MKNOD=0;
+  GNULIB_MKNODAT=0;
+  GNULIB_STAT=0;
+  GNULIB_UTIMENSAT=0;
+    HAVE_FCHMODAT=1;
+  HAVE_FSTATAT=1;
+  HAVE_FUTIMENS=1;
+  HAVE_LCHMOD=1;
+  HAVE_LSTAT=1;
+  HAVE_MKDIRAT=1;
+  HAVE_MKFIFO=1;
+  HAVE_MKFIFOAT=1;
+  HAVE_MKNOD=1;
+  HAVE_MKNODAT=1;
+  HAVE_UTIMENSAT=1;
+  REPLACE_FSTAT=0;
+  REPLACE_FSTATAT=0;
+  REPLACE_FUTIMENS=0;
+  REPLACE_LSTAT=0;
+  REPLACE_MKDIR=0;
+  REPLACE_MKFIFO=0;
+  REPLACE_MKNOD=0;
+  REPLACE_STAT=0;
+  REPLACE_UTIMENSAT=0;
+
+
+
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
+$as_echo_n "checking whether lstat correctly handles trailing slash... " >&6; }
+if test "${ac_cv_func_lstat_dereferences_slashed_symlink+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  rm -f conftest.sym conftest.file
+echo >conftest.file
+if test "$as_ln_s" = "ln -s" && ln -s conftest.file conftest.sym; then
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+     /* Linux will dereference the symlink and fail, as required by POSIX.
+	That is better in the sense that it means we will not
+	have to compile and use the lstat wrapper.  */
+     return lstat ("conftest.sym/", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=yes
+else
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+else
+  # If the `ln -s' command failed, then we probably don't even
+  # have an lstat function.
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f conftest.sym conftest.file
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_lstat_dereferences_slashed_symlink" >&5
+$as_echo "$ac_cv_func_lstat_dereferences_slashed_symlink" >&6; }
+
+test $ac_cv_func_lstat_dereferences_slashed_symlink = yes &&
+
+cat >>confdefs.h <<_ACEOF
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
+_ACEOF
+
+
+if test "x$ac_cv_func_lstat_dereferences_slashed_symlink" = xno; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS lstat.$ac_objext"
+
+fi
+
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether malloc, realloc, calloc are POSIX compliant" >&5
 $as_echo_n "checking whether malloc, realloc, calloc are POSIX compliant... " >&6; }
 if test "${gl_cv_func_malloc_posix+set}" = set; then :
@@ -15807,21 +16211,6 @@ $as_echo "#define HAVE_LONG_LONG_INT 1" >>confdefs.h
 
 
 
-
-
-
-
-  for ac_func in $gl_func_list
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
 
 
 
@@ -16102,6 +16491,209 @@ done
 
   fi
 
+# Check whether --enable-largefile was given.
+if test "${enable_largefile+set}" = set; then :
+  enableval=$enable_largefile;
+fi
+
+if test "$enable_largefile" != no; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for special C compiler options needed for large files" >&5
+$as_echo_n "checking for special C compiler options needed for large files... " >&6; }
+if test "${ac_cv_sys_largefile_CC+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_sys_largefile_CC=no
+     if test "$GCC" != yes; then
+       ac_save_CC=$CC
+       while :; do
+	 # IRIX 6.2 and later do not support large files by default,
+	 # so use the C compiler's -n32 option if that helps.
+	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+	 if ac_fn_c_try_compile "$LINENO"; then :
+  break
+fi
+rm -f core conftest.err conftest.$ac_objext
+	 CC="$CC -n32"
+	 if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_largefile_CC=' -n32'; break
+fi
+rm -f core conftest.err conftest.$ac_objext
+	 break
+       done
+       CC=$ac_save_CC
+       rm -f conftest.$ac_ext
+    fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_largefile_CC" >&5
+$as_echo "$ac_cv_sys_largefile_CC" >&6; }
+  if test "$ac_cv_sys_largefile_CC" != no; then
+    CC=$CC$ac_cv_sys_largefile_CC
+  fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _FILE_OFFSET_BITS value needed for large files" >&5
+$as_echo_n "checking for _FILE_OFFSET_BITS value needed for large files... " >&6; }
+if test "${ac_cv_sys_file_offset_bits+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  while :; do
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_file_offset_bits=no; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define _FILE_OFFSET_BITS 64
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_file_offset_bits=64; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_file_offset_bits=unknown
+  break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_file_offset_bits" >&5
+$as_echo "$ac_cv_sys_file_offset_bits" >&6; }
+case $ac_cv_sys_file_offset_bits in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _FILE_OFFSET_BITS $ac_cv_sys_file_offset_bits
+_ACEOF
+;;
+esac
+rm -rf conftest*
+  if test $ac_cv_sys_file_offset_bits = unknown; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _LARGE_FILES value needed for large files" >&5
+$as_echo_n "checking for _LARGE_FILES value needed for large files... " >&6; }
+if test "${ac_cv_sys_large_files+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  while :; do
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_large_files=no; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define _LARGE_FILES 1
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_large_files=1; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_large_files=unknown
+  break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_large_files" >&5
+$as_echo "$ac_cv_sys_large_files" >&6; }
+case $ac_cv_sys_large_files in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _LARGE_FILES $ac_cv_sys_large_files
+_ACEOF
+;;
+esac
+rm -rf conftest*
+  fi
+fi
+
+
+
+
+
+
 
     gl_cv_c_multiarch=no
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -16275,52 +16867,6 @@ done
 
 
 
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
-$as_echo_n "checking for C/C++ restrict keyword... " >&6; }
-if test "${ac_cv_c_restrict+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_cv_c_restrict=no
-   # The order here caters to the fact that C++ does not require restrict.
-   for ac_kw in __restrict __restrict__ _Restrict restrict; do
-     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-typedef int * int_ptr;
-	int foo (int_ptr $ac_kw ip) {
-	return ip[0];
-       }
-int
-main ()
-{
-int s[1];
-	int * $ac_kw t = s;
-	t[0] = 0;
-	return foo(t)
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_c_restrict=$ac_kw
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-     test "$ac_cv_c_restrict" != no && break
-   done
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_restrict" >&5
-$as_echo "$ac_cv_c_restrict" >&6; }
-
- case $ac_cv_c_restrict in
-   restrict) ;;
-   no) $as_echo "#define restrict /**/" >>confdefs.h
- ;;
-   *)  cat >>confdefs.h <<_ACEOF
-#define restrict $ac_cv_c_restrict
-_ACEOF
- ;;
- esac
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
 $as_echo_n "checking for uid_t in sys/types.h... " >&6; }
@@ -17335,14 +17881,67 @@ fi
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat file-mode macros are broken" >&5
+$as_echo_n "checking whether stat file-mode macros are broken... " >&6; }
+if test "${ac_cv_header_stat_broken+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <sys/stat.h>
 
-  GNULIB_GETTIMEOFDAY=0;
-    HAVE_GETTIMEOFDAY=1;
-  HAVE_STRUCT_TIMEVAL=1;
-  HAVE_SYS_TIME_H=1;
-  REPLACE_GETTIMEOFDAY=0;
+#if defined S_ISBLK && defined S_IFDIR
+extern char c1[S_ISBLK (S_IFDIR) ? -1 : 1];
+#endif
+
+#if defined S_ISBLK && defined S_IFCHR
+extern char c2[S_ISBLK (S_IFCHR) ? -1 : 1];
+#endif
+
+#if defined S_ISLNK && defined S_IFREG
+extern char c3[S_ISLNK (S_IFREG) ? -1 : 1];
+#endif
+
+#if defined S_ISSOCK && defined S_IFREG
+extern char c4[S_ISSOCK (S_IFREG) ? -1 : 1];
+#endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_stat_broken=no
+else
+  ac_cv_header_stat_broken=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_stat_broken" >&5
+$as_echo "$ac_cv_header_stat_broken" >&6; }
+if test $ac_cv_header_stat_broken = yes; then
+
+$as_echo "#define STAT_MACROS_BROKEN 1" >>confdefs.h
+
+fi
 
 
+
+
+
+
+
+  GNULIB_MKTIME=0;
+  GNULIB_NANOSLEEP=0;
+  GNULIB_STRPTIME=0;
+  GNULIB_TIMEGM=0;
+  GNULIB_TIME_R=0;
+    HAVE_LOCALTIME_R=1;
+  HAVE_NANOSLEEP=1;
+  HAVE_STRPTIME=1;
+  HAVE_TIMEGM=1;
+        REPLACE_LOCALTIME_R=GNULIB_PORTCHECK;
+  REPLACE_MKTIME=GNULIB_PORTCHECK;
+  REPLACE_NANOSLEEP=GNULIB_PORTCHECK;
+  REPLACE_TIMEGM=GNULIB_PORTCHECK;
 
 
 
@@ -17352,6 +17951,106 @@ fi
 
 
   :
+
+
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct timespec in <time.h>" >&5
+$as_echo_n "checking for struct timespec in <time.h>... " >&6; }
+if test "${gl_cv_sys_struct_timespec_in_time_h+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+
+int
+main ()
+{
+static struct timespec x; x.tv_sec = x.tv_nsec;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_sys_struct_timespec_in_time_h=yes
+else
+  gl_cv_sys_struct_timespec_in_time_h=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_struct_timespec_in_time_h" >&5
+$as_echo "$gl_cv_sys_struct_timespec_in_time_h" >&6; }
+
+  TIME_H_DEFINES_STRUCT_TIMESPEC=0
+  SYS_TIME_H_DEFINES_STRUCT_TIMESPEC=0
+  PTHREAD_H_DEFINES_STRUCT_TIMESPEC=0
+  if test $gl_cv_sys_struct_timespec_in_time_h = yes; then
+    TIME_H_DEFINES_STRUCT_TIMESPEC=1
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct timespec in <sys/time.h>" >&5
+$as_echo_n "checking for struct timespec in <sys/time.h>... " >&6; }
+if test "${gl_cv_sys_struct_timespec_in_sys_time_h+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/time.h>
+
+int
+main ()
+{
+static struct timespec x; x.tv_sec = x.tv_nsec;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_sys_struct_timespec_in_sys_time_h=yes
+else
+  gl_cv_sys_struct_timespec_in_sys_time_h=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_struct_timespec_in_sys_time_h" >&5
+$as_echo "$gl_cv_sys_struct_timespec_in_sys_time_h" >&6; }
+    if test $gl_cv_sys_struct_timespec_in_sys_time_h = yes; then
+      SYS_TIME_H_DEFINES_STRUCT_TIMESPEC=1
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct timespec in <pthread.h>" >&5
+$as_echo_n "checking for struct timespec in <pthread.h>... " >&6; }
+if test "${gl_cv_sys_struct_timespec_in_pthread_h+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <pthread.h>
+
+int
+main ()
+{
+static struct timespec x; x.tv_sec = x.tv_nsec;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_sys_struct_timespec_in_pthread_h=yes
+else
+  gl_cv_sys_struct_timespec_in_pthread_h=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_struct_timespec_in_pthread_h" >&5
+$as_echo "$gl_cv_sys_struct_timespec_in_pthread_h" >&6; }
+      if test $gl_cv_sys_struct_timespec_in_pthread_h = yes; then
+        PTHREAD_H_DEFINES_STRUCT_TIMESPEC=1
+      fi
+    fi
+  fi
+
+
 
 
 
@@ -17370,133 +18069,52 @@ fi
 
 
      if test $gl_cv_have_include_next = yes; then
-       gl_cv_next_sys_time_h='<'sys/time.h'>'
+       gl_cv_next_time_h='<'time.h'>'
      else
-       { $as_echo "$as_me:${as_lineno-$LINENO}: checking absolute name of <sys/time.h>" >&5
-$as_echo_n "checking absolute name of <sys/time.h>... " >&6; }
-if test "${gl_cv_next_sys_time_h+set}" = set; then :
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking absolute name of <time.h>" >&5
+$as_echo_n "checking absolute name of <time.h>... " >&6; }
+if test "${gl_cv_next_time_h+set}" = set; then :
   $as_echo_n "(cached) " >&6
 else
 
-          if test $ac_cv_header_sys_time_h = yes; then
+          if test $ac_cv_header_time_h = yes; then
             cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <sys/time.h>
+#include <time.h>
 
 _ACEOF
                                                                                                 case "$host_os" in
               aix*) gl_absname_cpp="$ac_cpp -C" ;;
               *)    gl_absname_cpp="$ac_cpp" ;;
             esac
-                                                gl_cv_next_sys_time_h='"'`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&5 |
-               sed -n '\#/sys/time.h#{
-                 s#.*"\(.*/sys/time.h\)".*#\1#
+                                                gl_cv_next_time_h='"'`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&5 |
+               sed -n '\#/time.h#{
+                 s#.*"\(.*/time.h\)".*#\1#
                  s#^/[^/]#//&#
                  p
                  q
                }'`'"'
           else
-            gl_cv_next_sys_time_h='<'sys/time.h'>'
+            gl_cv_next_time_h='<'time.h'>'
           fi
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_next_sys_time_h" >&5
-$as_echo "$gl_cv_next_sys_time_h" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_next_time_h" >&5
+$as_echo "$gl_cv_next_time_h" >&6; }
      fi
-     NEXT_SYS_TIME_H=$gl_cv_next_sys_time_h
+     NEXT_TIME_H=$gl_cv_next_time_h
 
      if test $gl_cv_have_include_next = yes || test $gl_cv_have_include_next = buggy; then
        # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include_next'
-       gl_next_as_first_directive='<'sys/time.h'>'
+       gl_next_as_first_directive='<'time.h'>'
      else
        # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include'
-       gl_next_as_first_directive=$gl_cv_next_sys_time_h
+       gl_next_as_first_directive=$gl_cv_next_time_h
      fi
-     NEXT_AS_FIRST_DIRECTIVE_SYS_TIME_H=$gl_next_as_first_directive
+     NEXT_AS_FIRST_DIRECTIVE_TIME_H=$gl_next_as_first_directive
 
 
 
-
-  if test $ac_cv_header_sys_time_h != yes; then
-    HAVE_SYS_TIME_H=0
-  fi
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct timeval" >&5
-$as_echo_n "checking for struct timeval... " >&6; }
-if test "${gl_cv_sys_struct_timeval+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if HAVE_SYS_TIME_H
-             #include <sys/time.h>
-            #endif
-            #include <time.h>
-
-int
-main ()
-{
-static struct timeval x; x.tv_sec = x.tv_usec;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  gl_cv_sys_struct_timeval=yes
-else
-  gl_cv_sys_struct_timeval=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_sys_struct_timeval" >&5
-$as_echo "$gl_cv_sys_struct_timeval" >&6; }
-  if test $gl_cv_sys_struct_timeval != yes; then
-    HAVE_STRUCT_TIMEVAL=0
-  fi
-
-
-    for gl_func in gettimeofday; do
-    as_gl_Symbol=`$as_echo "gl_cv_have_raw_decl_$gl_func" | $as_tr_sh`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $gl_func is declared without a macro" >&5
-$as_echo_n "checking whether $gl_func is declared without a macro... " >&6; }
-if eval "test \"\${$as_gl_Symbol+set}\"" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#if HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
-#include <time.h>
-
-int
-main ()
-{
-#undef $gl_func
-  (void) $gl_func;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  eval "$as_gl_Symbol=yes"
-else
-  eval "$as_gl_Symbol=no"
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-eval ac_res=\$$as_gl_Symbol
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-     if eval test \"x\$"$as_gl_Symbol"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_RAW_DECL_$gl_func" | $as_tr_cpp` 1
-_ACEOF
-
-                     eval ac_cv_have_decl_$gl_func=yes
-fi
-      done
 
 
 
@@ -18223,6 +18841,269 @@ $as_echo "$gl_cv_next_float_h" >&6; }
   # Code from module gettext-h:
 
 
+  # Code from module gettimeofday:
+
+
+
+
+
+  :
+
+
+
+
+
+
+  gl_gettimeofday_timezone=void
+  if test $ac_cv_func_gettimeofday != yes; then
+    HAVE_GETTIMEOFDAY=0
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS gettimeofday.$ac_objext"
+
+
+  for ac_header in sys/timeb.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/timeb.h" "ac_cv_header_sys_timeb_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_timeb_h" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_TIMEB_H 1
+_ACEOF
+
+fi
+
+done
+
+  for ac_func in _ftime
+do :
+  ac_fn_c_check_func "$LINENO" "_ftime" "ac_cv_func__ftime"
+if test "x$ac_cv_func__ftime" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE__FTIME 1
+_ACEOF
+
+fi
+done
+
+
+  else
+
+
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether gettimeofday clobbers localtime buffer" >&5
+$as_echo_n "checking whether gettimeofday clobbers localtime buffer... " >&6; }
+if test "${gl_cv_func_gettimeofday_clobber+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+       gl_cv_func_gettimeofday_clobber=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <string.h>
+          #include <sys/time.h>
+          #include <time.h>
+          #include <stdlib.h>
+
+int
+main ()
+{
+
+          time_t t = 0;
+          struct tm *lt;
+          struct tm saved_lt;
+          struct timeval tv;
+          lt = localtime (&t);
+          saved_lt = *lt;
+          gettimeofday (&tv, NULL);
+          return memcmp (lt, &saved_lt, sizeof (struct tm)) != 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_gettimeofday_clobber=no
+else
+  gl_cv_func_gettimeofday_clobber=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_gettimeofday_clobber" >&5
+$as_echo "$gl_cv_func_gettimeofday_clobber" >&6; }
+
+ if test $gl_cv_func_gettimeofday_clobber = yes; then
+   REPLACE_GETTIMEOFDAY=1
+
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS gettimeofday.$ac_objext"
+
+
+  for ac_header in sys/timeb.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/timeb.h" "ac_cv_header_sys_timeb_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_timeb_h" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_TIMEB_H 1
+_ACEOF
+
+fi
+
+done
+
+  for ac_func in _ftime
+do :
+  ac_fn_c_check_func "$LINENO" "_ftime" "ac_cv_func__ftime"
+if test "x$ac_cv_func__ftime" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE__FTIME 1
+_ACEOF
+
+fi
+done
+
+
+
+$as_echo "#define gmtime rpl_gmtime" >>confdefs.h
+
+
+$as_echo "#define localtime rpl_localtime" >>confdefs.h
+
+
+
+$as_echo "#define GETTIMEOFDAY_CLOBBERS_LOCALTIME 1" >>confdefs.h
+
+ fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettimeofday with POSIX signature" >&5
+$as_echo_n "checking for gettimeofday with POSIX signature... " >&6; }
+if test "${gl_cv_func_gettimeofday_posix_signature+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/time.h>
+              struct timeval c;
+              int gettimeofday (struct timeval *restrict, void *restrict);
+
+int
+main ()
+{
+/* glibc uses struct timezone * rather than the POSIX void *
+                 if _GNU_SOURCE is defined.  However, since the only portable
+                 use of gettimeofday uses NULL as the second parameter, and
+                 since the glibc definition is actually more typesafe, it is
+                 not worth wrapping this to get a compliant signature.  */
+              int (*f) (struct timeval *restrict, void *restrict)
+                = gettimeofday;
+              int x = f (&c, 0);
+              return !(x | c.tv_sec | c.tv_usec);
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_func_gettimeofday_posix_signature=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/time.h>
+int gettimeofday (struct timeval *restrict, struct timezone *restrict);
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_func_gettimeofday_posix_signature=almost
+else
+  gl_cv_func_gettimeofday_posix_signature=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_gettimeofday_posix_signature" >&5
+$as_echo "$gl_cv_func_gettimeofday_posix_signature" >&6; }
+    if test $gl_cv_func_gettimeofday_posix_signature = almost; then
+      gl_gettimeofday_timezone='struct timezone'
+    elif test $gl_cv_func_gettimeofday_posix_signature != yes; then
+      REPLACE_GETTIMEOFDAY=1
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS gettimeofday.$ac_objext"
+
+
+  for ac_header in sys/timeb.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/timeb.h" "ac_cv_header_sys_timeb_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_timeb_h" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_TIMEB_H 1
+_ACEOF
+
+fi
+
+done
+
+  for ac_func in _ftime
+do :
+  ac_fn_c_check_func "$LINENO" "_ftime" "ac_cv_func__ftime"
+if test "x$ac_cv_func__ftime" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE__FTIME 1
+_ACEOF
+
+fi
+done
+
+
+    fi
+  fi
+
+cat >>confdefs.h <<_ACEOF
+#define GETTIMEOFDAY_TIMEZONE $gl_gettimeofday_timezone
+_ACEOF
+
+
+
+
+
+  GNULIB_GETTIMEOFDAY=1
+
+
+
+$as_echo "#define GNULIB_TEST_GETTIMEOFDAY 1" >>confdefs.h
+
+
+
   # Code from module havelib:
   # Code from module include_next:
   # Code from module inline:
@@ -18367,6 +19248,38 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 
 
+  # Code from module lstat:
+
+
+
+  :
+
+
+
+
+
+  if test $ac_cv_func_lstat = yes; then
+
+    if test $ac_cv_func_lstat_dereferences_slashed_symlink = no; then
+            REPLACE_LSTAT=1
+    fi
+    # Prerequisites of lib/lstat.c.
+
+  else
+    HAVE_LSTAT=0
+  fi
+
+
+
+
+  GNULIB_LSTAT=1
+
+
+
+$as_echo "#define GNULIB_TEST_LSTAT 1" >>confdefs.h
+
+
+
   # Code from module malloc-posix:
 
 
@@ -18416,6 +19329,109 @@ $as_echo "#define GNULIB_TEST_MALLOC_POSIX 1" >>confdefs.h
 
 
 $as_echo "#define GNULIB_TEST_MEMCHR 1" >>confdefs.h
+
+
+
+  # Code from module mkstemp:
+
+
+
+
+
+  :
+
+
+
+
+
+  if test $ac_cv_func_mkstemp = yes; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working mkstemp" >&5
+$as_echo_n "checking for working mkstemp... " >&6; }
+if test "${gl_cv_func_working_mkstemp+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+
+        mkdir conftest.mkstemp
+        if test "$cross_compiling" = yes; then :
+  gl_cv_func_working_mkstemp=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+int i;
+              off_t large = (off_t) 4294967295u;
+              if (large < 0)
+                large = 2147483647;
+              for (i = 0; i < 70; i++)
+                {
+                  char templ[] = "conftest.mkstemp/coXXXXXX";
+                  int (*mkstemp_function) (char *) = mkstemp;
+                  int fd = mkstemp_function (templ);
+                  if (fd < 0 || lseek (fd, large, SEEK_SET) != large)
+                    return 1;
+                  close (fd);
+                }
+              return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_working_mkstemp=yes
+else
+  gl_cv_func_working_mkstemp=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+        rm -rf conftest.mkstemp
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_working_mkstemp" >&5
+$as_echo "$gl_cv_func_working_mkstemp" >&6; }
+    if test $gl_cv_func_working_mkstemp != yes; then
+      REPLACE_MKSTEMP=1
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS mkstemp.$ac_objext"
+
+
+
+    fi
+  else
+    HAVE_MKSTEMP=0
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS mkstemp.$ac_objext"
+
+
+
+  fi
+
+
+
+
+  GNULIB_MKSTEMP=1
+
+
+
+$as_echo "#define GNULIB_TEST_MKSTEMP 1" >>confdefs.h
 
 
 
@@ -18910,6 +19926,132 @@ $as_echo "$gl_cv_func_snprintf_size1" >&6; }
 
 
 $as_echo "#define GNULIB_TEST_SNPRINTF 1" >>confdefs.h
+
+
+
+  # Code from module stat:
+
+
+
+
+  :
+
+
+
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat handles trailing slashes on directories" >&5
+$as_echo_n "checking whether stat handles trailing slashes on directories... " >&6; }
+if test "${gl_cv_func_stat_dir_slash+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  case $host_os in
+            mingw*) gl_cv_func_stat_dir_slash="guessing no";;
+            *) gl_cv_func_stat_dir_slash="guessing yes";;
+          esac
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/stat.h>
+
+int
+main ()
+{
+struct stat st; return stat (".", &st) != stat ("./", &st);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_stat_dir_slash=yes
+else
+  gl_cv_func_stat_dir_slash=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_stat_dir_slash" >&5
+$as_echo "$gl_cv_func_stat_dir_slash" >&6; }
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat handles trailing slashes on files" >&5
+$as_echo_n "checking whether stat handles trailing slashes on files... " >&6; }
+if test "${gl_cv_func_stat_file_slash+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  touch conftest.tmp
+       # Assume that if we have lstat, we can also check symlinks.
+       if test $ac_cv_func_lstat = yes; then
+         ln -s conftest.tmp conftest.lnk
+       fi
+       if test "$cross_compiling" = yes; then :
+  gl_cv_func_stat_file_slash="guessing no"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/stat.h>
+
+int
+main ()
+{
+struct stat st;
+      if (!stat ("conftest.tmp/", &st)) return 1;
+#if HAVE_LSTAT
+      if (!stat ("conftest.lnk/", &st)) return 2;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_stat_file_slash=yes
+else
+  gl_cv_func_stat_file_slash=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+       rm -f conftest.tmp conftest.lnk
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_stat_file_slash" >&5
+$as_echo "$gl_cv_func_stat_file_slash" >&6; }
+  case $gl_cv_func_stat_dir_slash in
+    *no) REPLACE_STAT=1
+
+$as_echo "#define REPLACE_FUNC_STAT_DIR 1" >>confdefs.h
+;;
+  esac
+  case $gl_cv_func_stat_file_slash in
+    *no) REPLACE_STAT=1
+
+$as_echo "#define REPLACE_FUNC_STAT_FILE 1" >>confdefs.h
+;;
+  esac
+  if test $REPLACE_STAT = 1; then
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS stat.$ac_objext"
+
+
+  fi
+
+
+
+
+  GNULIB_STAT=1
+
+
+
+$as_echo "#define GNULIB_TEST_STAT 1" >>confdefs.h
 
 
 
@@ -21043,13 +22185,157 @@ fi
 
 
 
+  # Code from module sys_stat:
+
+
+
+
+
+
+
+
+
+
+
+  :
+
+
+
+
+
+
+
+     if test $gl_cv_have_include_next = yes; then
+       gl_cv_next_sys_stat_h='<'sys/stat.h'>'
+     else
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking absolute name of <sys/stat.h>" >&5
+$as_echo_n "checking absolute name of <sys/stat.h>... " >&6; }
+if test "${gl_cv_next_sys_stat_h+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+
+          if test $ac_cv_header_sys_stat_h = yes; then
+            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/stat.h>
+
+_ACEOF
+                                                                                                case "$host_os" in
+              aix*) gl_absname_cpp="$ac_cpp -C" ;;
+              *)    gl_absname_cpp="$ac_cpp" ;;
+            esac
+                                                gl_cv_next_sys_stat_h='"'`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&5 |
+               sed -n '\#/sys/stat.h#{
+                 s#.*"\(.*/sys/stat.h\)".*#\1#
+                 s#^/[^/]#//&#
+                 p
+                 q
+               }'`'"'
+          else
+            gl_cv_next_sys_stat_h='<'sys/stat.h'>'
+          fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_next_sys_stat_h" >&5
+$as_echo "$gl_cv_next_sys_stat_h" >&6; }
+     fi
+     NEXT_SYS_STAT_H=$gl_cv_next_sys_stat_h
+
+     if test $gl_cv_have_include_next = yes || test $gl_cv_have_include_next = buggy; then
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include_next'
+       gl_next_as_first_directive='<'sys/stat.h'>'
+     else
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include'
+       gl_next_as_first_directive=$gl_cv_next_sys_stat_h
+     fi
+     NEXT_AS_FIRST_DIRECTIVE_SYS_STAT_H=$gl_next_as_first_directive
+
+
+
+
+      ac_fn_c_check_type "$LINENO" "nlink_t" "ac_cv_type_nlink_t" "#include <sys/types.h>
+     #include <sys/stat.h>
+"
+if test "x$ac_cv_type_nlink_t" = x""yes; then :
+
+else
+
+$as_echo "#define nlink_t int" >>confdefs.h
+
+fi
+
+
+
+    for gl_func in fchmodat fstatat futimens lchmod lstat mkdirat mkfifo mkfifoat     mknod mknodat stat utimensat; do
+    as_gl_Symbol=`$as_echo "gl_cv_have_raw_decl_$gl_func" | $as_tr_sh`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $gl_func is declared without a macro" >&5
+$as_echo_n "checking whether $gl_func is declared without a macro... " >&6; }
+if eval "test \"\${$as_gl_Symbol+set}\"" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/stat.h>
+
+int
+main ()
+{
+#undef $gl_func
+  (void) $gl_func;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$as_gl_Symbol=yes"
+else
+  eval "$as_gl_Symbol=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$as_gl_Symbol
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+     if eval test \"x\$"$as_gl_Symbol"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_RAW_DECL_$gl_func" | $as_tr_cpp` 1
+_ACEOF
+
+                     eval ac_cv_have_decl_$gl_func=yes
+fi
+      done
+
+
+
   # Code from module sys_time:
 
 
 
 
+  # Code from module tempname:
+
+
+
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS tempname.$ac_objext"
+
+
+  :
+
+
   # Code from module threadlib:
 
+
+
+
+  # Code from module time:
 
 
 

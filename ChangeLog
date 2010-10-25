@@ -1,3 +1,20 @@
+Mon Oct 25 14:31:41 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* gnulib: Import mkstemp module.
+	* tests/Makefile.am (TESTS): Add redirect.
+	  (LIBPIPELINE): Rename to ...
+	  (LIBS): ... this, and add libgnu and $(LTLIBOBJS).
+	  (AM_CPPFLAGS): Add -I$(top_srcdir)/gnulib/lib and
+	  -I$(top_builddir)/gnulib/lib.
+	  (clean-local): Remove temporary test files.
+	  (basic_LDADD): Use $(LIBS) rather than $(LIBPIPELINE).
+	  (redirect_SOURCES, redirect_LDADD): Add.
+	* tests/redirect.c: New file.
+	* .bzrignore: Add gnulib/lib/time.h and tests/redirect.
+
+	* lib/Makefile.am (libpipeline_la_CPPFLAGS): Remove spurious
+	  -I$(top_builddir)/include.
+
 Mon Oct 25 14:30:14 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_start): Fix typo that broke

@@ -20,13 +20,23 @@
 ## USA
 
 TESTS = \
-	basic
+	basic \
+	redirect
 check_PROGRAMS = $(TESTS)
 
-LIBPIPELINE = $(top_builddir)/lib/libpipeline.la
+LIBS = ../gnulib/lib/libgnu.la $(LTLIBOBJS) $(top_builddir)/lib/libpipeline.la
 
-AM_CPPFLAGS = -I$(top_srcdir)/lib
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/gnulib/lib \
+	-I$(top_srcdir)/lib
 AM_CFLAGS = @CHECK_CFLAGS@
 
+clean-local:
+	rm -f testtmp.*
+
 basic_SOURCES = basic.c
-basic_LDADD = $(LIBPIPELINE) @CHECK_LIBS@
+basic_LDADD = $(LIBS) @CHECK_LIBS@
+
+redirect_SOURCES = redirect.c
+redirect_LDADD = $(LIBS) @CHECK_LIBS@

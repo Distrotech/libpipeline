@@ -41,15 +41,18 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module float:
   # Code from module gettext-h:
+  # Code from module gettimeofday:
   # Code from module havelib:
   # Code from module include_next:
   # Code from module inline:
   # Code from module intprops:
   # Code from module lib-ignore:
   # Code from module lock:
+  # Code from module lstat:
   # Code from module malloc-posix:
   # Code from module malloca:
   # Code from module memchr:
+  # Code from module mkstemp:
   # Code from module multiarch:
   # Code from module setenv:
   # Code from module sigaction:
@@ -57,6 +60,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module sigprocmask:
   # Code from module size_max:
   # Code from module snprintf:
+  # Code from module stat:
   # Code from module stdarg:
   dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
   dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
@@ -75,9 +79,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module strsignal:
   # Code from module sys_select:
   # Code from module sys_socket:
+  # Code from module sys_stat:
   # Code from module sys_time:
+  # Code from module tempname:
   # Code from module threadlib:
   gl_THREADLIB_EARLY
+  # Code from module time:
   # Code from module tls:
   # Code from module unistd:
   # Code from module vasnprintf:
@@ -134,6 +141,9 @@ AC_DEFUN([gl_INIT],
   # Code from module gettext-h:
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
+  # Code from module gettimeofday:
+  gl_FUNC_GETTIMEOFDAY
+  gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
   # Code from module havelib:
   # Code from module include_next:
   # Code from module inline:
@@ -143,6 +153,9 @@ AC_DEFUN([gl_INIT],
   gl_IGNORE_UNUSED_LIBRARIES
   # Code from module lock:
   gl_LOCK
+  # Code from module lstat:
+  gl_FUNC_LSTAT
+  gl_SYS_STAT_MODULE_INDICATOR([lstat])
   # Code from module malloc-posix:
   gl_FUNC_MALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([malloc-posix])
@@ -151,6 +164,9 @@ AC_DEFUN([gl_INIT],
   # Code from module memchr:
   gl_FUNC_MEMCHR
   gl_STRING_MODULE_INDICATOR([memchr])
+  # Code from module mkstemp:
+  gl_FUNC_MKSTEMP
+  gl_STDLIB_MODULE_INDICATOR([mkstemp])
   # Code from module multiarch:
   gl_MULTIARCH
   # Code from module setenv:
@@ -169,6 +185,9 @@ AC_DEFUN([gl_INIT],
   # Code from module snprintf:
   gl_FUNC_SNPRINTF
   gl_STDIO_MODULE_INDICATOR([snprintf])
+  # Code from module stat:
+  gl_FUNC_STAT
+  gl_SYS_STAT_MODULE_INDICATOR([stat])
   # Code from module stdarg:
   gl_STDARG_H
   # Code from module stdbool:
@@ -201,11 +220,18 @@ AC_DEFUN([gl_INIT],
   # Code from module sys_socket:
   gl_HEADER_SYS_SOCKET
   AC_PROG_MKDIR_P
+  # Code from module sys_stat:
+  gl_HEADER_SYS_STAT_H
+  AC_PROG_MKDIR_P
   # Code from module sys_time:
   gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
+  # Code from module tempname:
+  gl_FUNC_GEN_TEMPNAME
   # Code from module threadlib:
   gl_THREADLIB
+  # Code from module time:
+  gl_HEADER_TIME_H
   # Code from module tls:
   gl_TLS
   # Code from module unistd:
@@ -389,18 +415,21 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/float+.h
   lib/float.in.h
   lib/gettext.h
+  lib/gettimeofday.c
   lib/glthread/lock.c
   lib/glthread/lock.h
   lib/glthread/threadlib.c
   lib/glthread/tls.c
   lib/glthread/tls.h
   lib/intprops.h
+  lib/lstat.c
   lib/malloc.c
   lib/malloca.c
   lib/malloca.h
   lib/malloca.valgrind
   lib/memchr.c
   lib/memchr.valgrind
+  lib/mkstemp.c
   lib/printf-args.c
   lib/printf-args.h
   lib/printf-parse.c
@@ -413,6 +442,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sigprocmask.c
   lib/size_max.h
   lib/snprintf.c
+  lib/stat.c
   lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stddef.in.h
@@ -428,7 +458,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strsignal.c
   lib/sys_select.in.h
   lib/sys_socket.in.h
+  lib/sys_stat.in.h
   lib/sys_time.in.h
+  lib/tempname.c
+  lib/tempname.h
+  lib/time.in.h
   lib/unistd.in.h
   lib/vasnprintf.c
   lib/vasnprintf.h
@@ -455,6 +489,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/error.m4
   m4/extensions.m4
   m4/float_h.m4
+  m4/gettimeofday.m4
   m4/gnulib-common.m4
   m4/include_next.m4
   m4/inline.m4
@@ -466,9 +501,11 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/lib-prefix.m4
   m4/lock.m4
   m4/longlong.m4
+  m4/lstat.m4
   m4/malloc.m4
   m4/malloca.m4
   m4/memchr.m4
+  m4/mkstemp.m4
   m4/mmap-anon.m4
   m4/multiarch.m4
   m4/onceonly.m4
@@ -480,6 +517,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/size_max.m4
   m4/snprintf.m4
   m4/sockpfaf.m4
+  m4/stat.m4
   m4/stdarg.m4
   m4/stdbool.m4
   m4/stddef_h.m4
@@ -494,8 +532,11 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/strsignal.m4
   m4/sys_select_h.m4
   m4/sys_socket_h.m4
+  m4/sys_stat_h.m4
   m4/sys_time_h.m4
+  m4/tempname.m4
   m4/threadlib.m4
+  m4/time_h.m4
   m4/tls.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4

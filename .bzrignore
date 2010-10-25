@@ -19,8 +19,10 @@ gnulib/lib/stdio.h
 gnulib/lib/stdlib.h
 gnulib/lib/string.h
 gnulib/lib/sys
+gnulib/lib/time.h
 gnulib/lib/unistd.h
 gnulib/lib/warn-on-use.h
 gnulib/lib/wchar.h
 lib/libpipeline.pc
 tests/basic
+tests/redirect

@@ -22,7 +22,6 @@
 lib_LTLIBRARIES = libpipeline.la
 
 libpipeline_la_CPPFLAGS = \
-	-I$(top_builddir)/include \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib
 
