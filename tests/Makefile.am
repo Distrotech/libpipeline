@@ -35,8 +35,8 @@ AM_CFLAGS = @CHECK_CFLAGS@
 clean-local:
 	rm -f testtmp.*
 
-basic_SOURCES = basic.c
+basic_SOURCES = basic.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
 
-redirect_SOURCES = redirect.c
+redirect_SOURCES = redirect.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@

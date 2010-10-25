@@ -1,3 +1,10 @@
+Mon Oct 25 19:18:35 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* tests/common.h: New file.
+	* tests/basic.c (basic_suite, main), tests/redirect.c
+	  (redirect_suite, main): Use new TEST_CASE and MAIN macros.
+	* tests/Makefile.am (basic_SOURCES, redirect_SOURCES): Add common.h.
+
 Mon Oct 25 16:17:24 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* gnulib: Import unsetenv module.

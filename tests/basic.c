@@ -19,11 +19,7 @@
  * USA.
  */
 
-#include <stdlib.h>
-
-#include <check.h>
-
-#include "pipeline.h"
+#include "common.h"
 
 START_TEST (test_basic_status)
 {
@@ -123,39 +119,14 @@ END_TEST
 Suite *basic_suite (void)
 {
 	Suite *s = suite_create ("Basic");
-	TCase *t;
 
-	t = tcase_create ("status");
-	tcase_add_test (t, test_basic_status);
-	suite_add_tcase (s, t);
-
-	t = tcase_create ("args");
-	tcase_add_test (t, test_basic_args);
-	suite_add_tcase (s, t);
-
-	t = tcase_create ("pipeline");
-	tcase_add_test (t, test_basic_pipeline);
-	suite_add_tcase (s, t);
-
-	t = tcase_create ("setenv");
-	tcase_add_test (t, test_basic_setenv);
-	suite_add_tcase (s, t);
-
-	t = tcase_create ("unsetenv");
-	tcase_add_test (t, test_basic_unsetenv);
-	suite_add_tcase (s, t);
+	TEST_CASE (s, basic, status);
+	TEST_CASE (s, basic, args);
+	TEST_CASE (s, basic, pipeline);
+	TEST_CASE (s, basic, setenv);
+	TEST_CASE (s, basic, unsetenv);
 
 	return s;
 }
 
-int main (int argc PIPELINE_ATTR_UNUSED, char **argv PIPELINE_ATTR_UNUSED)
-{
-	int failed;
-	Suite *s = basic_suite ();
-	SRunner *sr = srunner_create (s);
-
-	srunner_run_all (sr, CK_ENV);
-	failed = srunner_ntests_failed (sr);
-	srunner_free (sr);
-	return (failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+MAIN (basic)

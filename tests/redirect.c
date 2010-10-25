@@ -25,11 +25,9 @@
 #include <string.h>
 #include <errno.h>
 
-#include <check.h>
-
 #include "xalloc.h"
 
-#include "pipeline.h"
+#include "common.h"
 
 START_TEST (test_redirect_files)
 {
@@ -63,23 +61,10 @@ END_TEST
 Suite *redirect_suite (void)
 {
 	Suite *s = suite_create ("Redirect");
-	TCase *t;
 
-	t = tcase_create ("files");
-	tcase_add_test (t, test_redirect_files);
-	suite_add_tcase (s, t);
+	TEST_CASE (s, redirect, files);
 
 	return s;
 }
 
-int main (int argc PIPELINE_ATTR_UNUSED, char **argv PIPELINE_ATTR_UNUSED)
-{
-	int failed;
-	Suite *s = redirect_suite ();
-	SRunner *sr = srunner_create (s);
-
-	srunner_run_all (sr, CK_ENV);
-	failed = srunner_ntests_failed (sr);
-	srunner_free (sr);
-	return (failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+MAIN (redirect)
