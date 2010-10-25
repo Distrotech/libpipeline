@@ -26,14 +26,19 @@
 START_TEST (test_inspect_command)
 {
 	command *cmd;
+	char *str;
 
 	cmd = command_new ("foo");
-	fail_unless (!strcmp (command_tostring (cmd), "foo"));
+	str = command_tostring (cmd);
+	fail_unless (!strcmp (str, "foo"));
+	free (str);
 	command_free (cmd);
 
 	cmd = command_new_args ("foo", "bar", "baz quux", NULL);
+	str = command_tostring (cmd);
 	/* TODO: not ideal representation of commands with metacharacters */
-	fail_unless (!strcmp (command_tostring (cmd), "foo bar baz quux"));
+	fail_unless (!strcmp (str, "foo bar baz quux"));
+	free (str);
 	command_free (cmd);
 }
 END_TEST
@@ -41,14 +46,16 @@ END_TEST
 START_TEST (test_inspect_pipeline)
 {
 	pipeline *p;
+	char *str;
 
 	p = pipeline_new ();
 	pipeline_command_args (p, "foo", "bar", NULL);
 	pipeline_command_args (p, "grep", "baz", "quux", NULL);
 	fail_unless (pipeline_get_ncommands (p) == 2);
 	command_setenv (pipeline_get_command (p, 1), "KEY", "value");
-	fail_unless (!strcmp (pipeline_tostring (p),
-			      "foo bar | KEY=value grep baz quux"));
+	str = pipeline_tostring (p);
+	fail_unless (!strcmp (str, "foo bar | KEY=value grep baz quux"));
+	free (str);
 	pipeline_free (p);
 }
 END_TEST
