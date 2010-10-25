@@ -87,6 +87,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module time:
   # Code from module tls:
   # Code from module unistd:
+  # Code from module unsetenv:
   # Code from module vasnprintf:
   # Code from module vasprintf:
   # Code from module warn-on-use:
@@ -236,6 +237,9 @@ AC_DEFUN([gl_INIT],
   gl_TLS
   # Code from module unistd:
   gl_UNISTD_H
+  # Code from module unsetenv:
+  gl_FUNC_UNSETENV
+  gl_STDLIB_MODULE_INDICATOR([unsetenv])
   # Code from module vasnprintf:
   gl_FUNC_VASNPRINTF
   # Code from module vasprintf:
@@ -464,6 +468,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/tempname.h
   lib/time.in.h
   lib/unistd.in.h
+  lib/unsetenv.c
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c

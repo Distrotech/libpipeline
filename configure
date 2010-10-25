@@ -12752,6 +12752,7 @@ fi
   # Code from module time:
   # Code from module tls:
   # Code from module unistd:
+  # Code from module unsetenv:
   # Code from module vasnprintf:
   # Code from module vasprintf:
   # Code from module warn-on-use:
@@ -22470,6 +22471,161 @@ _ACEOF
                      eval ac_cv_have_decl_$gl_func=yes
 fi
       done
+
+
+  # Code from module unsetenv:
+
+
+  for ac_func in unsetenv
+do :
+  ac_fn_c_check_func "$LINENO" "unsetenv" "ac_cv_func_unsetenv"
+if test "x$ac_cv_func_unsetenv" = x""yes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_UNSETENV 1
+_ACEOF
+
+fi
+done
+
+  if test $ac_cv_func_unsetenv = no; then
+    HAVE_UNSETENV=0
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS unsetenv.$ac_objext"
+
+
+
+
+  :
+
+
+
+
+
+
+  else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsetenv() return type" >&5
+$as_echo_n "checking for unsetenv() return type... " >&6; }
+if test "${gt_cv_func_unsetenv_ret+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+extern
+#ifdef __cplusplus
+"C"
+#endif
+#if defined(__STDC__) || defined(__cplusplus)
+int unsetenv (const char *name);
+#else
+int unsetenv();
+#endif
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gt_cv_func_unsetenv_ret='int'
+else
+  gt_cv_func_unsetenv_ret='void'
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_unsetenv_ret" >&5
+$as_echo "$gt_cv_func_unsetenv_ret" >&6; }
+    if test $gt_cv_func_unsetenv_ret = 'void'; then
+
+$as_echo "#define VOID_UNSETENV 1" >>confdefs.h
+
+      REPLACE_UNSETENV=1
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS unsetenv.$ac_objext"
+
+    fi
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether unsetenv works on duplicates" >&5
+$as_echo_n "checking whether unsetenv works on duplicates... " >&6; }
+if test "${gl_cv_func_unsetenv_works+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  gl_cv_func_unsetenv_works="guessing no"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+       #include <stdlib.h>
+
+int
+main ()
+{
+
+       char entry[] = "b=2";
+       if (putenv ((char *) "a=1")) return 1;
+       if (putenv (entry)) return 2;
+       entry[0] = 'a';
+       unsetenv ("a");
+       if (getenv ("a")) return 3;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gl_cv_func_unsetenv_works=yes
+else
+  gl_cv_func_unsetenv_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_func_unsetenv_works" >&5
+$as_echo "$gl_cv_func_unsetenv_works" >&6; }
+    if test "$gl_cv_func_unsetenv_works" != yes; then
+      REPLACE_UNSETENV=1
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS unsetenv.$ac_objext"
+
+    fi
+  fi
+
+
+
+
+  GNULIB_UNSETENV=1
+
+
+
+$as_echo "#define GNULIB_TEST_UNSETENV 1" >>confdefs.h
+
 
 
   # Code from module vasnprintf:

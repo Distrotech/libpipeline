@@ -364,7 +364,8 @@ command *command_dup (command *cmd)
 
 	for (i = 0; i < cmd->nenv; ++i) {
 		newcmd->env[i].name = xstrdup (cmd->env[i].name);
-		newcmd->env[i].value = xstrdup (cmd->env[i].value);
+		newcmd->env[i].value =
+			cmd->env[i].value ? xstrdup (cmd->env[i].value) : NULL;
 	}
 
 	switch (newcmd->tag) {
@@ -506,6 +507,19 @@ void command_setenv (command *cmd, const char *name, const char *value)
 	++cmd->nenv;
 }
 
+void command_unsetenv (command *cmd, const char *name)
+{
+	if (cmd->nenv >= cmd->env_max) {
+		cmd->env_max *= 2;
+		cmd->env = xrealloc (cmd->env,
+				     cmd->env_max * sizeof *cmd->env);
+	}
+
+	cmd->env[cmd->nenv].name = xstrdup (name);
+	cmd->env[cmd->nenv].value = NULL;
+	++cmd->nenv;
+}
+
 void command_sequence_command (command *cmd, command *child)
 {
 	struct command_sequence *cmds;
@@ -529,7 +543,8 @@ void command_dump (command *cmd, FILE *stream)
 
 	for (i = 0; i < cmd->nenv; ++i)
 		fprintf (stream, "%s=%s ",
-			 cmd->env[i].name, cmd->env[i].value);
+			 cmd->env[i].name,
+			 cmd->env[i].value ? cmd->env[i].value : "<unset>");
 
 	switch (cmd->tag) {
 		case COMMAND_PROCESS: {
@@ -571,7 +586,9 @@ char *command_tostring (command *cmd)
 	int i;
 
 	for (i = 0; i < cmd->nenv; ++i)
-		out = appendstr (out, cmd->env[i].name, "=", cmd->env[i].value,
+		out = appendstr (out, cmd->env[i].name, "=",
+				 cmd->env[i].value ? cmd->env[i].value
+						   : "<unset>",
 				 " ", NULL);
 
 	switch (cmd->tag) {
@@ -636,8 +653,12 @@ static void command_start_child (command *cmd)
 		}
 	}
 
-	for (i = 0; i < cmd->nenv; ++i)
-		setenv (cmd->env[i].name, cmd->env[i].value, 1);
+	for (i = 0; i < cmd->nenv; ++i) {
+		if (cmd->env[i].value)
+			setenv (cmd->env[i].name, cmd->env[i].value, 1);
+		else
+			unsetenv (cmd->env[i].name);
+	}
 
 	switch (cmd->tag) {
 		case COMMAND_PROCESS: {

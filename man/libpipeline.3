@@ -195,6 +195,12 @@ to
 .Va value
 while running this command.
 .Pp
+.It Ft void Fn command_unsetenv "command *cmd" "const char *name"
+.Pp
+Unset environment variable
+.Va name
+while running this command.
+.Pp
 .It Ft void Fn command_sequence_command "command *cmd" "command *child"
 .Pp
 Add a command to a sequence created using

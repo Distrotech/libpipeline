@@ -166,6 +166,9 @@ void command_discard_err (command *cmd, int discard_err);
 /* Set an environment variable while running this command. */
 void command_setenv (command *cmd, const char *name, const char *value);
 
+/* Unset an environment variable while running this command. */
+void command_unsetenv (command *cmd, const char *name);
+
 /* Add a command to a sequence. */
 void command_sequence_command (command *cmd, command *child);
 
