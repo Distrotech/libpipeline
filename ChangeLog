@@ -1,3 +1,8 @@
+Mon Oct 25 14:30:14 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Fix typo that broke
+	  pipeline_want_infile.
+
 Mon Oct 25 13:38:40 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	Start test suite.

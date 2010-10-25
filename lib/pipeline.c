@@ -1300,7 +1300,7 @@ void pipeline_start (pipeline *p)
 		p->infd = infd[1];
 	} else if (p->redirect_in == REDIRECT_FD)
 		last_input = p->want_in;
-	else if (p->redirect_out == REDIRECT_FILE_NAME) {
+	else if (p->redirect_in == REDIRECT_FILE_NAME) {
 		assert (p->want_infile);
 		last_input = open (p->want_infile, O_RDONLY);
 		if (last_input < 0)
