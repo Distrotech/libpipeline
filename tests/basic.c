@@ -19,6 +19,8 @@
  * USA.
  */
 
+#include <string.h>
+
 #include "common.h"
 
 START_TEST (test_basic_status)

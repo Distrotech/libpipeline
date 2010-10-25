@@ -1,3 +1,7 @@
+Mon Oct 25 19:31:27 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* tests/basic.c: Include <string.h>.
+
 Mon Oct 25 19:31:09 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* tests/Makefile.am (TESTS): Add inspect.
