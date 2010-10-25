@@ -9,6 +9,29 @@ and execve(2).
 
 Full programmers' documentation may be found using 'man libpipeline'.
 
+Building programs with libpipeline
+----------------------------------
+
+libpipeline supplies a pkg-config file which lists appropriate compiler and
+linker flags for building programs using it.  The output of 'pkg-config
+--cflags libpipeline' should be passed to the compiler (typically CFLAGS)
+and the output of 'pkg-config --libs libpipeline' should be passed to the
+linker (typically LDFLAGS).
+
+If your program uses the GNU Autotools, then you can put this in
+configure.ac:
+
+  PKG_CHECK_MODULES([libpipeline], [libpipeline])
+
+... and this in the appropriate Makefile.am (replacing 'program' with the
+Automake-canonicalised name for your program):
+
+  AM_CFLAGS = $(libpipeline_CFLAGS)
+  program_LDADD = $(libpipeline_LIBS)
+
+The details may vary for particular build systems, but this should be a
+reasonable start.
+
 Copyright and licensing
 -----------------------
 

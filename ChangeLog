@@ -1,3 +1,7 @@
+Mon Oct 25 20:10:25 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* README (Building programs with libpipeline): New section.
+
 Mon Oct 25 19:39:06 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/Makefile.am (FUNCTIONS): Add command_nice,
