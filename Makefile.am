@@ -29,8 +29,6 @@ dist_noinst_DATA = NEWS
 EXTRA_DIST = \
 	.bzrignore \
 	autogen.sh \
-	gnulib/lib/xmalloc.c.orig \
-	gnulib/lib/xmalloc.patch \
 	gnulib/m4/gnulib-cache.m4 \
 	gnulib/m4/gnulib-tool.m4 \
 	release.sh

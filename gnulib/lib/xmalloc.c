@@ -109,12 +109,10 @@ xmemdup (void const *p, size_t s)
   return memcpy (xmalloc (s), p, s);
 }
 
-/* If STRING is NULL, return NULL.  Otherwise, clone STRING.  */
+/* Clone STRING.  */
 
 char *
 xstrdup (char const *string)
 {
-  if (!string)
-    return NULL;
   return xmemdup (string, strlen (string) + 1);
 }

@@ -1,3 +1,13 @@
+Mon Oct 25 20:25:11 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	Revert our patched version of xstrdup, since none of libpipeline's
+	calls to xstrdup rely on being able to pass NULL to it.
+
+	* Makefile.am (EXTRA_DIST): Remove gnulib/lib/xmalloc.c.orig and
+	  gnulib/lib/xmalloc.patch.
+	* autogen.sh: Stop applying gnulib/lib/xmalloc.patch.
+	* gnulib/lib/xmalloc.c.orig, gnulib/lib/xmalloc.patch: Remove.
+
 Mon Oct 25 20:10:25 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* README (Building programs with libpipeline): New section.
