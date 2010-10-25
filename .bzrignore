@@ -25,4 +25,5 @@ gnulib/lib/warn-on-use.h
 gnulib/lib/wchar.h
 lib/libpipeline.pc
 tests/basic
+tests/inspect
 tests/redirect

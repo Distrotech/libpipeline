@@ -1,3 +1,10 @@
+Mon Oct 25 19:31:09 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* tests/Makefile.am (TESTS): Add inspect.
+	  (inspect_SOURCES, inspect_LDADD): Add.
+	* tests/inspect.c: New file.
+	* .bzrignore: Add tests/inspect.
+
 Mon Oct 25 19:18:35 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* tests/common.h: New file.

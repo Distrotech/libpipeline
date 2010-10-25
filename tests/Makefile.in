@@ -33,7 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = basic$(EXEEXT) redirect$(EXEEXT)
+TESTS = basic$(EXEEXT) inspect$(EXEEXT) redirect$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -124,13 +124,16 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = basic$(EXEEXT) redirect$(EXEEXT)
+am__EXEEXT_1 = basic$(EXEEXT) inspect$(EXEEXT) redirect$(EXEEXT)
 am_basic_OBJECTS = basic.$(OBJEXT)
 basic_OBJECTS = $(am_basic_OBJECTS)
 basic_DEPENDENCIES = $(LIBS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
+am_inspect_OBJECTS = inspect.$(OBJEXT)
+inspect_OBJECTS = $(am_inspect_OBJECTS)
+inspect_DEPENDENCIES = $(LIBS)
 am_redirect_OBJECTS = redirect.$(OBJEXT)
 redirect_OBJECTS = $(am_redirect_OBJECTS)
 redirect_DEPENDENCIES = $(LIBS)
@@ -160,8 +163,8 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(basic_SOURCES) $(redirect_SOURCES)
-DIST_SOURCES = $(basic_SOURCES) $(redirect_SOURCES)
+SOURCES = $(basic_SOURCES) $(inspect_SOURCES) $(redirect_SOURCES)
+DIST_SOURCES = $(basic_SOURCES) $(inspect_SOURCES) $(redirect_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -810,6 +813,8 @@ AM_CPPFLAGS = \
 AM_CFLAGS = @CHECK_CFLAGS@
 basic_SOURCES = basic.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
+inspect_SOURCES = inspect.c common.h
+inspect_LDADD = $(LIBS) @CHECK_LIBS@
 redirect_SOURCES = redirect.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@
 all: all-am
@@ -858,6 +863,9 @@ clean-checkPROGRAMS:
 basic$(EXEEXT): $(basic_OBJECTS) $(basic_DEPENDENCIES) 
 	@rm -f basic$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(basic_OBJECTS) $(basic_LDADD) $(LIBS)
+inspect$(EXEEXT): $(inspect_OBJECTS) $(inspect_DEPENDENCIES) 
+	@rm -f inspect$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(inspect_OBJECTS) $(inspect_LDADD) $(LIBS)
 redirect$(EXEEXT): $(redirect_OBJECTS) $(redirect_DEPENDENCIES) 
 	@rm -f redirect$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(redirect_OBJECTS) $(redirect_LDADD) $(LIBS)
@@ -869,6 +877,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/redirect.Po@am__quote@
 
 .c.o:

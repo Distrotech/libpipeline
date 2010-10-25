@@ -21,6 +21,7 @@
 
 TESTS = \
 	basic \
+	inspect \
 	redirect
 check_PROGRAMS = $(TESTS)
 
@@ -37,6 +38,9 @@ clean-local:
 
 basic_SOURCES = basic.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
+
+inspect_SOURCES = inspect.c common.h
+inspect_LDADD = $(LIBS) @CHECK_LIBS@
 
 redirect_SOURCES = redirect.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@
