@@ -35,7 +35,10 @@ FUNCTIONS = \
 	command_argv \
 	command_args \
 	command_argstr \
+	command_nice \
+	command_discard_err \
 	command_setenv \
+	command_unsetenv \
 	command_sequence_command \
 	command_dump \
 	command_tostring \
@@ -43,6 +46,7 @@ FUNCTIONS = \
 	pipeline_new \
 	pipeline_new_commandv \
 	pipeline_new_commands \
+	pipeline_new_command_args \
 	pipeline_join \
 	pipeline_connect \
 	pipeline_command \
@@ -50,6 +54,14 @@ FUNCTIONS = \
 	pipeline_command_argstr \
 	pipeline_commandv \
 	pipeline_commands \
+	pipeline_get_ncommands \
+	pipeline_get_command \
+	pipeline_set_command \
+	pipeline_want_in \
+	pipeline_want_out \
+	pipeline_want_infile \
+	pipeline_want_outfile \
+	pipeline_ignore_signals \
 	pipeline_get_infile \
 	pipeline_get_outfile \
 	pipeline_dump \

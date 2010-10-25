@@ -1,3 +1,12 @@
+Mon Oct 25 19:39:06 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* man/Makefile.am (FUNCTIONS): Add command_nice,
+	  command_discard_err, command_unsetenv, pipeline_new_command_args,
+	  pipeline_get_ncommands, pipeline_get_command,
+	  pipeline_set_command, pipeline_want_in, pipeline_want_out,
+	  pipeline_want_infile, pipeline_want_outfile, and
+	  pipeline_ignore_signals.
+
 Mon Oct 25 19:31:27 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* tests/basic.c: Include <string.h>.
