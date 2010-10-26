@@ -1,3 +1,10 @@
+Tue Oct 26 21:09:53 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* tests/Makefile.am (TESTS): Add argstr.
+	  (argstr_SOURCES, argstr_LDADD): Add.
+	* tests/argstr.c: New file.
+	* .bzrignore: Add tests/argstr.
+
 Mon Oct 25 21:56:08 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* tests/inspect.c (test_inspect_command): Free the result of

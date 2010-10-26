@@ -19,8 +19,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 ## USA
 
+# basic deliberately comes first so that any fundamental problems are more
+# obviously attributed to it.
 TESTS = \
 	basic \
+	argstr \
 	inspect \
 	redirect
 check_PROGRAMS = $(TESTS)
@@ -38,6 +41,9 @@ clean-local:
 
 basic_SOURCES = basic.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
+
+argstr_SOURCES = argstr.c common.h
+argstr_LDADD = $(LIBS) @CHECK_LIBS@
 
 inspect_SOURCES = inspect.c common.h
 inspect_LDADD = $(LIBS) @CHECK_LIBS@
