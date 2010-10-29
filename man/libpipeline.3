@@ -275,13 +275,14 @@ from
 Connect the input of one or more sink pipelines to the output of a source
 pipeline.
 The source pipeline may be started, but in that case
-.Fa want_out
-must be negative; otherwise, discards
-.Fa want_out
-from source.
-In any event, discards
-.Fa want_in
-from all sinks, none of which are allowed to be started.
+.Fn pipeline_want_out
+must have been called with a negative
+.Fa fd ;
+otherwise, calls
+.Fn pipeline_want_out source -1 .
+In any event, calls
+.Fn pipeline_want_in sink -1
+on all sinks, none of which are allowed to be started.
 Terminate arguments with
 .Li NULL .
 .Pp
