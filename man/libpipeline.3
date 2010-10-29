@@ -122,7 +122,12 @@ by this function.
 .Pp
 .It Ft "pipecmd *" Ns Fn pipecmd_new_sequence "const char *name" ...
 .Pp
-Construct a new command that itself runs a sequence of commands.
+Construct a new command that itself runs a sequence of commands, supplied as
+.Vt "command *"
+arguments following
+.Va name
+and terminated by
+.Li NULL .
 The commands will be executed in forked children; if any exits non-zero then
 it will terminate the sequence, as with "&&" in shell.
 .Pp
@@ -286,6 +291,11 @@ pipelines by the program before calling
 which sets data flowing from the source to the sinks.
 It is primarily useful when more than one sink pipeline is involved, in
 which case the pipelines cannot simply be concatenated into one.
+.Pp
+The result is similar to
+.Xr tee 1 ,
+except that output can be sent to more than two places and can easily be
+sent to multiple processes.
 .Pp
 .It Ft void Fn pipeline_command "pipeline *p" "pipecmd *cmd"
 .Pp

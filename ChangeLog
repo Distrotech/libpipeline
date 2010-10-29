@@ -1,3 +1,10 @@
+Fri Oct 29 03:30:45 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* man/libpipeline.3 (Functions to build individual commands):
+	  Document variable arguments to pipecmd_new_sequence.
+	  (Functions to build pipelines): Explain analogy of
+	  pipeline_connect to tee(1).
+
 Fri Oct 29 03:13:21 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c, lib/pipeline.h, lib/pipeline-private.h: Rename
