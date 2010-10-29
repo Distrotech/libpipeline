@@ -828,7 +828,7 @@ pipeline *pipeline_new (void)
 	p->buflen = p->bufmax = 0;
 	p->line_cache = NULL;
 	p->peek_offset = 0;
-	p->ignore_signals = 1;
+	p->ignore_signals = 0;
 	return p;
 }
 

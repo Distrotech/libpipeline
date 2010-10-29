@@ -372,13 +372,13 @@ respectively.
 .Pp
 If
 .Va ignore_signals
-is non-zero (which is the default), ignore
+is non-zero, ignore
 .Li SIGINT
 and
 .Li SIGQUIT
 in the calling process while the pipeline is running, like
 .Xr system 3 .
-Otherwise, leave their dispositions unchanged.
+Otherwise, and by default, leave their dispositions unchanged.
 .Pp
 .It Ft int Fn pipeline_get_ncommands "pipeline *p"
 .Pp

@@ -1,3 +1,9 @@
+Fri Oct 29 03:46:39 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_new): Default ignore_signals to 0.
+	* man/libpipeline.3 (Functions to build pipelines): Update
+	  pipeline_ignore_signals documentation.
+
 Fri Oct 29 03:43:29 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/libpipeline.3 (Functions to build pipelines): Rephrase
