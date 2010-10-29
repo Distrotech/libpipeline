@@ -1,3 +1,7 @@
+Fri Oct 29 07:34:05 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* Version: 1.0.0.
+
 Fri Oct 29 07:25:14 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.h (pipeline_install_post_fork): Clarify that this is
