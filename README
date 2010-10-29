@@ -85,4 +85,10 @@ write programs for your own use that use libpipeline without needing to
 license them under GPL v3-compatible terms.  If you distribute these
 programs to others, then you must take care to use compatible licensing.
 
+Credits
+-------
+
+Thanks to Scott James Remnant for code review, Ian Jackson for an extensive
+design review, and Kees Cook and Matthias Klose for helpful conversations.
+
  -- Colin Watson <cjwatson@debian.org>

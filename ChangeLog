@@ -1,3 +1,7 @@
+Fri Oct 29 06:20:18 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* README (Credits): New section.
+
 Fri Oct 29 06:11:37 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipecmd_new_sequencev): New function.
