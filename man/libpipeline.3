@@ -30,7 +30,7 @@
 is a C library for setting up and running pipelines of processes, without
 needing to involve shell command-line parsing which is often error-prone and
 insecure.
-This alleviates programmers of the need to laboriously construct pipelines
+This relieves programmers of the need to laboriously construct pipelines
 using lower-level primitives such as
 .Ic fork
 and
@@ -184,6 +184,7 @@ If
 is non-zero, redirect this command's standard error to
 .Pa /dev/null .
 Otherwise, and by default, pass it through.
+This is usually a bad idea.
 .Pp
 .It Xo Ft void
 .Fn command_setenv "command *cmd" "const char *name" "const char *value"
@@ -362,7 +363,7 @@ is non-zero (which is the default), ignore
 .Li SIGINT
 and
 .Li SIGQUIT
-while the pipeline is running, like
+in the calling process while the pipeline is running, like
 .Xr system 3 .
 Otherwise, leave their dispositions unchanged.
 .Pp
@@ -696,3 +697,8 @@ and by various contributors to Gnulib.
 .Nm
 is licensed under the GNU General Public License, version 3 or later.
 See the README file for full details.
+.Sh BUGS
+Using this library in a program which runs any other child processes and/or
+installs its own
+.Li SIGCHLD
+handler is unlikely to work.

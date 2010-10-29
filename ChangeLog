@@ -1,3 +1,9 @@
+Fri Oct 29 03:00:51 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* man/libpipeline.3 (DESCRIPTION): Various minor corrections and
+	  clarifications from Ian Jackson.
+	  (BUGS): New section.
+
 Tue Oct 26 21:09:53 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* tests/Makefile.am (TESTS): Add argstr.
