@@ -85,7 +85,7 @@ START_TEST (test_basic_setenv)
 	pipeline *p;
 
 	p = pipeline_new_command_args ("sh", "-c", "exit $TEST1", NULL);
-	command_setenv (pipeline_get_command (p, 0), "TEST1", "10");
+	pipecmd_setenv (pipeline_get_command (p, 0), "TEST1", "10");
 	fail_unless (pipeline_run (p) == 10, "TEST1 not set properly");
 }
 END_TEST
@@ -107,7 +107,7 @@ START_TEST (test_basic_unsetenv)
 	pipeline_free (p);
 
 	p = pipeline_new_command_args ("sh", "-c", "echo $TEST2", NULL);
-	command_unsetenv (pipeline_get_command (p, 0), "TEST2");
+	pipecmd_unsetenv (pipeline_get_command (p, 0), "TEST2");
 	pipeline_want_out (p, -1);
 	pipeline_start (p);
 	line = pipeline_readline (p);

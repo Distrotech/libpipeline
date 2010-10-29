@@ -74,11 +74,11 @@
 #  define PIPELINE_ATTR_SENTINEL
 #endif
 
-typedef void command_function_type (void *);
-typedef void command_function_free_type (void *);
+typedef void pipecmd_function_type (void *);
+typedef void pipecmd_function_free_type (void *);
 
-struct command;
-typedef struct command command;
+struct pipecmd;
+typedef struct pipecmd pipecmd;
 
 struct pipeline;
 typedef struct pipeline pipeline;
@@ -88,13 +88,13 @@ typedef struct pipeline pipeline;
 /* Functions to build individual commands. */
 
 /* Construct a new command. */
-command *command_new (const char *name);
+pipecmd *pipecmd_new (const char *name);
 
-/* Convenience constructors wrapping command_new() and command_arg().
+/* Convenience constructors wrapping pipecmd_new() and pipecmd_arg().
  * Terminate arguments with NULL.
  */
-command *command_new_argv (const char *name, va_list argv);
-command *command_new_args (const char *name, ...) PIPELINE_ATTR_SENTINEL;
+pipecmd *pipecmd_new_argv (const char *name, va_list argv);
+pipecmd *pipecmd_new_args (const char *name, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Split argstr on whitespace to construct a command and arguments,
  * honouring shell-style single-quoting, double-quoting, and backslashes,
@@ -102,47 +102,47 @@ command *command_new_args (const char *name, ...) PIPELINE_ATTR_SENTINEL;
  * is a backward-compatibility hack to support old configuration file
  * directives; please try to avoid using it in new code.
  */
-command *command_new_argstr (const char *argstr);
+pipecmd *pipecmd_new_argstr (const char *argstr);
 
 /* Construct a new command that calls a given function rather than executing
  * a process. The data argument is passed as the function's only argument,
  * and will be freed before returning using free_func (if non-NULL).
  *
- * command_* functions that deal with arguments cannot be used with the
+ * pipecmd_* functions that deal with arguments cannot be used with the
  * command returned by this function.
  */
-command *command_new_function (const char *name,
-			       command_function_type *func,
-			       command_function_free_type *free_func,
+pipecmd *pipecmd_new_function (const char *name,
+			       pipecmd_function_type *func,
+			       pipecmd_function_free_type *free_func,
 			       void *data);
 
 /* Construct a new command that runs a sequence of commands. The commands
  * will be executed in forked children; if any exits non-zero then it will
  * terminate the sequence, as with "&&" in shell.
  *
- * command_* functions that deal with arguments cannot be used with the
+ * pipecmd_* functions that deal with arguments cannot be used with the
  * command returned by this function.
  */
-command *command_new_sequence (const char *name, ...) PIPELINE_ATTR_SENTINEL;
+pipecmd *pipecmd_new_sequence (const char *name, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Return a new command that just passes data from its input to its output. */
-command *command_new_passthrough (void);
+pipecmd *pipecmd_new_passthrough (void);
 
 /* Return a duplicate of a command. */
-command *command_dup (command *cmd);
+pipecmd *pipecmd_dup (pipecmd *cmd);
 
 /* Add an argument to a command. */
-void command_arg (command *cmd, const char *arg);
+void pipecmd_arg (pipecmd *cmd, const char *arg);
 
 /* Convenience function to add an argument with printf substitutions. */
-void command_argf (command *cmd, const char *format, ...)
+void pipecmd_argf (pipecmd *cmd, const char *format, ...)
 	PIPELINE_ATTR_FORMAT_PRINTF(2, 3);
 
-/* Convenience functions wrapping command_arg().
+/* Convenience functions wrapping pipecmd_arg().
  * Terminate arguments with NULL.
  */
-void command_argv (command *cmd, va_list argv);
-void command_args (command *cmd, ...) PIPELINE_ATTR_SENTINEL;
+void pipecmd_argv (pipecmd *cmd, va_list argv);
+void pipecmd_args (pipecmd *cmd, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Split argstr on whitespace to add a list of arguments, honouring
  * shell-style single-quoting, double-quoting, and backslashes, but not
@@ -150,38 +150,38 @@ void command_args (command *cmd, ...) PIPELINE_ATTR_SENTINEL;
  * backward-compatibility hack to support old configuration file directives;
  * please try to avoid using it in new code.
  */
-void command_argstr (command *cmd, const char *argstr);
+void pipecmd_argstr (pipecmd *cmd, const char *argstr);
 
 /* Set the nice(3) value for this command.  Defaults to 0.  Errors while
  * attempting to set the nice value are ignored, aside from emitting a debug
  * message.
  */
-void command_nice (command *cmd, int nice);
+void pipecmd_nice (pipecmd *cmd, int nice);
 
 /* If discard_err is non-zero, redirect this command's standard error to
  * /dev/null.  Otherwise, and by default, pass it through.
  */
-void command_discard_err (command *cmd, int discard_err);
+void pipecmd_discard_err (pipecmd *cmd, int discard_err);
 
 /* Set an environment variable while running this command. */
-void command_setenv (command *cmd, const char *name, const char *value);
+void pipecmd_setenv (pipecmd *cmd, const char *name, const char *value);
 
 /* Unset an environment variable while running this command. */
-void command_unsetenv (command *cmd, const char *name);
+void pipecmd_unsetenv (pipecmd *cmd, const char *name);
 
 /* Add a command to a sequence. */
-void command_sequence_command (command *cmd, command *child);
+void pipecmd_sequence_command (pipecmd *cmd, pipecmd *child);
 
 /* Dump a string representation of a command to stream. */
-void command_dump (command *cmd, FILE *stream);
+void pipecmd_dump (pipecmd *cmd, FILE *stream);
 
 /* Return a string representation of a command. The caller should free the
  * result.
  */
-char *command_tostring (command *cmd);
+char *pipecmd_tostring (pipecmd *cmd);
 
 /* Destroy a command. Safely does nothing on NULL. */
-void command_free (command *cmd);
+void pipecmd_free (pipecmd *cmd);
 
 /* ---------------------------------------------------------------------- */
 
@@ -193,8 +193,8 @@ pipeline *pipeline_new (void);
 /* Convenience constructors wrapping pipeline_new() and pipeline_command().
  * Terminate commands with NULL.
  */
-pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv);
-pipeline *pipeline_new_commands (command *cmd1, ...) PIPELINE_ATTR_SENTINEL;
+pipeline *pipeline_new_commandv (pipecmd *cmd1, va_list cmdv);
+pipeline *pipeline_new_commands (pipecmd *cmd1, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Construct a new pipeline and add a single command to it. */
 pipeline *pipeline_new_command_args (const char *name, ...)
@@ -222,14 +222,14 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 	PIPELINE_ATTR_SENTINEL;
 
 /* Add a command to a pipeline. */
-void pipeline_command (pipeline *p, command *cmd);
+void pipeline_command (pipeline *p, pipecmd *cmd);
 
 /* Construct a new command and add it to a pipeline in one go. */
 void pipeline_command_args (pipeline *p, const char *name, ...)
 	PIPELINE_ATTR_SENTINEL;
 
 /* Construct a new command from a shell-quoted string and add it to a
- * pipeline in one go. See the comment against command_new_argstr() above if
+ * pipeline in one go. See the comment against pipecmd_new_argstr() above if
  * you're tempted to use this function.
  */
 void pipeline_command_argstr (pipeline *p, const char *argstr);
@@ -246,13 +246,13 @@ int pipeline_get_ncommands (pipeline *p);
 /* Return command number n from this pipeline, counting from zero, or NULL
  * if n is out of range.
  */
-command *pipeline_get_command (pipeline *p, int n);
+pipecmd *pipeline_get_command (pipeline *p, int n);
 
 /* Set command number n in this pipeline, counting from zero, to cmd, and
  * return the previous command in that position.  Do nothing and return NULL
  * if n is out of range.
  */
-command *pipeline_set_command (pipeline *p, int n, command *cmd);
+pipecmd *pipeline_set_command (pipeline *p, int n, pipecmd *cmd);
 
 /* Set file descriptors to use as the input and output of the whole
  * pipeline.  If non-negative, fd is used directly as a file descriptor.  If

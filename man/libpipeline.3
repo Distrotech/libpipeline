@@ -41,11 +41,13 @@ The general way to use
 involves constructing a
 .Vt pipeline
 structure and adding one or more
-.Vt command
+.Vt pipecmd
 structures to it.
 A
-.Vt command
-represents a subprocess, while a
+.Vt pipecmd
+represents a subprocess (or
+.Dq command ) ,
+while a
 .Vt pipeline
 represents a sequence of subprocesses each of whose outputs is connected to
 the next one's input, as in the example
@@ -63,25 +65,25 @@ Strings passed as
 function arguments will be copied by the library.
 .Ss Functions to build individual commands
 .Bl -tag -width 4n -compact
-.It Ft "command *" Ns Fn command_new "const char *name"
+.It Ft "pipecmd *" Ns Fn pipecmd_new "const char *name"
 .Pp
 Construct a new command representing execution of a program called
 .Va name .
 .Pp
-.It Ft "command *" Ns Fn command_new_argv "const char *name" "va_list argv"
-.It Ft "command *" Ns Fn command_new_args "const char *name" ...
+.It Ft "pipecmd *" Ns Fn pipecmd_new_argv "const char *name" "va_list argv"
+.It Ft "pipecmd *" Ns Fn pipecmd_new_args "const char *name" ...
 .Pp
 Convenience constructors wrapping
-.Fn command_new
+.Fn pipecmd_new
 and
-.Fn command_arg .
+.Fn pipecmd_arg .
 Construct a new command representing execution of a program called
 .Va name
 with arguments.
 Terminate arguments with
 .Li NULL .
 .Pp
-.It Ft "command *" Ns Fn command_new_argstr "const char *argstr"
+.It Ft "pipecmd *" Ns Fn pipecmd_new_argstr "const char *argstr"
 .Pp
 Split
 .Va argstr
@@ -96,13 +98,13 @@ it still involves significant string parsing which is inherently riskier
 than avoiding it altogether.
 Please try to avoid using it in new code.
 .Pp
-.It Vt typedef void command_function_type (void *) ;
-.It Vt typedef void command_function_free_type (void *) ;
-.It Xo Ft "command *" Ns
-.Fo command_new_function
+.It Vt typedef void pipecmd_function_type (void *) ;
+.It Vt typedef void pipecmd_function_free_type (void *) ;
+.It Xo Ft "pipecmd *" Ns
+.Fo pipecmd_new_function
 .Fa "const char *name"
-.Fa "command_function_type *func"
-.Fa "command_function_free_type *free_func"
+.Fa "pipecmd_function_type *func"
+.Fa "pipecmd_function_free_type *free_func"
 .Fa "void *data"
 .Fc
 .Xc
@@ -114,46 +116,46 @@ The data argument is passed as the function's only argument, and will be
 freed before returning using free_func (if
 .No non- Ns Va NULL Ns ).
 .Pp
-.Li command_*
+.Li pipecmd_*
 functions that deal with arguments cannot be used with the command returned
 by this function.
 .Pp
-.It Ft "command *" Ns Fn command_new_sequence "const char *name" ...
+.It Ft "pipecmd *" Ns Fn pipecmd_new_sequence "const char *name" ...
 .Pp
 Construct a new command that itself runs a sequence of commands.
 The commands will be executed in forked children; if any exits non-zero then
 it will terminate the sequence, as with "&&" in shell.
 .Pp
-.Li command_*
+.Li pipecmd_*
 functions that deal with arguments cannot be used with the command returned
 by this function.
 .Pp
-.It Ft "command *" Ns Fn command_new_passthrough void
+.It Ft "pipecmd *" Ns Fn pipecmd_new_passthrough void
 .Pp
 Return a new command that just passes data from its input to its output.
 .Pp
-.It Ft "command *" Ns Fn command_dup "command *cmd"
+.It Ft "pipecmd *" Ns Fn pipecmd_dup "pipecmd *cmd"
 .Pp
 Return a duplicate of a command.
 .Pp
-.It Ft void Fn command_arg "command *cmd" "const char *arg"
+.It Ft void Fn pipecmd_arg "pipecmd *cmd" "const char *arg"
 .Pp
 Add an argument to a command.
 .Pp
-.It Ft void Fn command_argf "command *cmd" "const char *format" ...
+.It Ft void Fn pipecmd_argf "pipecmd *cmd" "const char *format" ...
 .Pp
 Convenience function to add an argument with printf substitutions.
 .Pp
-.It Ft void Fn command_argv "command *cmd" "va_list argv"
-.It Ft void Fn command_args "command *cmd" ...
+.It Ft void Fn pipecmd_argv "pipecmd *cmd" "va_list argv"
+.It Ft void Fn pipecmd_args "pipecmd *cmd" ...
 .Pp
 Convenience functions wrapping
-.Fn command_arg
+.Fn pipecmd_arg
 to add multiple arguments at once.
 Terminate arguments with
 .Li NULL .
 .Pp
-.It Ft void Fn command_argstr "command *cmd" "const char *argstr"
+.It Ft void Fn pipecmd_argstr "pipecmd *cmd" "const char *argstr"
 .Pp
 Split
 .Va argstr
@@ -168,7 +170,7 @@ it still involves significant string parsing which is inherently riskier
 than avoiding it altogether.
 Please try to avoid using it in new code.
 .Pp
-.It Ft void Fn command_nice "command *cmd" "int value"
+.It Ft void Fn pipecmd_nice "pipecmd *cmd" "int value"
 .Pp
 Set the
 .Xr nice 3
@@ -177,7 +179,7 @@ Defaults to 0.
 Errors while attempting to set the nice value are ignored, aside from
 emitting a debug message.
 .Pp
-.It Ft void Fn command_discard_err "command *cmd" "int discard_err"
+.It Ft void Fn pipecmd_discard_err "pipecmd *cmd" "int discard_err"
 .Pp
 If
 .Va discard_err
@@ -187,7 +189,7 @@ Otherwise, and by default, pass it through.
 This is usually a bad idea.
 .Pp
 .It Xo Ft void
-.Fn command_setenv "command *cmd" "const char *name" "const char *value"
+.Fn pipecmd_setenv "pipecmd *cmd" "const char *name" "const char *value"
 .Xc
 .Pp
 Set environment variable
@@ -196,27 +198,27 @@ to
 .Va value
 while running this command.
 .Pp
-.It Ft void Fn command_unsetenv "command *cmd" "const char *name"
+.It Ft void Fn pipecmd_unsetenv "pipecmd *cmd" "const char *name"
 .Pp
 Unset environment variable
 .Va name
 while running this command.
 .Pp
-.It Ft void Fn command_sequence_command "command *cmd" "command *child"
+.It Ft void Fn pipecmd_sequence_command "pipecmd *cmd" "pipecmd *child"
 .Pp
 Add a command to a sequence created using
-.Fn command_new_sequence .
+.Fn pipecmd_new_sequence .
 .Pp
-.It Ft void Fn command_dump "command *cmd" "FILE *stream"
+.It Ft void Fn pipecmd_dump "pipecmd *cmd" "FILE *stream"
 .Pp
 Dump a string representation of a command to stream.
 .Pp
-.It Ft "char *" Ns Fn command_tostring "command *cmd"
+.It Ft "char *" Ns Fn pipecmd_tostring "pipecmd *cmd"
 .Pp
 Return a string representation of a command.
 The caller should free the result.
 .Pp
-.It Ft void Fn command_free "command *cmd"
+.It Ft void Fn pipecmd_free "pipecmd *cmd"
 .Pp
 Destroy a command.
 Safely does nothing if
@@ -230,8 +232,8 @@ is
 .Pp
 Construct a new pipeline.
 .Pp
-.It Ft "pipeline *" Ns Fn pipeline_new_commandv "command *cmd1" "va_list cmdv"
-.It Ft "pipeline *" Ns Fn pipeline_new_commands "command *cmd1" ...
+.It Ft "pipeline *" Ns Fn pipeline_new_commandv "pipecmd *cmd1" "va_list cmdv"
+.It Ft "pipeline *" Ns Fn pipeline_new_commands "pipecmd *cmd1" ...
 .Pp
 Convenience constructors wrapping
 .Fn pipeline_new
@@ -285,7 +287,7 @@ which sets data flowing from the source to the sinks.
 It is primarily useful when more than one sink pipeline is involved, in
 which case the pipelines cannot simply be concatenated into one.
 .Pp
-.It Ft void Fn pipeline_command "pipeline *p" "command *cmd"
+.It Ft void Fn pipeline_command "pipeline *p" "pipecmd *cmd"
 .Pp
 Add a command to a pipeline.
 .Pp
@@ -298,7 +300,7 @@ Construct a new command and add it to a pipeline in one go.
 Construct a new command from a shell-quoted string and add it to a pipeline
 in one go.
 See the comment against
-.Fn command_new_argstr
+.Fn pipecmd_new_argstr
 above if you're tempted to use this function.
 .Pp
 .It Ft void Fn pipeline_commandv "pipeline *p" "va_list cmdv"
@@ -371,7 +373,7 @@ Otherwise, leave their dispositions unchanged.
 .Pp
 Return the number of commands in this pipeline.
 .Pp
-.It Ft "command *" Ns Fn pipeline_get_command "pipeline *p" "int n"
+.It Ft "pipecmd *" Ns Fn pipeline_get_command "pipeline *p" "int n"
 .Pp
 Return command number
 .Va n
@@ -381,8 +383,8 @@ if
 .Va n
 is out of range.
 .Pp
-.It Xo Ft "command *" Ns
-.Fn pipeline_set_command "pipeline *p" "int n" "command *cmd"
+.It Xo Ft "pipecmd *" Ns
+.Fn pipeline_set_command "pipeline *p" "int n" "pipecmd *cmd"
 .Xc
 .Pp
 Set command number
@@ -584,7 +586,7 @@ then
 will emit debugging messages on standard error.
 .Sh EXAMPLES
 In the following examples, function names starting with
-.Li command_
+.Li pipecmd_
 or
 .Li pipeline_
 are real
@@ -621,18 +623,18 @@ status = pipeline_run (p);
 .Pp
 You might want to construct a command more dynamically:
 .Bd -literal -offset indent
-command *manconv = command_new_args ("manconv", "-f", from_code,
+pipecmd *manconv = pipecmd_new_args ("manconv", "-f", from_code,
                                      "-t", "UTF-8", NULL);
 if (quiet)
-        command_arg (manconv, "-q");
+        pipecmd_arg (manconv, "-q");
 pipeline_command (p, manconv);
 .Ed
 .Pp
 Perhaps you want an environment variable set only while running a certain
 command:
 .Bd -literal -offset indent
-command *less = command_new ("less");
-command_setenv (less, "LESSCHARSET", lesscharset);
+pipecmd *less = pipecmd_new ("less");
+pipecmd_setenv (less, "LESSCHARSET", lesscharset);
 .Ed
 .Pp
 You might find yourself needing to pass the output of one pipeline to
@@ -656,7 +658,7 @@ pipeline_free (source);
 Maybe one of your commands is actually an in-process function, rather than
 an external program:
 .Bd -literal -offset indent
-command *inproc = command_new_function ("in-process", &func,
+pipecmd *inproc = pipecmd_new_function ("in-process", &func,
                                         NULL, NULL);
 pipeline_command (p, inproc);
 .Ed

@@ -76,13 +76,13 @@
 
 /* Functions to build individual commands. */
 
-command *command_new (const char *name)
+pipecmd *pipecmd_new (const char *name)
 {
-	command *cmd = XMALLOC (command);
-	struct command_process *cmdp;
+	pipecmd *cmd = XMALLOC (pipecmd);
+	struct pipecmd_process *cmdp;
 	char *name_base;
 
-	cmd->tag = COMMAND_PROCESS;
+	cmd->tag = PIPECMD_PROCESS;
 	cmd->name = xstrdup (name);
 	cmd->nice = 0;
 	cmd->discard_err = 0;
@@ -99,33 +99,33 @@ command *command_new (const char *name)
 
 	/* argv[0] is the basename of the command name. */
 	name_base = base_name (name);
-	command_arg (cmd, name_base);
+	pipecmd_arg (cmd, name_base);
 	free (name_base);
 
 	return cmd;
 }
 
-command *command_new_argv (const char *name, va_list argv)
+pipecmd *pipecmd_new_argv (const char *name, va_list argv)
 {
-	command *cmd = command_new (name);
-	command_argv (cmd, argv);
+	pipecmd *cmd = pipecmd_new (name);
+	pipecmd_argv (cmd, argv);
 	return cmd;
 }
 
-command *command_new_args (const char *name, ...)
+pipecmd *pipecmd_new_args (const char *name, ...)
 {
 	va_list argv;
-	command *cmd;
+	pipecmd *cmd;
 
 	va_start (argv, name);
-	cmd = command_new_argv (name, argv);
+	cmd = pipecmd_new_argv (name, argv);
 	va_end (argv);
 
 	return cmd;
 }
 
-/* As suggested in the header file, this function (for command_new_argstr()
- * and command_argstr()) is really a wart. If we didn't have to worry about
+/* As suggested in the header file, this function (for pipecmd_new_argstr()
+ * and pipecmd_argstr()) is really a wart. If we didn't have to worry about
  * old configuration files then it wouldn't be necessary. Worse, the
  * definition for tr in man_db.conf currently contains single-quoting, and
  * people probably took that as a licence to do similar things, so we're
@@ -235,9 +235,9 @@ static char *argstr_get_word (const char **argstr)
 	return out;
 }
 
-command *command_new_argstr (const char *argstr)
+pipecmd *pipecmd_new_argstr (const char *argstr)
 {
-	command *cmd;
+	pipecmd *cmd;
 	char *arg;
 
 	arg = argstr_get_word (&argstr);
@@ -258,26 +258,26 @@ command *command_new_argstr (const char *argstr)
 			       "badly formed configuration directive: '%s'",
 			       argstr);
 	}
-	cmd = command_new (arg);
+	cmd = pipecmd_new (arg);
 	free (arg);
 
 	while ((arg = argstr_get_word (&argstr))) {
-		command_arg (cmd, arg);
+		pipecmd_arg (cmd, arg);
 		free (arg);
 	}
 
 	return cmd;
 }
 
-command *command_new_function (const char *name,
-			       command_function_type *func,
-			       command_function_free_type *free_func,
+pipecmd *pipecmd_new_function (const char *name,
+			       pipecmd_function_type *func,
+			       pipecmd_function_free_type *free_func,
 			       void *data)
 {
-	command *cmd = XMALLOC (command);
-	struct command_function *cmdf;
+	pipecmd *cmd = XMALLOC (pipecmd);
+	struct pipecmd_function *cmdf;
 
-	cmd->tag = COMMAND_FUNCTION;
+	cmd->tag = PIPECMD_FUNCTION;
 	cmd->name = xstrdup (name);
 	cmd->nice = 0;
 	cmd->discard_err = 0;
@@ -295,14 +295,14 @@ command *command_new_function (const char *name,
 	return cmd;
 }
 
-command *command_new_sequence (const char *name, ...)
+pipecmd *pipecmd_new_sequence (const char *name, ...)
 {
-	command *cmd = XMALLOC (command);
-	struct command_sequence *cmds;
+	pipecmd *cmd = XMALLOC (pipecmd);
+	struct pipecmd_sequence *cmds;
 	va_list cmdv;
-	command *child;
+	pipecmd *child;
 
-	cmd->tag = COMMAND_SEQUENCE;
+	cmd->tag = PIPECMD_SEQUENCE;
 	cmd->name = xstrdup (name);
 	cmd->nice = 0;
 	cmd->discard_err = 0;
@@ -318,10 +318,10 @@ command *command_new_sequence (const char *name, ...)
 	cmds->commands = xnmalloc (cmds->commands_max, sizeof *cmds->commands);
 
 	va_start (cmdv, name);
-	child = va_arg (cmdv, command *);
+	child = va_arg (cmdv, pipecmd *);
 	while (child) {
-		command_sequence_command (cmd, child);
-		child = va_arg (cmdv, command *);
+		pipecmd_sequence_command (cmd, child);
+		child = va_arg (cmdv, pipecmd *);
 	}
 	va_end (cmdv);
 
@@ -342,14 +342,14 @@ static void passthrough (void *data PIPELINE_ATTR_UNUSED)
 	return;
 }
 
-command *command_new_passthrough (void)
+pipecmd *pipecmd_new_passthrough (void)
 {
-	return command_new_function ("cat", &passthrough, NULL, NULL);
+	return pipecmd_new_function ("cat", &passthrough, NULL, NULL);
 }
 
-command *command_dup (command *cmd)
+pipecmd *pipecmd_dup (pipecmd *cmd)
 {
-	command *newcmd = XMALLOC (command);
+	pipecmd *newcmd = XMALLOC (pipecmd);
 	int i;
 
 	newcmd->tag = cmd->tag;
@@ -369,9 +369,9 @@ command *command_dup (command *cmd)
 	}
 
 	switch (newcmd->tag) {
-		case COMMAND_PROCESS: {
-			struct command_process *cmdp = &cmd->u.process;
-			struct command_process *newcmdp = &newcmd->u.process;
+		case PIPECMD_PROCESS: {
+			struct pipecmd_process *cmdp = &cmd->u.process;
+			struct pipecmd_process *newcmdp = &newcmd->u.process;
 
 			newcmdp->argc = cmdp->argc;
 			newcmdp->argv_max = cmdp->argv_max;
@@ -386,9 +386,9 @@ command *command_dup (command *cmd)
 			break;
 		}
 
-		case COMMAND_FUNCTION: {
-			struct command_function *cmdf = &cmd->u.function;
-			struct command_function *newcmdf = &newcmd->u.function;
+		case PIPECMD_FUNCTION: {
+			struct pipecmd_function *cmdf = &cmd->u.function;
+			struct pipecmd_function *newcmdf = &newcmd->u.function;
 
 			newcmdf->func = cmdf->func;
 			newcmdf->free_func = cmdf->free_func;
@@ -397,9 +397,9 @@ command *command_dup (command *cmd)
 			break;
 		}
 
-		case COMMAND_SEQUENCE: {
-			struct command_sequence *cmds = &cmd->u.sequence;
-			struct command_sequence *newcmds = &newcmd->u.sequence;
+		case PIPECMD_SEQUENCE: {
+			struct pipecmd_sequence *cmds = &cmd->u.sequence;
+			struct pipecmd_sequence *newcmds = &newcmd->u.sequence;
 
 			newcmds->ncommands = cmds->ncommands;
 			newcmds->commands_max = cmds->commands_max;
@@ -410,7 +410,7 @@ command *command_dup (command *cmd)
 
 			for (i = 0; i < cmds->ncommands; ++i)
 				newcmds->commands[i] =
-					command_dup (cmds->commands[i]);
+					pipecmd_dup (cmds->commands[i]);
 
 			break;
 		}
@@ -419,11 +419,11 @@ command *command_dup (command *cmd)
 	return newcmd;
 }
 
-void command_arg (command *cmd, const char *arg)
+void pipecmd_arg (pipecmd *cmd, const char *arg)
 {
-	struct command_process *cmdp;
+	struct pipecmd_process *cmdp;
 
-	assert (cmd->tag == COMMAND_PROCESS);
+	assert (cmd->tag == PIPECMD_PROCESS);
 	cmdp = &cmd->u.process;
 
 	if (cmdp->argc + 1 >= cmdp->argv_max) {
@@ -437,64 +437,64 @@ void command_arg (command *cmd, const char *arg)
 	cmdp->argv[cmdp->argc] = NULL;
 }
 
-void command_argf (command *cmd, const char *format, ...)
+void pipecmd_argf (pipecmd *cmd, const char *format, ...)
 {
 	va_list argv;
 	char *arg;
 
 	va_start (argv, format);
 	arg = xvasprintf (format, argv);
-	command_arg (cmd, arg);
+	pipecmd_arg (cmd, arg);
 	free (arg);
 	va_end (argv);
 }
 
-void command_argv (command *cmd, va_list argv)
+void pipecmd_argv (pipecmd *cmd, va_list argv)
 {
 	const char *arg = va_arg (argv, const char *);
 
-	assert (cmd->tag == COMMAND_PROCESS);
+	assert (cmd->tag == PIPECMD_PROCESS);
 
 	while (arg) {
-		command_arg (cmd, arg);
+		pipecmd_arg (cmd, arg);
 		arg = va_arg (argv, const char *);
 	}
 }
 
-void command_args (command *cmd, ...)
+void pipecmd_args (pipecmd *cmd, ...)
 {
 	va_list argv;
 
-	assert (cmd->tag == COMMAND_PROCESS);
+	assert (cmd->tag == PIPECMD_PROCESS);
 
 	va_start (argv, cmd);
-	command_argv (cmd, argv);
+	pipecmd_argv (cmd, argv);
 	va_end (argv);
 }
 
-void command_argstr (command *cmd, const char *argstr)
+void pipecmd_argstr (pipecmd *cmd, const char *argstr)
 {
 	char *arg;
 
-	assert (cmd->tag == COMMAND_PROCESS);
+	assert (cmd->tag == PIPECMD_PROCESS);
 
 	while ((arg = argstr_get_word (&argstr))) {
-		command_arg (cmd, arg);
+		pipecmd_arg (cmd, arg);
 		free (arg);
 	}
 }
 
-void command_nice (command *cmd, int value)
+void pipecmd_nice (pipecmd *cmd, int value)
 {
 	cmd->nice = value;
 }
 
-void command_discard_err (command *cmd, int discard_err)
+void pipecmd_discard_err (pipecmd *cmd, int discard_err)
 {
 	cmd->discard_err = discard_err;
 }
 
-void command_setenv (command *cmd, const char *name, const char *value)
+void pipecmd_setenv (pipecmd *cmd, const char *name, const char *value)
 {
 	if (cmd->nenv >= cmd->env_max) {
 		cmd->env_max *= 2;
@@ -507,7 +507,7 @@ void command_setenv (command *cmd, const char *name, const char *value)
 	++cmd->nenv;
 }
 
-void command_unsetenv (command *cmd, const char *name)
+void pipecmd_unsetenv (pipecmd *cmd, const char *name)
 {
 	if (cmd->nenv >= cmd->env_max) {
 		cmd->env_max *= 2;
@@ -520,11 +520,11 @@ void command_unsetenv (command *cmd, const char *name)
 	++cmd->nenv;
 }
 
-void command_sequence_command (command *cmd, command *child)
+void pipecmd_sequence_command (pipecmd *cmd, pipecmd *child)
 {
-	struct command_sequence *cmds;
+	struct pipecmd_sequence *cmds;
 
-	assert (cmd->tag == COMMAND_SEQUENCE);
+	assert (cmd->tag == PIPECMD_SEQUENCE);
 	cmds = &cmd->u.sequence;
 
 	if (cmds->ncommands >= cmds->commands_max) {
@@ -537,7 +537,7 @@ void command_sequence_command (command *cmd, command *child)
 	cmds->commands[cmds->ncommands++] = child;
 }
 
-void command_dump (command *cmd, FILE *stream)
+void pipecmd_dump (pipecmd *cmd, FILE *stream)
 {
 	int i;
 
@@ -547,8 +547,8 @@ void command_dump (command *cmd, FILE *stream)
 			 cmd->env[i].value ? cmd->env[i].value : "<unset>");
 
 	switch (cmd->tag) {
-		case COMMAND_PROCESS: {
-			struct command_process *cmdp = &cmd->u.process;
+		case PIPECMD_PROCESS: {
+			struct pipecmd_process *cmdp = &cmd->u.process;
 
 			fputs (cmd->name, stream);
 			for (i = 1; i < cmdp->argc; ++i) {
@@ -560,16 +560,16 @@ void command_dump (command *cmd, FILE *stream)
 			break;
 		}
 
-		case COMMAND_FUNCTION:
+		case PIPECMD_FUNCTION:
 			fputs (cmd->name, stream);
 			break;
 
-		case COMMAND_SEQUENCE: {
-			struct command_sequence *cmds = &cmd->u.sequence;
+		case PIPECMD_SEQUENCE: {
+			struct pipecmd_sequence *cmds = &cmd->u.sequence;
 
 			putc ('(', stream);
 			for (i = 0; i < cmds->ncommands; ++i) {
-				command_dump (cmds->commands[i], stream);
+				pipecmd_dump (cmds->commands[i], stream);
 				if (i < cmds->ncommands - 1)
 					fputs (" && ", stream);
 			}
@@ -580,7 +580,7 @@ void command_dump (command *cmd, FILE *stream)
 	}
 }
 
-char *command_tostring (command *cmd)
+char *pipecmd_tostring (pipecmd *cmd)
 {
 	char *out = NULL;
 	int i;
@@ -592,8 +592,8 @@ char *command_tostring (command *cmd)
 				 " ", NULL);
 
 	switch (cmd->tag) {
-		case COMMAND_PROCESS: {
-			struct command_process *cmdp = &cmd->u.process;
+		case PIPECMD_PROCESS: {
+			struct pipecmd_process *cmdp = &cmd->u.process;
 
 			out = appendstr (out, cmd->name, NULL);
 			for (i = 1; i < cmdp->argc; ++i)
@@ -604,16 +604,16 @@ char *command_tostring (command *cmd)
 			break;
 		}
 
-		case COMMAND_FUNCTION:
+		case PIPECMD_FUNCTION:
 			out = appendstr (out, cmd->name, NULL);
 			break;
 
-		case COMMAND_SEQUENCE: {
-			struct command_sequence *cmds = &cmd->u.sequence;
+		case PIPECMD_SEQUENCE: {
+			struct pipecmd_sequence *cmds = &cmd->u.sequence;
 
 			out = appendstr (out, "(", NULL);
 			for (i = 0; i < cmds->ncommands; ++i) {
-				char *subout = command_tostring
+				char *subout = pipecmd_tostring
 					(cmds->commands[i]);
 				out = appendstr (out, subout, NULL);
 				free (subout);
@@ -635,8 +635,8 @@ char *command_tostring (command *cmd)
 /* Start a command. This is called in the forked child process, with file
  * descriptors already set up.
  */
-static void command_start_child (command *cmd) PIPELINE_ATTR_NORETURN;
-static void command_start_child (command *cmd)
+static void pipecmd_start_child (pipecmd *cmd) PIPELINE_ATTR_NORETURN;
+static void pipecmd_start_child (pipecmd *cmd)
 {
 	int i;
 
@@ -661,8 +661,8 @@ static void command_start_child (command *cmd)
 	}
 
 	switch (cmd->tag) {
-		case COMMAND_PROCESS: {
-			struct command_process *cmdp = &cmd->u.process;
+		case PIPECMD_PROCESS: {
+			struct pipecmd_process *cmdp = &cmd->u.process;
 			execvp (cmd->name, cmdp->argv);
 			break;
 		}
@@ -671,8 +671,8 @@ static void command_start_child (command *cmd)
 		 * to execute non-blocking functions without
 		 * needing to fork?
 		 */
-		case COMMAND_FUNCTION: {
-			struct command_function *cmdf = &cmd->u.function;
+		case PIPECMD_FUNCTION: {
+			struct pipecmd_function *cmdf = &cmd->u.function;
 			(*cmdf->func) (cmdf->data);
 			/* pacify valgrind et al */
 			if (cmdf->free_func)
@@ -680,8 +680,8 @@ static void command_start_child (command *cmd)
 			exit (0);
 		}
 
-		case COMMAND_SEQUENCE: {
-			struct command_sequence *cmds = &cmd->u.sequence;
+		case PIPECMD_SEQUENCE: {
+			struct pipecmd_sequence *cmds = &cmd->u.sequence;
 			struct sigaction sa;
 
 			/* pipeline_start will have blocked SIGCHLD. We like
@@ -697,14 +697,14 @@ static void command_start_child (command *cmd)
 				       "can't install SIGCHLD handler");
 
 			for (i = 0; i < cmds->ncommands; ++i) {
-				command *child = cmds->commands[i];
+				pipecmd *child = cmds->commands[i];
 				pid_t pid = fork ();
 				int status;
 
 				if (pid < 0)
 					error (FATAL, errno, "fork failed");
 				if (pid == 0)
-					command_start_child (child);
+					pipecmd_start_child (child);
 				debug ("Started \"%s\", pid %d\n",
 				       child->name, pid);
 
@@ -737,8 +737,8 @@ static void command_start_child (command *cmd)
 					error (0, 0, "unexpected status %d",
 					       status);
 
-				if (child->tag == COMMAND_FUNCTION) {
-					struct command_function *cmdf =
+				if (child->tag == PIPECMD_FUNCTION) {
+					struct pipecmd_function *cmdf =
 						&child->u.function;
 					if (cmdf->free_func)
 						(*cmdf->free_func)
@@ -763,7 +763,7 @@ static void command_start_child (command *cmd)
 	exit (EXEC_FAILED_EXIT_STATUS);
 }
 
-void command_free (command *cmd)
+void pipecmd_free (pipecmd *cmd)
 {
 	int i;
 
@@ -779,8 +779,8 @@ void command_free (command *cmd)
 	free (cmd->env);
 
 	switch (cmd->tag) {
-		case COMMAND_PROCESS: {
-			struct command_process *cmdp = &cmd->u.process;
+		case PIPECMD_PROCESS: {
+			struct pipecmd_process *cmdp = &cmd->u.process;
 
 			for (i = 0; i < cmdp->argc; ++i)
 				free (cmdp->argv[i]);
@@ -789,14 +789,14 @@ void command_free (command *cmd)
 			break;
 		}
 
-		case COMMAND_FUNCTION:
+		case PIPECMD_FUNCTION:
 			break;
 
-		case COMMAND_SEQUENCE: {
-			struct command_sequence *cmds = &cmd->u.sequence;
+		case PIPECMD_SEQUENCE: {
+			struct pipecmd_sequence *cmds = &cmd->u.sequence;
 
 			for (i = 0; i < cmds->ncommands; ++i)
-				command_free (cmds->commands[i]);
+				pipecmd_free (cmds->commands[i]);
 			free (cmds->commands);
 
 			break;
@@ -832,7 +832,7 @@ pipeline *pipeline_new (void)
 	return p;
 }
 
-pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv)
+pipeline *pipeline_new_commandv (pipecmd *cmd1, va_list cmdv)
 {
 	pipeline *p = pipeline_new ();
 	pipeline_command (p, cmd1);
@@ -840,7 +840,7 @@ pipeline *pipeline_new_commandv (command *cmd1, va_list cmdv)
 	return p;
 }
 
-pipeline *pipeline_new_commands (command *cmd1, ...)
+pipeline *pipeline_new_commands (pipecmd *cmd1, ...)
 {
 	va_list cmdv;
 	pipeline *p;
@@ -856,11 +856,11 @@ pipeline *pipeline_new_command_args (const char *name, ...)
 {
 	va_list argv;
 	pipeline *p;
-	command *cmd;
+	pipecmd *cmd;
 
 	p = pipeline_new ();
 	va_start (argv, name);
-	cmd = command_new_argv (name, argv);
+	cmd = pipecmd_new_argv (name, argv);
 	va_end (argv);
 	pipeline_command (p, cmd);
 
@@ -900,9 +900,9 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->ignore_signals = (p1->ignore_signals || p2->ignore_signals);
 
 	for (i = 0; i < p1->ncommands; ++i)
-		p->commands[i] = command_dup (p1->commands[i]);
+		p->commands[i] = pipecmd_dup (p1->commands[i]);
 	for (i = 0; i < p2->ncommands; ++i)
-		p->commands[p1->ncommands + i] = command_dup (p2->commands[i]);
+		p->commands[p1->ncommands + i] = pipecmd_dup (p2->commands[i]);
 
 	return p;
 }
@@ -936,12 +936,12 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 		 * fixed, this kludge is necessary.
 		 */
 		if (arg->ncommands == 0)
-			pipeline_command (arg, command_new_passthrough ());
+			pipeline_command (arg, pipecmd_new_passthrough ());
 	}
 	va_end (argv);
 }
 
-void pipeline_command (pipeline *p, command *cmd)
+void pipeline_command (pipeline *p, pipecmd *cmd)
 {
 	if (p->ncommands >= p->commands_max) {
 		p->commands_max *= 2;
@@ -955,26 +955,26 @@ void pipeline_command (pipeline *p, command *cmd)
 void pipeline_command_args (pipeline *p, const char *name, ...)
 {
 	va_list argv;
-	command *cmd;
+	pipecmd *cmd;
 
 	va_start (argv, name);
-	cmd = command_new_argv (name, argv);
+	cmd = pipecmd_new_argv (name, argv);
 	va_end (argv);
 	pipeline_command (p, cmd);
 }
 
 void pipeline_command_argstr (pipeline *p, const char *argstr)
 {
-	pipeline_command (p, command_new_argstr (argstr));
+	pipeline_command (p, pipecmd_new_argstr (argstr));
 }
 
 void pipeline_commandv (pipeline *p, va_list cmdv)
 {
-	command *cmd = va_arg (cmdv, command *);
+	pipecmd *cmd = va_arg (cmdv, pipecmd *);
 
 	while (cmd) {
 		pipeline_command (p, cmd);
-		cmd = va_arg (cmdv, command *);
+		cmd = va_arg (cmdv, pipecmd *);
 	}
 }
 
@@ -992,16 +992,16 @@ int pipeline_get_ncommands (pipeline *p)
 	return p->ncommands;
 }
 
-command *pipeline_get_command (pipeline *p, int n)
+pipecmd *pipeline_get_command (pipeline *p, int n)
 {
 	if (n < 0 || n >= p->ncommands)
 		return NULL;
 	return p->commands[n];
 }
 
-command *pipeline_set_command (pipeline *p, int n, command *cmd)
+pipecmd *pipeline_set_command (pipeline *p, int n, pipecmd *cmd)
 {
-	command *prev;
+	pipecmd *prev;
 	if (n < 0 || n >= p->ncommands)
 		return NULL;
 	prev = p->commands[n];
@@ -1073,7 +1073,7 @@ void pipeline_dump (pipeline *p, FILE *stream)
 	int i;
 
 	for (i = 0; i < p->ncommands; ++i) {
-		command_dump (p->commands[i], stream);
+		pipecmd_dump (p->commands[i], stream);
 		if (i < p->ncommands - 1)
 			fputs (" | ", stream);
 	}
@@ -1088,7 +1088,7 @@ char *pipeline_tostring (pipeline *p)
 	int i;
 
 	for (i = 0; i < p->ncommands; ++i) {
-		char *cmdout = command_tostring (p->commands[i]);
+		char *cmdout = pipecmd_tostring (p->commands[i]);
 		out = appendstr (out, cmdout, NULL);
 		free (cmdout);
 		if (i < p->ncommands - 1)
@@ -1108,7 +1108,7 @@ void pipeline_free (pipeline *p)
 		pipeline_wait (p);
 
 	for (i = 0; i < p->ncommands; ++i)
-		command_free (p->commands[i]);
+		pipecmd_free (p->commands[i]);
 	free (p->commands);
 	if (p->pids)
 		free (p->pids);
@@ -1419,7 +1419,7 @@ void pipeline_start (pipeline *p)
 				sigaction (SIGQUIT, &osa_sigquit, NULL);
 			}
 
-			command_start_child (p->commands[i]);
+			pipecmd_start_child (p->commands[i]);
 			/* never returns */
 		}
 
@@ -1549,8 +1549,8 @@ int pipeline_wait (pipeline *p)
 				error (0, 0, "unexpected status %d",
 				       status);
 
-			if (p->commands[i]->tag == COMMAND_FUNCTION) {
-				struct command_function *cmdf =
+			if (p->commands[i]->tag == PIPECMD_FUNCTION) {
+				struct pipecmd_function *cmdf =
 					&p->commands[i]->u.function;
 				if (cmdf->free_func)
 					(*cmdf->free_func) (cmdf->data);

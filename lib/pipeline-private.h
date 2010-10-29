@@ -36,40 +36,40 @@ extern void init_debug (void);
 extern int debug_level;
 extern void debug (const char *message, ...) PIPELINE_ATTR_FORMAT_PRINTF(1, 2);
 
-enum command_tag {
-	COMMAND_PROCESS,
-	COMMAND_FUNCTION,
-	COMMAND_SEQUENCE
+enum pipecmd_tag {
+	PIPECMD_PROCESS,
+	PIPECMD_FUNCTION,
+	PIPECMD_SEQUENCE
 };
 
-struct command_env {
+struct pipecmd_env {
 	char *name;
 	char *value;
 };
 
-struct command {
-	enum command_tag tag;
+struct pipecmd {
+	enum pipecmd_tag tag;
 	char *name;
 	int nice;
 	int discard_err;	/* discard stderr? */
 	int nenv;
 	int env_max;		/* size of allocated array */
-	struct command_env *env;
+	struct pipecmd_env *env;
 	union {
-		struct command_process {
+		struct pipecmd_process {
 			int argc;
 			int argv_max;	/* size of allocated array */
 			char **argv;
 		} process;
-		struct command_function {
-			command_function_type *func;
-			command_function_free_type *free_func;
+		struct pipecmd_function {
+			pipecmd_function_type *func;
+			pipecmd_function_free_type *free_func;
 			void *data;
 		} function;
-		struct command_sequence {
+		struct pipecmd_sequence {
 			int ncommands;
 			int commands_max;
-			struct command **commands;
+			struct pipecmd **commands;
 		} sequence;
 	} u;
 };
@@ -83,7 +83,7 @@ enum pipeline_redirect {
 struct pipeline {
 	int ncommands;
 	int commands_max;	/* size of allocated array */
-	command **commands;
+	pipecmd **commands;
 	pid_t *pids;
 	int *statuses;		/* -1 until command exits */
 

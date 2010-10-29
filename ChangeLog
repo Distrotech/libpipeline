@@ -1,3 +1,11 @@
+Fri Oct 29 03:13:21 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c, lib/pipeline.h, lib/pipeline-private.h: Rename
+	  command to pipecmd, command_* to pipecmd_*, and COMMAND_* to
+	  PIPECMD_*.  Update all callers and documentation references.
+	* lib/Makefile.am (libpipeline_la_LDFLAGS): Adjust
+	  -export-symbols-regex to export pipecmd_* rather than command_*.
+
 Fri Oct 29 03:00:51 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/libpipeline.3 (DESCRIPTION): Various minor corrections and

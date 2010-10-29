@@ -28,36 +28,36 @@
 
 START_TEST (test_argstr_trivial)
 {
-	command *cmd;
+	pipecmd *cmd;
 
-	cmd = command_new_argstr ("/bin/simple");
+	cmd = pipecmd_new_argstr ("/bin/simple");
 	fail_unless (!strcmp (cmd->name, "/bin/simple"));
 	fail_unless (cmd->u.process.argc == 1);
 	fail_unless (!strcmp (cmd->u.process.argv[0], "simple"));
-	command_free (cmd);
+	pipecmd_free (cmd);
 }
 END_TEST
 
 START_TEST (test_argstr_torture)
 {
-	command *cmd;
+	pipecmd *cmd;
 
-	cmd = command_new_argstr
+	cmd = pipecmd_new_argstr
 		("x' \\' \\$\\'\\\"\" \\'\\$\\\"\\\\ \" \\\"");
 	fail_unless (!strcmp (cmd->name, "x \\"));
 	fail_unless (cmd->u.process.argc == 3);
 	fail_unless (!strcmp (cmd->u.process.argv[0], "x \\"));
 	fail_unless (!strcmp (cmd->u.process.argv[1], "$'\" \\'$\"\\ "));
 	fail_unless (!strcmp (cmd->u.process.argv[2], "\""));
-	command_free (cmd);
+	pipecmd_free (cmd);
 }
 END_TEST
 
 START_TEST (test_argstr_exec)
 {
-	command *cmd;
+	pipecmd *cmd;
 
-	cmd = command_new_argstr ("exec /bin/foo bar");
+	cmd = pipecmd_new_argstr ("exec /bin/foo bar");
 	fail_unless (!strcmp (cmd->name, "/bin/foo"));
 	fail_unless (cmd->u.process.argc == 2);
 	fail_unless (!strcmp (cmd->u.process.argv[0], "foo"));
