@@ -1,3 +1,14 @@
+Fri Oct 29 07:25:14 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (pipeline_install_post_fork): Clarify that this is
+	  run in the child process.
+	  (pipeline_wait_all): Clarify that SIGPIPE is considered equivalent
+	  to exiting zero.
+	* man/libpipeline.3 (DESCRIPTION): Update descriptions of
+	  pipeline_install_post_fork and pipeline_wait_all to match this.
+	  (Functions to read output from pipelines): Note that output is
+	  returned as a pointer into a pipeline-owned buffer.
+
 Fri Oct 29 06:21:02 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* TODO: New file.

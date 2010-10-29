@@ -312,10 +312,10 @@ void pipeline_free (pipeline *p);
 
 typedef void pipeline_post_fork_fn (void);
 
-/* Install a post-fork handler.  This will be run immediately after forking
- * any child process.  For instance, this may be used for cleaning up
- * application-specific signal handlers.  Pass NULL to clear any existing
- * post-fork handler.
+/* Install a post-fork handler.  This will be run in any child process
+ * immediately after it is forked.  For instance, this may be used for
+ * cleaning up application-specific signal handlers.  Pass NULL to clear any
+ * existing post-fork handler.
  */
 void pipeline_install_post_fork (pipeline_post_fork_fn *fn);
 
@@ -326,9 +326,10 @@ void pipeline_start (pipeline *p);
 /* Wait for a pipeline to complete.  Set *statuses to a newly-allocated
  * array of wait statuses, as returned by waitpid, and *n_statuses to the
  * length of that array.  The return value is similar to the exit status
- * that a shell would return, with a modification.  If the last command
- * exits with a signal, then the return value is 128 plus the signal number;
- * if the last command exits normally but non-zero, then the return value is
+ * that a shell would return, with some modifications.  If the last command
+ * exits with a signal (other than SIGPIPE, which is considered equivalent
+ * to exiting zero), then the return value is 128 plus the signal number; if
+ * the last command exits normally but non-zero, then the return value is
  * its exit status; if any other command exits non-zero, then the return
  * value is 127; otherwise, the return value is 0.  This means that the
  * return value is only 0 if all commands in the pipeline exit successfully.

@@ -455,7 +455,7 @@ May wait for the pipeline to complete if it has not already done so.
 .It Ft void Fn pipeline_install_post_fork "pipeline_post_fork_fn *fn"
 .Pp
 Install a post-fork handler.
-This will be run immediately after forking any child process.
+This will be run in any child process immediately after it is forked.
 For instance, this may be used for cleaning up application-specific signal
 handlers.
 Pass
@@ -485,11 +485,13 @@ and
 .No * Ns Va n_statuses
 to the length of that array.
 The return value is similar to the exit status that a shell would return,
-with a modification.
-If the last command exits with a signal, then the return value is 128 plus
-the signal number; if the last command exits normally but non-zero, then the
-return value is its exit status; if any other command exits non-zero, then
-the return value is 127; otherwise, the return value is 0.
+with some modifications.
+If the last command exits with a signal (other than
+.Li SIGPIPE ,
+which is considered equivalent to exiting zero), then the return value is
+128 plus the signal number; if the last command exits normally but non-zero,
+then the return value is its exit status; if any other command exits
+non-zero, then the return value is 127; otherwise, the return value is 0.
 This means that the return value is only 0 if all commands in the pipeline
 exit successfully.
 .Pp
@@ -516,6 +518,13 @@ Terminate arguments with
 .Li NULL .
 .El
 .Ss Functions to read output from pipelines
+In general, output is returned as a pointer into a buffer owned by the
+pipeline, which is automatically freed when
+.Fn pipeline_free
+is called.
+This saves the caller from having to explicitly free individual blocks of
+output data.
+.Pp
 .Bl -tag -width 4n -compact
 .It Ft "const char *" Ns Fn pipeline_read "pipeline *p" "size_t *len"
 .Pp
