@@ -463,6 +463,27 @@ Calls
 .Li error (FATAL)
 on error.
 .Pp
+.It Xo
+.Ft int Fn pipeline_wait_all "pipeline *p" "int **statuses" "int *n_statuses"
+.Xc
+.Pp
+Wait for a pipeline to complete.
+Set
+.No * Ns Va statuses
+to a newly-allocated array of wait statuses, as returned by
+.Xr waitpid 2 ,
+and
+.No * Ns Va n_statuses
+to the length of that array.
+The return value is similar to the exit status that a shell would return,
+with a modification.
+If the last command exits with a signal, then the return value is 128 plus
+the signal number; if the last command exits normally but non-zero, then the
+return value is its exit status; if any other command exits non-zero, then
+the return value is 127; otherwise, the return value is 0.
+This means that the return value is only 0 if all commands in the pipeline
+exit successfully.
+.Pp
 .It Ft int Fn pipeline_wait "pipeline *p"
 .Pp
 Wait for a pipeline to complete and return the exit status.

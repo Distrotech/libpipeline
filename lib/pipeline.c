@@ -1449,7 +1449,7 @@ void pipeline_start (pipeline *p)
 		p->outfd = last_input;
 }
 
-int pipeline_wait (pipeline *p)
+int pipeline_wait_all (pipeline *p, int **statuses, int *n_statuses)
 {
 	int ret = 0;
 	int proc_count = p->ncommands;
@@ -1481,14 +1481,14 @@ int pipeline_wait (pipeline *p)
 		if (fclose (p->outfile)) {
 			error (0, errno,
 			       "closing pipeline output stream failed");
-			ret = 1;
+			ret = 127;
 		}
 		p->outfile = NULL;
 		p->outfd = -1;
 	} else if (p->outfd != -1) {
 		if (close (p->outfd)) {
 			error (0, errno, "closing pipeline output failed");
-			ret = 1;
+			ret = 127;
 		}
 		p->outfd = -1;
 	}
@@ -1559,9 +1559,12 @@ int pipeline_wait (pipeline *p)
 			if (i == p->ncommands - 1) {
 				if (WIFSIGNALED (status))
 					ret = 128 + WTERMSIG (status);
-				else
+				else if (WEXITSTATUS (status))
 					ret = WEXITSTATUS (status);
-			}
+			} else if (!ret &&
+				   (WIFSIGNALED (status) ||
+				    WEXITSTATUS (status)))
+				ret = 127;
 		}
 
 		assert (proc_count >= 0);
@@ -1584,6 +1587,13 @@ int pipeline_wait (pipeline *p)
 		if (active_pipelines[i] == p)
 			active_pipelines[i] = NULL;
 
+	if (statuses && n_statuses) {
+		*statuses = xnmalloc (p->ncommands, sizeof **statuses);
+		*n_statuses = p->ncommands;
+		for (i = 0; i < p->ncommands; ++i)
+			(*statuses)[i] = p->statuses[i];
+	}
+
 	free (p->pids);
 	p->pids = NULL;
 	free (p->statuses);
@@ -1599,6 +1609,11 @@ int pipeline_wait (pipeline *p)
 		raise (raise_signal);
 
 	return ret;
+}
+
+int pipeline_wait (pipeline *p)
+{
+	return pipeline_wait_all (p, NULL, NULL);
 }
 
 int pipeline_run (pipeline *p)

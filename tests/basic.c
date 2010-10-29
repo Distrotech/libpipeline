@@ -80,6 +80,26 @@ START_TEST (test_basic_pipeline)
 }
 END_TEST
 
+START_TEST (test_basic_wait_all)
+{
+	pipeline *p;
+	int *statuses;
+	int n_statuses;
+
+	p = pipeline_new ();
+	pipeline_command_args (p, "sh", "-c", "exit 2", NULL);
+	pipeline_command_args (p, "sh", "-c", "exit 3", NULL);
+	pipeline_command_args (p, "true", NULL);
+	pipeline_start (p);
+	fail_unless (pipeline_wait_all (p, &statuses, &n_statuses) == 127);
+	fail_unless (n_statuses == 3);
+	fail_unless (statuses[0] == 2 * 256);
+	fail_unless (statuses[1] == 3 * 256);
+	fail_unless (statuses[2] == 0);
+	pipeline_free (p);
+}
+END_TEST
+
 START_TEST (test_basic_setenv)
 {
 	pipeline *p;
@@ -125,6 +145,7 @@ Suite *basic_suite (void)
 	TEST_CASE (s, basic, status);
 	TEST_CASE (s, basic, args);
 	TEST_CASE (s, basic, pipeline);
+	TEST_CASE (s, basic, wait_all);
 	TEST_CASE (s, basic, setenv);
 	TEST_CASE (s, basic, unsetenv);
 

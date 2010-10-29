@@ -1,3 +1,17 @@
+Fri Oct 29 05:25:19 BST 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait): Rename to ...
+	  (pipeline_wait_all): ... this.  Return 127 rather than 1 if
+	  closing the pipeline output fails.  Return 127 if a command other
+	  than the last one fails.  Return the statuses and the number of
+	  statuses in new output parameters if they are non-NULL.
+	  (pipeline_wait): Add new wrapper function.
+	* lib/pipeline.h (pipeline_wait_all): Add prototype.
+	* man/libpipeline.3 (Functions to run pipelines and handle signals):
+	  Document pipeline_wait_all.
+	* tests/basic.c (test_basic_wait_all): Add test.
+	  (basic_suite): Call test_basic_wait_all.
+
 Fri Oct 29 03:46:39 BST 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_new): Default ignore_signals to 0.

@@ -320,7 +320,21 @@ void pipeline_install_post_fork (pipeline_post_fork_fn *fn);
  * handler if not already installed. Calls error(FATAL) on error. */
 void pipeline_start (pipeline *p);
 
-/* Wait for a pipeline to complete and return the exit status. */
+/* Wait for a pipeline to complete.  Set *statuses to a newly-allocated
+ * array of wait statuses, as returned by waitpid, and *n_statuses to the
+ * length of that array.  The return value is similar to the exit status
+ * that a shell would return, with a modification.  If the last command
+ * exits with a signal, then the return value is 128 plus the signal number;
+ * if the last command exits normally but non-zero, then the return value is
+ * its exit status; if any other command exits non-zero, then the return
+ * value is 127; otherwise, the return value is 0.  This means that the
+ * return value is only 0 if all commands in the pipeline exit successfully.
+ */
+int pipeline_wait_all (pipeline *p, int **statuses, int *n_statuses);
+
+/* Wait for a pipeline to complete and return its combined exit status,
+ * calculated as for pipeline_wait_all().
+ */
 int pipeline_wait (pipeline *p);
 
 /* Start a pipeline, wait for it to complete, and free it, all in one go. */
