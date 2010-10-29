@@ -39,7 +39,7 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_noinst_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure COPYING \
-	ChangeLog INSTALL NEWS tools/compile tools/config.guess \
+	ChangeLog INSTALL NEWS TODO tools/compile tools/config.guess \
 	tools/config.rpath tools/config.sub tools/depcomp \
 	tools/install-sh tools/ltmain.sh tools/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
