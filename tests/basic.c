@@ -138,6 +138,28 @@ START_TEST (test_basic_unsetenv)
 }
 END_TEST
 
+START_TEST (test_basic_sequence)
+{
+	pipeline *p;
+	pipecmd *cmd1, *cmd2, *cmd3, *seq;
+	const char *line;
+
+	p = pipeline_new ();
+	cmd1 = pipecmd_new_args ("echo", "foo", NULL);
+	cmd2 = pipecmd_new_args ("echo", "bar", NULL);
+	cmd3 = pipecmd_new_args ("echo", "baz", NULL);
+	seq = pipecmd_new_sequence ("echo*3", cmd1, cmd2, cmd3, NULL);
+	pipeline_command (p, seq);
+	pipeline_command_args (p, "xargs", NULL);
+	pipeline_want_out (p, -1);
+	pipeline_start (p);
+	line = pipeline_readline (p);
+	fail_unless (!strcmp (line, "foo bar baz\n"));
+	pipeline_wait (p);
+	pipeline_free (p);
+}
+END_TEST
+
 Suite *basic_suite (void)
 {
 	Suite *s = suite_create ("Basic");
@@ -148,6 +170,7 @@ Suite *basic_suite (void)
 	TEST_CASE (s, basic, wait_all);
 	TEST_CASE (s, basic, setenv);
 	TEST_CASE (s, basic, unsetenv);
+	TEST_CASE (s, basic, sequence);
 
 	return s;
 }

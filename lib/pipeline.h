@@ -123,6 +123,7 @@ pipecmd *pipecmd_new_function (const char *name,
  * pipecmd_* functions that deal with arguments cannot be used with the
  * command returned by this function.
  */
+pipecmd *pipecmd_new_sequencev (const char *name, va_list cmdv);
 pipecmd *pipecmd_new_sequence (const char *name, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Return a new command that just passes data from its input to its output. */
@@ -197,6 +198,7 @@ pipeline *pipeline_new_commandv (pipecmd *cmd1, va_list cmdv);
 pipeline *pipeline_new_commands (pipecmd *cmd1, ...) PIPELINE_ATTR_SENTINEL;
 
 /* Construct a new pipeline and add a single command to it. */
+pipeline *pipeline_new_command_argv (const char *name, va_list argv);
 pipeline *pipeline_new_command_args (const char *name, ...)
 	PIPELINE_ATTR_SENTINEL;
 
@@ -225,6 +227,7 @@ void pipeline_connect (pipeline *source, pipeline *sink, ...)
 void pipeline_command (pipeline *p, pipecmd *cmd);
 
 /* Construct a new command and add it to a pipeline in one go. */
+void pipeline_command_argv (pipeline *p, const char *name, va_list argv);
 void pipeline_command_args (pipeline *p, const char *name, ...)
 	PIPELINE_ATTR_SENTINEL;
 

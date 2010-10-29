@@ -120,6 +120,9 @@ freed before returning using free_func (if
 functions that deal with arguments cannot be used with the command returned
 by this function.
 .Pp
+.It Xo Ft "pipecmd *" Ns
+.Fn pipecmd_new_sequencev "const char *name" "va_list cmdv"
+.Xc
 .It Ft "pipecmd *" Ns Fn pipecmd_new_sequence "const char *name" ...
 .Pp
 Construct a new command that itself runs a sequence of commands, supplied as
@@ -248,6 +251,9 @@ Construct a new pipeline consisting of the given list of commands.
 Terminate commands with
 .Li NULL .
 .Pp
+.It Xo Ft "pipeline *" Ns
+.Fn pipeline_new_command_argv "const char *name" "va_list argv"
+.Xc
 .It Ft "pipeline *" Ns Fn pipeline_new_command_args "const char *name" ...
 .Pp
 Construct a new pipeline and add a single command to it.
@@ -302,6 +308,9 @@ sent to multiple processes.
 .Pp
 Add a command to a pipeline.
 .Pp
+.It Xo Ft void
+.Fn pipeline_command_argv "pipeline *p" "const char *name" "va_list argv"
+.Xc
 .It Ft void Fn pipeline_command_args "pipeline *p" "const char *name" ...
 .Pp
 Construct a new command and add it to a pipeline in one go.

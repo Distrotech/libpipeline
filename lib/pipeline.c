@@ -295,11 +295,10 @@ pipecmd *pipecmd_new_function (const char *name,
 	return cmd;
 }
 
-pipecmd *pipecmd_new_sequence (const char *name, ...)
+pipecmd *pipecmd_new_sequencev (const char *name, va_list cmdv)
 {
 	pipecmd *cmd = XMALLOC (pipecmd);
 	struct pipecmd_sequence *cmds;
-	va_list cmdv;
 	pipecmd *child;
 
 	cmd->tag = PIPECMD_SEQUENCE;
@@ -317,12 +316,22 @@ pipecmd *pipecmd_new_sequence (const char *name, ...)
 	cmds->commands_max = 4;
 	cmds->commands = xnmalloc (cmds->commands_max, sizeof *cmds->commands);
 
-	va_start (cmdv, name);
 	child = va_arg (cmdv, pipecmd *);
 	while (child) {
 		pipecmd_sequence_command (cmd, child);
 		child = va_arg (cmdv, pipecmd *);
 	}
+
+	return cmd;
+}
+
+pipecmd *pipecmd_new_sequence (const char *name, ...)
+{
+	va_list cmdv;
+	pipecmd *cmd;
+
+	va_start (cmdv, name);
+	cmd = pipecmd_new_sequencev (name, cmdv);
 	va_end (cmdv);
 
 	return cmd;
@@ -852,17 +861,26 @@ pipeline *pipeline_new_commands (pipecmd *cmd1, ...)
 	return p;
 }
 
-pipeline *pipeline_new_command_args (const char *name, ...)
+pipeline *pipeline_new_command_argv (const char *name, va_list argv)
 {
-	va_list argv;
 	pipeline *p;
 	pipecmd *cmd;
 
 	p = pipeline_new ();
-	va_start (argv, name);
 	cmd = pipecmd_new_argv (name, argv);
-	va_end (argv);
 	pipeline_command (p, cmd);
+
+	return p;
+}
+
+pipeline *pipeline_new_command_args (const char *name, ...)
+{
+	va_list argv;
+	pipeline *p;
+
+	va_start (argv, name);
+	p = pipeline_new_command_argv (name, argv);
+	va_end (argv);
 
 	return p;
 }
@@ -952,15 +970,21 @@ void pipeline_command (pipeline *p, pipecmd *cmd)
 	p->commands[p->ncommands++] = cmd;
 }
 
+void pipeline_command_argv (pipeline *p, const char *name, va_list argv)
+{
+	pipecmd *cmd;
+
+	cmd = pipecmd_new_argv (name, argv);
+	pipeline_command (p, cmd);
+}
+
 void pipeline_command_args (pipeline *p, const char *name, ...)
 {
 	va_list argv;
-	pipecmd *cmd;
 
 	va_start (argv, name);
-	cmd = pipecmd_new_argv (name, argv);
+	pipeline_command_argv (p, name, argv);
 	va_end (argv);
-	pipeline_command (p, cmd);
 }
 
 void pipeline_command_argstr (pipeline *p, const char *argstr)
