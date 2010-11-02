@@ -32,6 +32,12 @@ Automake-canonicalised name for your program):
 The details may vary for particular build systems, but this should be a
 reasonable start.
 
+When building with GCC, you should use at least the -Wformat option
+(included in -Wall) to ensure that the 'sentinel' function attribute is
+checked.  This means that your program will produce a warning if it calls
+any of the several libpipeline functions that require a trailing NULL
+without passing that trailing NULL.
+
 Copyright and licensing
 -----------------------
 
