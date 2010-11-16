@@ -719,6 +719,8 @@ than sending it all to some other subprocess:
 pipeline *p = make_pipeline ();
 const char *line;
 
+pipeline_want_out (p, -1);
+pipeline_start (p);
 line = pipeline_peekline (p);
 if (!strstr (line, "coding: UTF-8"))
         printf ("Unicode text follows:\n");

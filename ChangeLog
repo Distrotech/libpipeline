@@ -1,3 +1,8 @@
+Tue Nov 16 17:25:08 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* man/libpipeline.3 (EXAMPLES): Clarify pipeline_readline example:
+	  show calls to pipeline_want_out and pipeline_start.
+
 Tue Nov  2 16:56:22 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* README (Building programs with libpipeline): Recommend -Wformat.
