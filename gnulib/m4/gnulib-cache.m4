@@ -15,7 +15,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=tools --libtool --macro-prefix=gl dirname error lib-ignore mkstemp setenv sigaction signal sigprocmask strerror strsignal sys_select unsetenv xalloc xstrndup xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib/lib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=tools --libtool --macro-prefix=gl dirname error lib-ignore setenv sigaction signal sigprocmask strerror strsignal sys_select sys_stat unsetenv xalloc xstrndup xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -23,7 +23,6 @@ gl_MODULES([
   dirname
   error
   lib-ignore
-  mkstemp
   setenv
   sigaction
   signal
@@ -31,6 +30,7 @@ gl_MODULES([
   strerror
   strsignal
   sys_select
+  sys_stat
   unsetenv
   xalloc
   xstrndup

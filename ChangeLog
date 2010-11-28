@@ -1,3 +1,7 @@
+Sun Nov 28 13:43:45 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* gnulib: Remove mkstemp module.  Add sys_stat module.
+
 Tue Nov 16 17:25:08 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/libpipeline.3 (EXAMPLES): Clarify pipeline_readline example:

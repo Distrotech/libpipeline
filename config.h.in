@@ -46,13 +46,6 @@
    followed by a file name component separator. */
 #undef FILE_SYSTEM_DRIVE_PREFIX_CAN_BE_RELATIVE
 
-/* Define if gettimeofday clobbers the localtime buffer. */
-#undef GETTIMEOFDAY_CLOBBERS_LOCALTIME
-
-/* Define this to 'void' or 'struct timezone' to match the system's
-   declaration of the second argument to gettimeofday. */
-#undef GETTIMEOFDAY_TIMEZONE
-
 /* Define to a C preprocessor expression that evaluates to 1 or 0, depending
    whether the gnulib module dirname shall be considered present. */
 #undef GNULIB_DIRNAME
@@ -60,20 +53,11 @@
 /* Define to 1 when the gnulib module environ should be tested. */
 #undef GNULIB_TEST_ENVIRON
 
-/* Define to 1 when the gnulib module gettimeofday should be tested. */
-#undef GNULIB_TEST_GETTIMEOFDAY
-
-/* Define to 1 when the gnulib module lstat should be tested. */
-#undef GNULIB_TEST_LSTAT
-
 /* Define to 1 when the gnulib module malloc-posix should be tested. */
 #undef GNULIB_TEST_MALLOC_POSIX
 
 /* Define to 1 when the gnulib module memchr should be tested. */
 #undef GNULIB_TEST_MEMCHR
-
-/* Define to 1 when the gnulib module mkstemp should be tested. */
-#undef GNULIB_TEST_MKSTEMP
 
 /* Define to 1 when the gnulib module setenv should be tested. */
 #undef GNULIB_TEST_SETENV
@@ -86,9 +70,6 @@
 
 /* Define to 1 when the gnulib module snprintf should be tested. */
 #undef GNULIB_TEST_SNPRINTF
-
-/* Define to 1 when the gnulib module stat should be tested. */
-#undef GNULIB_TEST_STAT
 
 /* Define to 1 when the gnulib module strerror should be tested. */
 #undef GNULIB_TEST_STRERROR
@@ -170,9 +151,6 @@
 /* Define to 1 if you have the <float.h> header file. */
 #undef HAVE_FLOAT_H
 
-/* Define to 1 if you have the `gettimeofday' function. */
-#undef HAVE_GETTIMEOFDAY
-
 /* Define to 1 if the compiler supports one of the keywords 'inline',
    '__inline__', '__inline' and effectively inlines functions marked as such.
    */
@@ -191,9 +169,6 @@
 /* Define to 1 if the system has the type `long long int'. */
 #undef HAVE_LONG_LONG_INT
 
-/* Define to 1 if you have the `lstat' function. */
-#undef HAVE_LSTAT
-
 /* Define if the 'malloc' function is POSIX compliant. */
 #undef HAVE_MALLOC_POSIX
 
@@ -209,9 +184,6 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `mkstemp' function. */
-#undef HAVE_MKSTEMP
 
 /* Define to 1 if you have the `mprotect' function. */
 #undef HAVE_MPROTECT
@@ -754,9 +726,6 @@
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
-/* Define to 1 if you have the <sys/timeb.h> header file. */
-#undef HAVE_SYS_TIMEB_H
-
 /* Define to 1 if you have the <sys/time.h> header file. */
 #undef HAVE_SYS_TIME_H
 
@@ -814,18 +783,11 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
-/* Define to 1 if you have the `_ftime' function. */
-#undef HAVE__FTIME
-
 #if FILE_SYSTEM_BACKSLASH_IS_FILE_NAME_SEPARATOR
 # define ISSLASH(C) ((C) == '/' || (C) == '\\')
 #else
 # define ISSLASH(C) ((C) == '/')
 #endif
-
-/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
-   slash. */
-#undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -867,14 +829,6 @@
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'ptrdiff_t'. */
 #undef PTRDIFF_T_SUFFIX
-
-/* Define to 1 if stat needs help when passed a directory name with a trailing
-   slash */
-#undef REPLACE_FUNC_STAT_DIR
-
-/* Define to 1 if stat needs help when passed a file name with a trailing
-   slash */
-#undef REPLACE_FUNC_STAT_FILE
 
 /* Define this to 1 if strerror is broken. */
 #undef REPLACE_STRERROR
@@ -958,12 +912,6 @@
    'wint_t'. */
 #undef WINT_T_SUFFIX
 
-/* Number of bits in a file offset, on hosts where this is settable. */
-#undef _FILE_OFFSET_BITS
-
-/* Define for large files, on AIX-style hosts. */
-#undef _LARGE_FILES
-
 /* Define to 1 if on MINIX. */
 #undef _MINIX
 
@@ -1008,9 +956,6 @@
 /* A replacement for va_copy, if needed.  */
 #define gl_va_copy(a,b) ((a) = (b))
 
-/* Define to rpl_gmtime if the replacement function should be used. */
-#undef gmtime
-
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
@@ -1029,9 +974,6 @@
 #if defined __APPLE__ && defined __MACH__ && __APPLE_CC__ >= 5465 && !defined __cplusplus && __STDC_VERSION__ >= 199901L && !defined __GNUC_STDC_INLINE__
 # define __GNUC_STDC_INLINE__ 1
 #endif
-
-/* Define to rpl_localtime if the replacement function should be used. */
-#undef localtime
 
 /* Define to the type of st_nlink in struct stat, or a supertype. */
 #undef nlink_t
