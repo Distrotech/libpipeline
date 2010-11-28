@@ -641,11 +641,10 @@ char *pipecmd_tostring (pipecmd *cmd)
 /* Children exit with this status if execvp fails. */
 #define EXEC_FAILED_EXIT_STATUS 0xff
 
-/* Start a command. This is called in the forked child process, with file
- * descriptors already set up.
+/* When called internally during pipeline execution, this is called in the
+ * forked child process, with file descriptors already set up.
  */
-static void pipecmd_start_child (pipecmd *cmd) PIPELINE_ATTR_NORETURN;
-static void pipecmd_start_child (pipecmd *cmd)
+void pipecmd_exec (pipecmd *cmd)
 {
 	int i;
 
@@ -713,7 +712,7 @@ static void pipecmd_start_child (pipecmd *cmd)
 				if (pid < 0)
 					error (FATAL, errno, "fork failed");
 				if (pid == 0)
-					pipecmd_start_child (child);
+					pipecmd_exec (child);
 				debug ("Started \"%s\", pid %d\n",
 				       child->name, pid);
 
@@ -1443,7 +1442,7 @@ void pipeline_start (pipeline *p)
 				sigaction (SIGQUIT, &osa_sigquit, NULL);
 			}
 
-			pipecmd_start_child (p->commands[i]);
+			pipecmd_exec (p->commands[i]);
 			/* never returns */
 		}
 

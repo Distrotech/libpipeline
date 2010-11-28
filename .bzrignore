@@ -26,5 +26,6 @@ gnulib/lib/wchar.h
 lib/libpipeline.pc
 tests/argstr
 tests/basic
+tests/exec
 tests/inspect
 tests/redirect

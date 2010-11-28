@@ -181,6 +181,11 @@ void pipecmd_dump (pipecmd *cmd, FILE *stream);
  */
 char *pipecmd_tostring (pipecmd *cmd);
 
+/* Execute a single command, replacing the current process.  Never returns,
+ * instead exiting non-zero on failure.
+ */
+void pipecmd_exec (pipecmd *cmd) PIPELINE_ATTR_NORETURN;
+
 /* Destroy a command. Safely does nothing on NULL. */
 void pipecmd_free (pipecmd *cmd);
 

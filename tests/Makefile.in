@@ -33,7 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = basic$(EXEEXT) argstr$(EXEEXT) inspect$(EXEEXT) \
+TESTS = basic$(EXEEXT) argstr$(EXEEXT) exec$(EXEEXT) inspect$(EXEEXT) \
 	redirect$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = tests
@@ -120,8 +120,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = basic$(EXEEXT) argstr$(EXEEXT) inspect$(EXEEXT) \
-	redirect$(EXEEXT)
+am__EXEEXT_1 = basic$(EXEEXT) argstr$(EXEEXT) exec$(EXEEXT) \
+	inspect$(EXEEXT) redirect$(EXEEXT)
 am_argstr_OBJECTS = argstr.$(OBJEXT)
 argstr_OBJECTS = $(am_argstr_OBJECTS)
 argstr_DEPENDENCIES = $(LIBS)
@@ -131,6 +131,9 @@ am__v_lt_0 = --silent
 am_basic_OBJECTS = basic.$(OBJEXT)
 basic_OBJECTS = $(am_basic_OBJECTS)
 basic_DEPENDENCIES = $(LIBS)
+am_exec_OBJECTS = exec.$(OBJEXT)
+exec_OBJECTS = $(am_exec_OBJECTS)
+exec_DEPENDENCIES = $(LIBS)
 am_inspect_OBJECTS = inspect.$(OBJEXT)
 inspect_OBJECTS = $(am_inspect_OBJECTS)
 inspect_DEPENDENCIES = $(LIBS)
@@ -163,10 +166,10 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = $(argstr_SOURCES) $(basic_SOURCES) $(inspect_SOURCES) \
-	$(redirect_SOURCES)
-DIST_SOURCES = $(argstr_SOURCES) $(basic_SOURCES) $(inspect_SOURCES) \
-	$(redirect_SOURCES)
+SOURCES = $(argstr_SOURCES) $(basic_SOURCES) $(exec_SOURCES) \
+	$(inspect_SOURCES) $(redirect_SOURCES)
+DIST_SOURCES = $(argstr_SOURCES) $(basic_SOURCES) $(exec_SOURCES) \
+	$(inspect_SOURCES) $(redirect_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -817,6 +820,8 @@ basic_SOURCES = basic.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
 argstr_SOURCES = argstr.c common.h
 argstr_LDADD = $(LIBS) @CHECK_LIBS@
+exec_SOURCES = exec.c common.h
+exec_LDADD = $(LIBS) @CHECK_LIBS@
 inspect_SOURCES = inspect.c common.h
 inspect_LDADD = $(LIBS) @CHECK_LIBS@
 redirect_SOURCES = redirect.c common.h
@@ -870,6 +875,9 @@ argstr$(EXEEXT): $(argstr_OBJECTS) $(argstr_DEPENDENCIES)
 basic$(EXEEXT): $(basic_OBJECTS) $(basic_DEPENDENCIES) 
 	@rm -f basic$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(basic_OBJECTS) $(basic_LDADD) $(LIBS)
+exec$(EXEEXT): $(exec_OBJECTS) $(exec_DEPENDENCIES) 
+	@rm -f exec$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(exec_OBJECTS) $(exec_LDADD) $(LIBS)
 inspect$(EXEEXT): $(inspect_OBJECTS) $(inspect_DEPENDENCIES) 
 	@rm -f inspect$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(inspect_OBJECTS) $(inspect_LDADD) $(LIBS)
@@ -885,6 +893,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/argstr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/redirect.Po@am__quote@
 

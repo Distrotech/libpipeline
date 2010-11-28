@@ -1,3 +1,16 @@
+Sun Nov 28 14:47:03 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipecmd_start_child): Rename to ...
+	  (pipecmd_exec): ... this, and make external.  Update all callers.
+	* lib/pipeline.h (pipecmd_exec): Add prototype.
+	* man/libpipeline.3 (Functions to build individual commands):
+	  Document pipecmd_exec.
+	* tests/Makefile.am (TESTS): Add exec.
+	  (exec_SOURCES, exec_LDADD): Add.
+	* tests/exec.c: New file.
+	* .bzrignore: Add tests/exec.
+	* NEWS: Document this.
+
 Sun Nov 28 13:43:45 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* gnulib: Remove mkstemp module.  Add sys_stat module.

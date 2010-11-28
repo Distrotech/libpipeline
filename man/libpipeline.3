@@ -226,6 +226,11 @@ Dump a string representation of a command to stream.
 Return a string representation of a command.
 The caller should free the result.
 .Pp
+.It Ft void Fn pipecmd_exec "pipecmd *cmd"
+.Pp
+Execute a single command, replacing the current process.
+Never returns, instead exiting non-zero on failure.
+.Pp
 .It Ft void Fn pipecmd_free "pipecmd *cmd"
 .Pp
 Destroy a command.

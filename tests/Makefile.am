@@ -24,6 +24,7 @@
 TESTS = \
 	basic \
 	argstr \
+	exec \
 	inspect \
 	redirect
 check_PROGRAMS = $(TESTS)
@@ -44,6 +45,9 @@ basic_LDADD = $(LIBS) @CHECK_LIBS@
 
 argstr_SOURCES = argstr.c common.h
 argstr_LDADD = $(LIBS) @CHECK_LIBS@
+
+exec_SOURCES = exec.c common.h
+exec_LDADD = $(LIBS) @CHECK_LIBS@
 
 inspect_SOURCES = inspect.c common.h
 inspect_LDADD = $(LIBS) @CHECK_LIBS@
