@@ -4,8 +4,8 @@ libpipeline 1.0.1
 Add `pipecmd_exec' to execute a single command, replacing the current
 process; this is analogous to `execvp'.
 
-libpipeline 1.0.0
-=================
+libpipeline 1.0.0 (29 October 2010)
+===================================
 
 This is a new C library for pipeline manipulation, broken out from man-db
 2.5.8.

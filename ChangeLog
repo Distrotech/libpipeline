@@ -1,3 +1,7 @@
+Sun Nov 28 14:49:42 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* NEWS: Note date of 1.0.0 release.
+
 Sun Nov 28 14:47:03 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipecmd_start_child): Rename to ...
