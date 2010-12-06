@@ -7,6 +7,8 @@ process; this is analogous to `execvp'.
 Add `pipecmd_clearenv' to clear a command's environment; this is analogous
 to `clearenv'.
 
+Add `pipecmd_get_nargs' to get the number of arguments to a command.
+
 libpipeline 1.0.0 (29 October 2010)
 ===================================
 

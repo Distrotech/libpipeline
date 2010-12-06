@@ -1,3 +1,12 @@
+Mon Dec  6 20:54:29 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipecmd_get_nargs): New function.
+	* lib/pipeline.h (pipecmd_get_nargs): Add prototype.
+	* man/libpipeline.3 (Functions to build individual commands):
+	  Document pipecmd_get_nargs.
+	* tests/basic.c (test_basic_args): Test pipecmd_get_nargs.
+	* NEWS: Document this.
+
 Mon Dec  6 20:07:43 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipecmd_clearenv): New function.

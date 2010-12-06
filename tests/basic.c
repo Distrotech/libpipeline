@@ -41,6 +41,8 @@ START_TEST (test_basic_args)
 
 	p = pipeline_new_command_args ("echo", "foo", NULL);
 	pipeline_want_out (p, -1);
+	fail_unless (pipecmd_get_nargs (pipeline_get_command (p, 0)) == 1,
+		     "Number of arguments != 1");
 	pipeline_start (p);
 	line = pipeline_readline (p);
 	fail_unless (!strcmp (line, "foo\n"),
@@ -50,6 +52,8 @@ START_TEST (test_basic_args)
 
 	p = pipeline_new_command_args ("echo", "foo", "bar", NULL);
 	pipeline_want_out (p, -1);
+	fail_unless (pipecmd_get_nargs (pipeline_get_command (p, 0)) == 2,
+		     "Number of arguments != 2");
 	pipeline_start (p);
 	line = pipeline_readline (p);
 	fail_unless (!strcmp (line, "foo bar\n"),

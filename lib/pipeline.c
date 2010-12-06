@@ -494,6 +494,16 @@ void pipecmd_argstr (pipecmd *cmd, const char *argstr)
 	}
 }
 
+int pipecmd_get_nargs (pipecmd *cmd)
+{
+	struct pipecmd_process *cmdp;
+
+	assert (cmd->tag == PIPECMD_PROCESS);
+	cmdp = &cmd->u.process;
+
+	return cmdp->argc;
+}
+
 void pipecmd_nice (pipecmd *cmd, int value)
 {
 	cmd->nice = value;

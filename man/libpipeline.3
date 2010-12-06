@@ -178,6 +178,10 @@ it still involves significant string parsing which is inherently riskier
 than avoiding it altogether.
 Please try to avoid using it in new code.
 .Pp
+.It Ft void Fn pipecmd_get_nargs "pipecmd *cmd"
+.Pp
+Return the number of arguments to this command.
+.Pp
 .It Ft void Fn pipecmd_nice "pipecmd *cmd" "int value"
 .Pp
 Set the

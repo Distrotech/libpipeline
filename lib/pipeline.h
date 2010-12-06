@@ -153,6 +153,9 @@ void pipecmd_args (pipecmd *cmd, ...) PIPELINE_ATTR_SENTINEL;
  */
 void pipecmd_argstr (pipecmd *cmd, const char *argstr);
 
+/* Return the number of arguments to this command. */
+int pipecmd_get_nargs (pipecmd *cmd);
+
 /* Set the nice(3) value for this command.  Defaults to 0.  Errors while
  * attempting to set the nice value are ignored, aside from emitting a debug
  * message.
