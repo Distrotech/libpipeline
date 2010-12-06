@@ -170,6 +170,12 @@ void pipecmd_setenv (pipecmd *cmd, const char *name, const char *value);
 /* Unset an environment variable while running this command. */
 void pipecmd_unsetenv (pipecmd *cmd, const char *name);
 
+/* Clear the environment while running this command.  (Note that environment
+ * operations work in sequence; pipecmd_clearenv followed by pipecmd_setenv
+ * causes the command to have just a single environment variable set.)
+ */
+void pipecmd_clearenv (pipecmd *cmd);
+
 /* Add a command to a sequence. */
 void pipecmd_sequence_command (pipecmd *cmd, pipecmd *child);
 

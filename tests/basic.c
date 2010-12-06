@@ -138,6 +138,53 @@ START_TEST (test_basic_unsetenv)
 }
 END_TEST
 
+START_TEST (test_basic_clearenv)
+{
+	pipeline *p;
+	const char *line1, *line2;
+
+	setenv ("TEST3", "foo", 1);
+
+	p = pipeline_new_command_args ("sh", "-c", "echo $TEST3; echo $TEST4",
+				       NULL);
+	pipeline_want_out (p, -1);
+	pipeline_start (p);
+	line1 = pipeline_readline (p);
+	fail_unless (!strcmp (line1, "foo\n"),
+		     "control returned first line '%s', expected 'foo\n'",
+		     line1);
+	line2 = pipeline_readline (p);
+	fail_unless (!strcmp (line2, "\n"),
+		     "control returned second line '%s', expected '\n'",
+		     line2);
+	pipeline_wait (p);
+
+	pipecmd_clearenv (pipeline_get_command (p, 0));
+	pipeline_start (p);
+	line1 = pipeline_readline (p);
+	fail_unless (!strcmp (line1, "\n"),
+		     "clearenv failed: returned first line '%s', expected '\n'",
+		     line1);
+	line2 = pipeline_readline (p);
+	fail_unless (!strcmp (line2, "\n"),
+		     "clearenv returned second line '%s', expected '\n'",
+		     line2);
+	pipeline_wait (p);
+
+	pipecmd_setenv (pipeline_get_command (p, 0), "TEST4", "bar");
+	pipeline_start (p);
+	line1 = pipeline_readline (p);
+	fail_unless (!strcmp (line1, "\n"),
+		     "clearenv+setenv failed: returned first line '%s', expected '\n'",
+		     line1);
+	line2 = pipeline_readline (p);
+	fail_unless (!strcmp (line2, "bar\n"),
+		     "clearenv+setenv returned second line '%s', expected 'bar\n'",
+		     line2);
+	pipeline_wait (p);
+}
+END_TEST
+
 START_TEST (test_basic_sequence)
 {
 	pipeline *p;
@@ -170,6 +217,7 @@ Suite *basic_suite (void)
 	TEST_CASE (s, basic, wait_all);
 	TEST_CASE (s, basic, setenv);
 	TEST_CASE (s, basic, unsetenv);
+	TEST_CASE (s, basic, clearenv);
 	TEST_CASE (s, basic, sequence);
 
 	return s;

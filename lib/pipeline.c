@@ -372,7 +372,8 @@ pipecmd *pipecmd_dup (pipecmd *cmd)
 	newcmd->env = xmalloc (newcmd->env_max * sizeof *newcmd->env);
 
 	for (i = 0; i < cmd->nenv; ++i) {
-		newcmd->env[i].name = xstrdup (cmd->env[i].name);
+		newcmd->env[i].name =
+			cmd->env[i].name ? xstrdup (cmd->env[i].name) : NULL;
 		newcmd->env[i].value =
 			cmd->env[i].value ? xstrdup (cmd->env[i].value) : NULL;
 	}
@@ -529,6 +530,19 @@ void pipecmd_unsetenv (pipecmd *cmd, const char *name)
 	++cmd->nenv;
 }
 
+void pipecmd_clearenv (pipecmd *cmd)
+{
+	if (cmd->nenv >= cmd->env_max) {
+		cmd->env_max *= 2;
+		cmd->env = xrealloc (cmd->env,
+				     cmd->env_max * sizeof *cmd->env);
+	}
+
+	cmd->env[cmd->nenv].name = NULL;
+	cmd->env[cmd->nenv].value = NULL;
+	++cmd->nenv;
+}
+
 void pipecmd_sequence_command (pipecmd *cmd, pipecmd *child)
 {
 	struct pipecmd_sequence *cmds;
@@ -550,10 +564,15 @@ void pipecmd_dump (pipecmd *cmd, FILE *stream)
 {
 	int i;
 
-	for (i = 0; i < cmd->nenv; ++i)
-		fprintf (stream, "%s=%s ",
-			 cmd->env[i].name,
-			 cmd->env[i].value ? cmd->env[i].value : "<unset>");
+	for (i = 0; i < cmd->nenv; ++i) {
+		if (cmd->env[i].name)
+			fprintf (stream, "%s=%s ",
+				 cmd->env[i].name,
+				 cmd->env[i].value ? cmd->env[i].value
+						   : "<unset>");
+		else
+			fprintf (stream, "env -i ");
+	}
 
 	switch (cmd->tag) {
 		case PIPECMD_PROCESS: {
@@ -594,11 +613,15 @@ char *pipecmd_tostring (pipecmd *cmd)
 	char *out = NULL;
 	int i;
 
-	for (i = 0; i < cmd->nenv; ++i)
-		out = appendstr (out, cmd->env[i].name, "=",
-				 cmd->env[i].value ? cmd->env[i].value
-						   : "<unset>",
-				 " ", NULL);
+	for (i = 0; i < cmd->nenv; ++i) {
+		if (cmd->env[i].name)
+			out = appendstr (out, cmd->env[i].name, "=",
+					 cmd->env[i].value ? cmd->env[i].value
+							   : "<unset>",
+					 " ", NULL);
+		else
+			out = appendstr (out, "env -i ", NULL);
+	}
 
 	switch (cmd->tag) {
 		case PIPECMD_PROCESS: {
@@ -662,10 +685,14 @@ void pipecmd_exec (pipecmd *cmd)
 	}
 
 	for (i = 0; i < cmd->nenv; ++i) {
-		if (cmd->env[i].value)
-			setenv (cmd->env[i].name, cmd->env[i].value, 1);
-		else
-			unsetenv (cmd->env[i].name);
+		if (cmd->env[i].name) {
+			if (cmd->env[i].value)
+				setenv (cmd->env[i].name,
+					cmd->env[i].value, 1);
+			else
+				unsetenv (cmd->env[i].name);
+		} else
+			clearenv ();
 	}
 
 	switch (cmd->tag) {
