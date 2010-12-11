@@ -1,3 +1,10 @@
+Sat Dec 11 13:25:29 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (pipecmd_get_nargs): Clarify that the command name
+	  is counted as the first argument.
+	* man/libpipeline.3 (pipecmd_get_nargs): Likewise.
+	* tests/basic.c (test_basic_args): Correct off-by-one error.
+
 Mon Dec  6 20:54:29 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipecmd_get_nargs): New function.

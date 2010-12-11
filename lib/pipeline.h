@@ -153,7 +153,10 @@ void pipecmd_args (pipecmd *cmd, ...) PIPELINE_ATTR_SENTINEL;
  */
 void pipecmd_argstr (pipecmd *cmd, const char *argstr);
 
-/* Return the number of arguments to this command. */
+/* Return the number of arguments to this command.  Note that this includes
+ * the command name as the first argument, so the command 'echo foo bar' is
+ * counted as having three arguments.
+ */
 int pipecmd_get_nargs (pipecmd *cmd);
 
 /* Set the nice(3) value for this command.  Defaults to 0.  Errors while

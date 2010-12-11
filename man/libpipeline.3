@@ -181,6 +181,10 @@ Please try to avoid using it in new code.
 .It Ft void Fn pipecmd_get_nargs "pipecmd *cmd"
 .Pp
 Return the number of arguments to this command.
+Note that this includes the command name as the first argument, so the
+command
+.Sq echo foo bar
+is counted as having three arguments.
 .Pp
 .It Ft void Fn pipecmd_nice "pipecmd *cmd" "int value"
 .Pp
