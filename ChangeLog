@@ -1,3 +1,9 @@
+Sat Dec 11 15:01:14 GMT 2010  Colin Watson  <cjwatson@debian.org>
+
+	* Version: 1.1.0.
+	* lib/Makefile.am (libpipeline_la_LDFLAGS): Bump -version-info to
+	  2:0:1.
+
 Sat Dec 11 15:00:02 GMT 2010  Colin Watson  <cjwatson@debian.org>
 
 	* man/Makefile.am (FUNCTIONS): Add pipecmd_get_nargs,
