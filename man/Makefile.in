@@ -802,13 +802,16 @@ FUNCTIONS = \
 	pipecmd_argv \
 	pipecmd_args \
 	pipecmd_argstr \
+	pipecmd_get_nargs \
 	pipecmd_nice \
 	pipecmd_discard_err \
 	pipecmd_setenv \
 	pipecmd_unsetenv \
+	pipecmd_clearenv \
 	pipecmd_sequence_command \
 	pipecmd_dump \
 	pipecmd_tostring \
+	pipecmd_exec \
 	pipecmd_free \
 	pipeline_new \
 	pipeline_new_commandv \
