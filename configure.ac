@@ -66,6 +66,12 @@ AC_C_CONST
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
+# We must have fork(2) support.
+AC_FUNC_FORK
+if test "x$ac_cv_func_fork_works" != xyes; then
+  AC_MSG_FAILURE([cannot use libpipeline on systems without fork])
+fi
+
 # Check for socketpair(2) as fast replacement for pipe(2).
 AC_ARG_ENABLE([socketpair-pipe],
 [AS_HELP_STRING([--enable-socketpair-pipe], [Use socketpair(2) as fast replacement for pipe(2)])],
