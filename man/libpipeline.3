@@ -438,6 +438,18 @@ if
 .Va n
 is out of range.
 .Pp
+.It Ft pid_t Fn pipeline_get_pid "pipeline *p" "int n"
+.Pp
+Return the process ID of command number
+.Va n
+from this pipeline, counting from zero.
+The pipeline must be started.
+Return
+.Li \-1
+if
+.Va n
+is out of range or if the command has already exited and been reaped.
+.Pp
 .It Ft "FILE *" Ns Fn pipeline_get_infile "pipeline *p"
 .It Ft "FILE *" Ns Fn pipeline_get_outfile "pipeline *p"
 .Pp

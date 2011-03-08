@@ -1069,6 +1069,14 @@ pipecmd *pipeline_set_command (pipeline *p, int n, pipecmd *cmd)
 	return prev;
 }
 
+pid_t pipeline_get_pid (pipeline *p, int n)
+{
+	assert (p->pids);	/* pipeline started */
+	if (n < 0 || n >= p->ncommands)
+		return -1;
+	return p->pids[n];
+}
+
 void pipeline_want_in (pipeline *p, int fd)
 {
 	p->redirect_in = REDIRECT_FD;

@@ -274,6 +274,12 @@ pipecmd *pipeline_get_command (pipeline *p, int n);
  */
 pipecmd *pipeline_set_command (pipeline *p, int n, pipecmd *cmd);
 
+/* Return the process ID of command number n from this pipeline, counting
+ * from zero.  The pipeline must be started.  Return -1 if n is out of range
+ * or if the command has already exited and been reaped.
+ */
+pid_t pipeline_get_pid (pipeline *p, int n);
+
 /* Set file descriptors to use as the input and output of the whole
  * pipeline.  If non-negative, fd is used directly as a file descriptor.  If
  * negative, pipeline_start will create pipes and store the input writing

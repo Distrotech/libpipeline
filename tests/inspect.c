@@ -20,6 +20,10 @@
  */
 
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <signal.h>
 
 #include "common.h"
 
@@ -60,12 +64,60 @@ START_TEST (test_inspect_pipeline)
 }
 END_TEST
 
+static void pid_helper (void *data PIPELINE_ATTR_UNUSED)
+{
+	printf ("%ld\n", (long) getpid ());
+	pause ();
+}
+
+START_TEST (test_inspect_pid)
+{
+	pipeline *p;
+	pipecmd *cmd;
+	const char *line;
+	pid_t pid;
+
+	p = pipeline_new ();
+	cmd = pipecmd_new_function ("pid_helper", pid_helper, NULL, NULL);
+	pipeline_command (p, cmd);
+	pipeline_want_out (p, -1);
+	pipeline_start (p);
+	line = pipeline_readline (p);
+	pid = (pid_t) atol (line);
+	fail_unless (pid == pipeline_get_pid (p, 0), "pids match");
+	/* Note that this test may hang if pipeline_get_pid does not work.
+	 * We might be able to fix this by calling setsid at the start of
+	 * the test and then killing the process group, but I'm not sure if
+	 * that's sufficiently portable.
+	 */
+	if (pid == pipeline_get_pid (p, 0)) {
+		FILE *saved_stderr;
+		int status;
+
+		/* Suppress "Terminated" errors.  We should probably have a
+		 * cleaner way to do this.
+		 */
+		saved_stderr = stderr;
+		stderr = fopen ("/dev/null", "w");
+		kill (pid, SIGTERM);
+		status = pipeline_wait (p);
+		fclose (stderr);
+		stderr = saved_stderr;
+
+		fail_unless (status == 128 + SIGTERM,
+			     "pid_helper did not indicate SIGTERM");
+	}
+	pipeline_free (p);
+}
+END_TEST
+
 Suite *inspect_suite (void)
 {
 	Suite *s = suite_create ("Inspect");
 
 	TEST_CASE (s, inspect, command);
 	TEST_CASE (s, inspect, pipeline);
+	TEST_CASE (s, inspect, pid);
 
 	return s;
 }

@@ -1,3 +1,16 @@
+Tue Mar  8 14:10:52 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	Add a function to get process IDs of commands in started pipelines
+	(Savannah bug #32710).
+
+	* lib/pipeline.c (pipeline_get_pid): New function.
+	* lib/pipeline.h (pipeline_get_pid): Add prototype.
+	* man/libpipeline.3 (Functions to build pipelines): Document
+	  pipeline_get_pid.
+	* tests/inspect.c (pid_helper, test_inspect_pid): Test
+	  pipeline_get_pid.
+	* NEWS: Document this.
+
 Mon Mar  7 10:41:50 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* configure.ac: Check for working fork(2).
