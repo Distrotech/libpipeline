@@ -1,3 +1,8 @@
+Fri Mar 18 11:45:10 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	* tests/basic.c (test_basic_clearenv): Test that pipecmd_clearenv
+	  and pipecmd_setenv survive pipecmd_dup.
+
 Tue Mar  8 14:10:52 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	Add a function to get process IDs of commands in started pipelines

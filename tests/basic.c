@@ -144,7 +144,7 @@ END_TEST
 
 START_TEST (test_basic_clearenv)
 {
-	pipeline *p;
+	pipeline *p, *p2;
 	const char *line1, *line2;
 
 	setenv ("TEST3", "foo", 1);
@@ -186,6 +186,20 @@ START_TEST (test_basic_clearenv)
 		     "clearenv+setenv returned second line '%s', expected 'bar\n'",
 		     line2);
 	pipeline_wait (p);
+
+	p2 = pipeline_new ();
+	pipeline_command (p2, pipecmd_dup (pipeline_get_command (p, 0)));
+	pipeline_want_out (p2, -1);
+	pipeline_start (p2);
+	line1 = pipeline_readline (p2);
+	fail_unless (!strcmp (line1, "\n"),
+		     "clearenv+setenv+dup failed: returned first line '%s', expected '\n'",
+		     line1);
+	line2 = pipeline_readline (p2);
+	fail_unless (!strcmp (line2, "bar\n"),
+		     "clearenv+setenv+dup returned second line '%s', expected 'bar\n'",
+		     line2);
+	pipeline_wait (p2);
 }
 END_TEST
 
