@@ -67,6 +67,7 @@ END_TEST
 static void pid_helper (void *data PIPELINE_ATTR_UNUSED)
 {
 	printf ("%ld\n", (long) getpid ());
+	fflush (stdout);
 	pause ();
 }
 

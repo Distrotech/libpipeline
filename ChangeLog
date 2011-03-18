@@ -1,3 +1,7 @@
+Fri Mar 18 18:22:42 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	* tests/inspect.c (pid_helper): Flush stdout before pausing.
+
 Fri Mar 18 12:08:51 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* gnulib: Import waitpid module.
