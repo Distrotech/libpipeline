@@ -1,3 +1,9 @@
+Fri Mar 18 22:27:39 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	* Version: 1.2.0.
+	* lib/Makefile.am (libpipeline_la_LDFLAGS): Bump -version-info to
+	  3:0:2.
+
 Fri Mar 18 18:24:42 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* man/Makefile.am (FUNCTIONS): Add pipeline_get_pid.

@@ -1,5 +1,5 @@
-libpipeline 1.2.0
-=================
+libpipeline 1.2.0 (18 March 2010)
+=================================
 
 Add `pipeline_get_pid' to get the process ID of a command in a started
 pipeline.
