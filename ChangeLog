@@ -1,3 +1,7 @@
+Fri Mar 18 12:08:51 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	* gnulib: Import waitpid module.
+
 Fri Mar 18 12:02:42 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	Upgrade to Gnulib 20110216-stable.

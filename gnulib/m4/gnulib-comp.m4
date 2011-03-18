@@ -79,6 +79,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module sys_socket:
   # Code from module sys_stat:
   # Code from module sys_time:
+  # Code from module sys_wait:
   # Code from module threadlib:
   gl_THREADLIB_EARLY
   # Code from module time:
@@ -88,6 +89,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module vasnprintf:
   # Code from module vasprintf:
   # Code from module verify:
+  # Code from module waitpid:
   # Code from module warn-on-use:
   # Code from module wchar:
   # Code from module xalloc:
@@ -216,6 +218,9 @@ AC_DEFUN([gl_INIT],
   # Code from module sys_time:
   gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
+  # Code from module sys_wait:
+  gl_SYS_WAIT_H
+  AC_PROG_MKDIR_P
   # Code from module threadlib:
   gl_THREADLIB
   # Code from module time:
@@ -236,6 +241,9 @@ AC_DEFUN([gl_INIT],
     [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
      AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
   # Code from module verify:
+  # Code from module waitpid:
+  gl_FUNC_WAITPID
+  gl_SYS_WAIT_MODULE_INDICATOR([waitpid])
   # Code from module warn-on-use:
   # Code from module wchar:
   gl_WCHAR_H
@@ -448,6 +456,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sys_socket.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
+  lib/sys_wait.in.h
   lib/time.in.h
   lib/unistd.in.h
   lib/unsetenv.c
@@ -455,6 +464,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/vasnprintf.h
   lib/vasprintf.c
   lib/verify.h
+  lib/waitpid.c
   lib/wchar.in.h
   lib/xalloc-die.c
   lib/xalloc.h
@@ -519,12 +529,14 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
   m4/sys_time_h.m4
+  m4/sys_wait_h.m4
   m4/threadlib.m4
   m4/time_h.m4
   m4/tls.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
+  m4/waitpid.m4
   m4/warn-on-use.m4
   m4/wchar_h.m4
   m4/wchar_t.m4

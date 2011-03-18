@@ -89,6 +89,9 @@
 /* Define to 1 when the gnulib module vasprintf should be tested. */
 #undef GNULIB_TEST_VASPRINTF
 
+/* Define to 1 when the gnulib module waitpid should be tested. */
+#undef GNULIB_TEST_WAITPID
+
 /* Define to 1 if you have 'alloca' after including <alloca.h>, a header that
    may be supplied by this distribution. */
 #undef HAVE_ALLOCA
@@ -607,6 +610,9 @@
 
 /* Define to 1 if vsnprintf is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_VSNPRINTF
+
+/* Define to 1 if waitpid is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_WAITPID
 
 /* Define to 1 if wcpcpy is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_WCPCPY
