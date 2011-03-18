@@ -1,3 +1,7 @@
+Fri Mar 18 18:24:42 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	* man/Makefile.am (FUNCTIONS): Add pipeline_get_pid.
+
 Fri Mar 18 18:22:42 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* tests/inspect.c (pid_helper): Flush stdout before pausing.

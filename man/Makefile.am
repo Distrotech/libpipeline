@@ -60,6 +60,7 @@ FUNCTIONS = \
 	pipeline_get_ncommands \
 	pipeline_get_command \
 	pipeline_set_command \
+	pipeline_get_pid \
 	pipeline_want_in \
 	pipeline_want_out \
 	pipeline_want_infile \
