@@ -1,3 +1,7 @@
+Fri Mar 18 12:02:42 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Gnulib 20110216-stable.
+
 Fri Mar 18 11:45:10 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* tests/basic.c (test_basic_clearenv): Test that pipecmd_clearenv

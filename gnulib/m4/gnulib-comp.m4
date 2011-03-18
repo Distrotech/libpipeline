@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2010 Free Software Foundation, Inc.
+# Copyright (C) 2002-2011 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -12,7 +12,8 @@
 # This file represents the compiled summary of the specification in
 # gnulib-cache.m4. It lists the computed macro invocations that need
 # to be invoked from configure.ac.
-# In projects using CVS, this file can be treated like other built files.
+# In projects that use version control, this file can be treated like
+# other built files.
 
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -57,6 +58,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module sigprocmask:
   # Code from module size_max:
   # Code from module snprintf:
+  # Code from module socklen:
   # Code from module stdarg:
   dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
   dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
@@ -85,6 +87,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module unsetenv:
   # Code from module vasnprintf:
   # Code from module vasprintf:
+  # Code from module verify:
   # Code from module warn-on-use:
   # Code from module wchar:
   # Code from module xalloc:
@@ -172,6 +175,9 @@ AC_DEFUN([gl_INIT],
   # Code from module snprintf:
   gl_FUNC_SNPRINTF
   gl_STDIO_MODULE_INDICATOR([snprintf])
+  gl_MODULE_INDICATOR([snprintf])
+  # Code from module socklen:
+  gl_TYPE_SOCKLEN_T
   # Code from module stdarg:
   gl_STDARG_H
   # Code from module stdbool:
@@ -229,6 +235,7 @@ AC_DEFUN([gl_INIT],
   m4_ifdef([AM_XGETTEXT_OPTION],
     [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
      AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
+  # Code from module verify:
   # Code from module warn-on-use:
   # Code from module wchar:
   gl_WCHAR_H
@@ -447,6 +454,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c
+  lib/verify.h
   lib/wchar.in.h
   lib/xalloc-die.c
   lib/xalloc.h
@@ -493,6 +501,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/signalblocking.m4
   m4/size_max.m4
   m4/snprintf.m4
+  m4/socklen.m4
   m4/sockpfaf.m4
   m4/stdarg.m4
   m4/stdbool.m4
