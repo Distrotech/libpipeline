@@ -41,6 +41,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module float:
+  # Code from module full-write:
   # Code from module gettext-h:
   # Code from module havelib:
   # Code from module include_next:
@@ -52,6 +53,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module malloca:
   # Code from module memchr:
   # Code from module multiarch:
+  # Code from module safe-read:
+  # Code from module safe-write:
   # Code from module setenv:
   # Code from module sigaction:
   # Code from module signal:
@@ -59,6 +62,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module size_max:
   # Code from module snprintf:
   # Code from module socklen:
+  # Code from module ssize_t:
   # Code from module stdarg:
   dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
   dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
@@ -92,6 +96,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module waitpid:
   # Code from module warn-on-use:
   # Code from module wchar:
+  # Code from module write:
   # Code from module xalloc:
   # Code from module xalloc-die:
   # Code from module xsize:
@@ -139,6 +144,7 @@ AC_DEFUN([gl_INIT],
   # Code from module extensions:
   # Code from module float:
   gl_FLOAT_H
+  # Code from module full-write:
   # Code from module gettext-h:
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
@@ -161,6 +167,10 @@ AC_DEFUN([gl_INIT],
   gl_STRING_MODULE_INDICATOR([memchr])
   # Code from module multiarch:
   gl_MULTIARCH
+  # Code from module safe-read:
+  gl_SAFE_READ
+  # Code from module safe-write:
+  gl_SAFE_WRITE
   # Code from module setenv:
   gl_FUNC_SETENV
   gl_STDLIB_MODULE_INDICATOR([setenv])
@@ -180,6 +190,8 @@ AC_DEFUN([gl_INIT],
   gl_MODULE_INDICATOR([snprintf])
   # Code from module socklen:
   gl_TYPE_SOCKLEN_T
+  # Code from module ssize_t:
+  gt_TYPE_SSIZE_T
   # Code from module stdarg:
   gl_STDARG_H
   # Code from module stdbool:
@@ -247,6 +259,9 @@ AC_DEFUN([gl_INIT],
   # Code from module warn-on-use:
   # Code from module wchar:
   gl_WCHAR_H
+  # Code from module write:
+  gl_FUNC_WRITE
+  gl_UNISTD_MODULE_INDICATOR([write])
   # Code from module xalloc:
   gl_XALLOC
   # Code from module xalloc-die:
@@ -414,6 +429,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/exitfail.h
   lib/float+.h
   lib/float.in.h
+  lib/full-write.c
+  lib/full-write.h
   lib/gettext.h
   lib/glthread/lock.c
   lib/glthread/lock.h
@@ -431,6 +448,10 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/safe-read.c
+  lib/safe-read.h
+  lib/safe-write.c
+  lib/safe-write.h
   lib/setenv.c
   lib/sig-handler.h
   lib/sigaction.c
@@ -466,6 +487,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/verify.h
   lib/waitpid.c
   lib/wchar.in.h
+  lib/write.c
   lib/xalloc-die.c
   lib/xalloc.h
   lib/xasprintf.c
@@ -505,6 +527,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/multiarch.m4
   m4/onceonly.m4
   m4/printf.m4
+  m4/safe-read.m4
+  m4/safe-write.m4
   m4/setenv.m4
   m4/sigaction.m4
   m4/signal_h.m4
@@ -513,6 +537,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/snprintf.m4
   m4/socklen.m4
   m4/sockpfaf.m4
+  m4/ssize_t.m4
   m4/stdarg.m4
   m4/stdbool.m4
   m4/stddef_h.m4
@@ -541,6 +566,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wchar_h.m4
   m4/wchar_t.m4
   m4/wint_t.m4
+  m4/write.m4
   m4/xalloc.m4
   m4/xsize.m4
   m4/xstrndup.m4

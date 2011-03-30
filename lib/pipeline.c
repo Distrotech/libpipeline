@@ -41,6 +41,9 @@
 #include <sys/wait.h>
 
 #include "dirname.h"
+#include "full-write.h"
+#include "safe-read.h"
+#include "safe-write.h"
 #include "xalloc.h"
 #include "xstrndup.h"
 #include "xvasprintf.h"
@@ -341,10 +344,11 @@ static void passthrough (void *data PIPELINE_ATTR_UNUSED)
 {
 	for (;;) {
 		char buffer[4096];
-		int r = read (STDIN_FILENO, buffer, 4096);
+		int r = safe_read (STDIN_FILENO, buffer, 4096);
 		if (r <= 0)
 			break;
-		if (fwrite (buffer, 1, (size_t) r, stdout) < (size_t) r)
+		if (full_write (STDOUT_FILENO, buffer,
+				(size_t) r) < (size_t) r)
 			break;
 	}
 
@@ -1946,16 +1950,15 @@ void pipeline_pump (pipeline *p, ...)
 
 			/* write as much of it as will fit to the sink */
 			for (;;) {
-				w = write (pieces[i]->infd, block + pos[i],
-					   peek_size - pos[i]);
+				w = safe_write (pieces[i]->infd,
+						block + pos[i],
+						peek_size - pos[i]);
 				if (w >= 0)
 					break;
 				if (errno == EAGAIN) {
 					w = 0;
 					break;
 				}
-				if (errno == EINTR)
-					continue;
 				/* It may be useful for other processes to
 				 * continue even though this one fails, so
 				 * don't FATAL yet.
@@ -2081,7 +2084,7 @@ static const char *get_block (pipeline *p, size_t *len, int peek)
 		p->peek_offset = 0;
 
 	assert (p->outfd != -1);
-	r = read (p->outfd, p->buffer + readstart, toread);
+	r = safe_read (p->outfd, p->buffer + readstart, toread);
 	if (r == -1)
 		return NULL;
 	p->buflen = readstart + r;

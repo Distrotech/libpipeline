@@ -92,6 +92,9 @@
 /* Define to 1 when the gnulib module waitpid should be tested. */
 #undef GNULIB_TEST_WAITPID
 
+/* Define to 1 when the gnulib module write should be tested. */
+#undef GNULIB_TEST_WRITE
+
 /* Define to 1 if you have 'alloca' after including <alloca.h>, a header that
    may be supplied by this distribution. */
 #undef HAVE_ALLOCA
@@ -1106,6 +1109,9 @@
 
 /* type to use in place of socklen_t if not defined */
 #undef socklen_t
+
+/* Define as a signed type of the same size as size_t. */
+#undef ssize_t
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef uid_t

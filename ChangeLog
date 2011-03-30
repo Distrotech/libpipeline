@@ -1,3 +1,14 @@
+Wed Mar 30 13:40:42 BST 2011  Colin Watson  <cjwatson@debian.org>
+
+	* gnulib: Import full-write, safe-read, and safe-write modules.
+	* lib/pipeline.c (passthrough): Use safe_read instead of read.  Use
+	  full_write instead of fwrite (stdio is not necessarily
+	  EINTR-safe).
+	  (pipeline_pump): Use safe_write instead of write and a manual
+	  EINTR check.
+	  (get_block): Use safe_read instead of read.
+	* NEWS: Document this.
+
 Fri Mar 18 22:27:39 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* Version: 1.2.0.

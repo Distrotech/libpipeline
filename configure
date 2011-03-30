@@ -12772,6 +12772,7 @@ fi
   # Code from module extensions:
 
   # Code from module float:
+  # Code from module full-write:
   # Code from module gettext-h:
   # Code from module havelib:
   # Code from module include_next:
@@ -12783,6 +12784,8 @@ fi
   # Code from module malloca:
   # Code from module memchr:
   # Code from module multiarch:
+  # Code from module safe-read:
+  # Code from module safe-write:
   # Code from module setenv:
   # Code from module sigaction:
   # Code from module signal:
@@ -12790,6 +12793,7 @@ fi
   # Code from module size_max:
   # Code from module snprintf:
   # Code from module socklen:
+  # Code from module ssize_t:
   # Code from module stdarg:
 
   # Code from module stdbool:
@@ -12821,6 +12825,7 @@ fi
   # Code from module waitpid:
   # Code from module warn-on-use:
   # Code from module wchar:
+  # Code from module write:
   # Code from module xalloc:
   # Code from module xalloc-die:
   # Code from module xsize:
@@ -16308,6 +16313,39 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ssize_t" >&5
+$as_echo_n "checking for ssize_t... " >&6; }
+if test "${gt_cv_ssize_t+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+int
+main ()
+{
+int x = sizeof (ssize_t *) + sizeof (ssize_t);
+            return !x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gt_cv_ssize_t=yes
+else
+  gt_cv_ssize_t=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_ssize_t" >&5
+$as_echo "$gt_cv_ssize_t" >&6; }
+  if test $gt_cv_ssize_t = no; then
+
+$as_echo "#define ssize_t int" >>confdefs.h
+
+  fi
+
+
       ac_fn_c_check_decl "$LINENO" "setenv" "ac_cv_have_decl_setenv" "$ac_includes_default"
 if test "x$ac_cv_have_decl_setenv" = x""yes; then :
   ac_have_decl=1
@@ -18776,6 +18814,7 @@ $as_echo "$gl_cv_next_float_h" >&6; }
   esac
 
 
+  # Code from module full-write:
   # Code from module gettext-h:
 
 
@@ -18980,6 +19019,42 @@ $as_echo "#define GNULIB_TEST_MEMCHR 1" >>confdefs.h
 
 
   # Code from module multiarch:
+
+  # Code from module safe-read:
+
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS safe-read.$ac_objext"
+
+
+
+
+
+
+  # Code from module safe-write:
+
+
+
+
+
+
+
+
+
+  gl_LIBOBJS="$gl_LIBOBJS safe-write.$ac_objext"
+
+
+
+
+
+
+
 
   # Code from module setenv:
 
@@ -19537,6 +19612,40 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
+
+  # Code from module ssize_t:
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ssize_t" >&5
+$as_echo_n "checking for ssize_t... " >&6; }
+if test "${gt_cv_ssize_t+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+int
+main ()
+{
+int x = sizeof (ssize_t *) + sizeof (ssize_t);
+            return !x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gt_cv_ssize_t=yes
+else
+  gt_cv_ssize_t=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_ssize_t" >&5
+$as_echo "$gt_cv_ssize_t" >&6; }
+  if test $gt_cv_ssize_t = no; then
+
+$as_echo "#define ssize_t int" >>confdefs.h
+
+  fi
 
   # Code from module stdarg:
 
@@ -22559,6 +22668,22 @@ _ACEOF
                      eval ac_cv_have_decl_$gl_func=yes
 fi
       done
+
+
+  # Code from module write:
+
+
+
+
+
+
+
+  GNULIB_WRITE=1
+
+
+
+$as_echo "#define GNULIB_TEST_WRITE 1" >>confdefs.h
+
 
 
   # Code from module xalloc:
