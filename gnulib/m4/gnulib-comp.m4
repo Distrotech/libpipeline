@@ -33,6 +33,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module c++defs:
   # Code from module dirname:
   # Code from module dirname-lgpl:
+  # Code from module dosname:
   # Code from module double-slash-root:
   # Code from module environ:
   # Code from module errno:
@@ -128,6 +129,7 @@ AC_DEFUN([gl_INIT],
   gl_MODULE_INDICATOR([dirname])
   # Code from module dirname-lgpl:
   gl_DIRNAME_LGPL
+  # Code from module dosname:
   # Code from module double-slash-root:
   gl_DOUBLE_SLASH_ROOT
   # Code from module environ:
@@ -422,6 +424,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/dirname-lgpl.c
   lib/dirname.c
   lib/dirname.h
+  lib/dosname.h
   lib/errno.in.h
   lib/error.c
   lib/error.h
@@ -464,7 +467,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
-  lib/stdio-write.c
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/strerror.c
@@ -499,9 +501,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xvasprintf.h
   m4/00gnulib.m4
   m4/alloca.m4
-  m4/asm-underscore.m4
   m4/dirname.m4
-  m4/dos.m4
   m4/double-slash-root.m4
   m4/eealloc.m4
   m4/environ.m4

@@ -1,3 +1,7 @@
+Sat Apr 23 17:51:13 BST 2011  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Autoconf 2.68, Libtool 2.4, and Gnulib 20110412-stable.
+
 Wed Mar 30 13:40:42 BST 2011  Colin Watson  <cjwatson@debian.org>
 
 	* gnulib: Import full-write, safe-read, and safe-write modules.
