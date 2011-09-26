@@ -649,7 +649,7 @@ with
 .Li \-1 ,
 so it will reap any child process, not merely those created by way of this
 library.
-At present, this means that if the calling program which forks other child
+At present, this means that if the calling program forks other child
 processes which may exit while a pipeline is running, the program is not
 guaranteed to be able to collect exit statuses of those processes.
 .Pp
