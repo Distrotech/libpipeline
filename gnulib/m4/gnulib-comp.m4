@@ -25,12 +25,9 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_ES$])dnl a valid locale name
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
-  AC_REQUIRE([AC_PROG_RANLIB])
+  AC_REQUIRE([gl_PROG_AR_RANLIB])
   AC_REQUIRE([AM_PROG_CC_C_O])
-  # Code from module alignof:
   # Code from module alloca-opt:
-  # Code from module arg-nonnull:
-  # Code from module c++defs:
   # Code from module dirname:
   # Code from module dirname-lgpl:
   # Code from module dosname:
@@ -54,6 +51,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module malloca:
   # Code from module memchr:
   # Code from module multiarch:
+  # Code from module read:
   # Code from module safe-read:
   # Code from module safe-write:
   # Code from module setenv:
@@ -61,8 +59,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module signal:
   # Code from module sigprocmask:
   # Code from module size_max:
+  # Code from module snippet/_Noreturn:
+  # Code from module snippet/arg-nonnull:
+  # Code from module snippet/c++defs:
+  # Code from module snippet/warn-on-use:
   # Code from module snprintf:
-  # Code from module socklen:
   # Code from module ssize_t:
   # Code from module stdarg:
   dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
@@ -76,12 +77,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module stdio:
   # Code from module stdlib:
   # Code from module strerror:
+  # Code from module strerror-override:
   # Code from module string:
   # Code from module strndup:
   # Code from module strnlen:
   # Code from module strsignal:
   # Code from module sys_select:
-  # Code from module sys_socket:
   # Code from module sys_stat:
   # Code from module sys_time:
   # Code from module sys_wait:
@@ -95,11 +96,11 @@ AC_DEFUN([gl_EARLY],
   # Code from module vasprintf:
   # Code from module verify:
   # Code from module waitpid:
-  # Code from module warn-on-use:
   # Code from module wchar:
   # Code from module write:
   # Code from module xalloc:
   # Code from module xalloc-die:
+  # Code from module xalloc-oversized:
   # Code from module xsize:
   # Code from module xstrndup:
   # Code from module xvasprintf:
@@ -119,162 +120,151 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='gnulib/lib'
-  # Code from module alignof:
-  # Code from module alloca-opt:
-  gl_FUNC_ALLOCA
-  # Code from module arg-nonnull:
-  # Code from module c++defs:
-  # Code from module dirname:
-  gl_DIRNAME
-  gl_MODULE_INDICATOR([dirname])
-  # Code from module dirname-lgpl:
-  gl_DIRNAME_LGPL
-  # Code from module dosname:
-  # Code from module double-slash-root:
-  gl_DOUBLE_SLASH_ROOT
-  # Code from module environ:
-  gl_ENVIRON
-  gl_UNISTD_MODULE_INDICATOR([environ])
-  # Code from module errno:
-  gl_HEADER_ERRNO_H
-  # Code from module error:
-  gl_ERROR
-  m4_ifdef([AM_XGETTEXT_OPTION],
-    [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
-     AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
-  # Code from module exitfail:
-  # Code from module extensions:
-  # Code from module float:
-  gl_FLOAT_H
-  # Code from module full-write:
-  # Code from module gettext-h:
-  AC_SUBST([LIBINTL])
-  AC_SUBST([LTLIBINTL])
-  # Code from module havelib:
-  # Code from module include_next:
-  # Code from module inline:
-  gl_INLINE
-  # Code from module intprops:
-  # Code from module lib-ignore:
-  gl_IGNORE_UNUSED_LIBRARIES
-  # Code from module lock:
-  gl_LOCK
-  # Code from module malloc-posix:
-  gl_FUNC_MALLOC_POSIX
-  gl_STDLIB_MODULE_INDICATOR([malloc-posix])
-  # Code from module malloca:
-  gl_MALLOCA
-  # Code from module memchr:
-  gl_FUNC_MEMCHR
-  gl_STRING_MODULE_INDICATOR([memchr])
-  # Code from module multiarch:
-  gl_MULTIARCH
-  # Code from module safe-read:
-  gl_SAFE_READ
-  # Code from module safe-write:
-  gl_SAFE_WRITE
-  # Code from module setenv:
-  gl_FUNC_SETENV
-  gl_STDLIB_MODULE_INDICATOR([setenv])
-  # Code from module sigaction:
-  gl_SIGACTION
-  gl_SIGNAL_MODULE_INDICATOR([sigaction])
-  # Code from module signal:
-  gl_SIGNAL_H
-  # Code from module sigprocmask:
-  gl_SIGNALBLOCKING
-  gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
-  # Code from module size_max:
-  gl_SIZE_MAX
-  # Code from module snprintf:
-  gl_FUNC_SNPRINTF
-  gl_STDIO_MODULE_INDICATOR([snprintf])
-  gl_MODULE_INDICATOR([snprintf])
-  # Code from module socklen:
-  gl_TYPE_SOCKLEN_T
-  # Code from module ssize_t:
-  gt_TYPE_SSIZE_T
-  # Code from module stdarg:
-  gl_STDARG_H
-  # Code from module stdbool:
-  AM_STDBOOL_H
-  # Code from module stddef:
-  gl_STDDEF_H
-  # Code from module stdint:
-  gl_STDINT_H
-  # Code from module stdio:
-  gl_STDIO_H
-  # Code from module stdlib:
-  gl_STDLIB_H
-  # Code from module strerror:
-  gl_FUNC_STRERROR
-  gl_STRING_MODULE_INDICATOR([strerror])
-  # Code from module string:
-  gl_HEADER_STRING_H
-  # Code from module strndup:
-  gl_FUNC_STRNDUP
-  gl_STRING_MODULE_INDICATOR([strndup])
-  # Code from module strnlen:
-  gl_FUNC_STRNLEN
-  gl_STRING_MODULE_INDICATOR([strnlen])
-  # Code from module strsignal:
-  gl_FUNC_STRSIGNAL
-  gl_STRING_MODULE_INDICATOR([strsignal])
-  # Code from module sys_select:
-  gl_HEADER_SYS_SELECT
-  AC_PROG_MKDIR_P
-  # Code from module sys_socket:
-  gl_HEADER_SYS_SOCKET
-  AC_PROG_MKDIR_P
-  # Code from module sys_stat:
-  gl_HEADER_SYS_STAT_H
-  AC_PROG_MKDIR_P
-  # Code from module sys_time:
-  gl_HEADER_SYS_TIME_H
-  AC_PROG_MKDIR_P
-  # Code from module sys_wait:
-  gl_SYS_WAIT_H
-  AC_PROG_MKDIR_P
-  # Code from module threadlib:
-  gl_THREADLIB
-  # Code from module time:
-  gl_HEADER_TIME_H
-  # Code from module tls:
-  gl_TLS
-  # Code from module unistd:
-  gl_UNISTD_H
-  # Code from module unsetenv:
-  gl_FUNC_UNSETENV
-  gl_STDLIB_MODULE_INDICATOR([unsetenv])
-  # Code from module vasnprintf:
-  gl_FUNC_VASNPRINTF
-  # Code from module vasprintf:
-  gl_FUNC_VASPRINTF
-  gl_STDIO_MODULE_INDICATOR([vasprintf])
-  m4_ifdef([AM_XGETTEXT_OPTION],
-    [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
-     AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
-  # Code from module verify:
-  # Code from module waitpid:
-  gl_FUNC_WAITPID
-  gl_SYS_WAIT_MODULE_INDICATOR([waitpid])
-  # Code from module warn-on-use:
-  # Code from module wchar:
-  gl_WCHAR_H
-  # Code from module write:
-  gl_FUNC_WRITE
-  gl_UNISTD_MODULE_INDICATOR([write])
-  # Code from module xalloc:
-  gl_XALLOC
-  # Code from module xalloc-die:
-  # Code from module xsize:
-  gl_XSIZE
-  # Code from module xstrndup:
-  gl_XSTRNDUP
-  # Code from module xvasprintf:
-  gl_XVASPRINTF
-  m4_ifdef([AM_XGETTEXT_OPTION],
-    [AM_][XGETTEXT_OPTION([--flag=xasprintf:1:c-format])])
+gl_FUNC_ALLOCA
+gl_DIRNAME
+gl_MODULE_INDICATOR([dirname])
+gl_DIRNAME_LGPL
+gl_DOUBLE_SLASH_ROOT
+gl_ENVIRON
+gl_UNISTD_MODULE_INDICATOR([environ])
+gl_HEADER_ERRNO_H
+gl_ERROR
+if test $ac_cv_lib_error_at_line = no; then
+  AC_LIBOBJ([error])
+  gl_PREREQ_ERROR
+fi
+m4_ifdef([AM_XGETTEXT_OPTION],
+  [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
+   AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
+gl_FLOAT_H
+if test $REPLACE_FLOAT_LDBL = 1; then
+  AC_LIBOBJ([float])
+fi
+AC_SUBST([LIBINTL])
+AC_SUBST([LTLIBINTL])
+gl_INLINE
+gl_IGNORE_UNUSED_LIBRARIES
+gl_LOCK
+gl_FUNC_MALLOC_POSIX
+if test $REPLACE_MALLOC = 1; then
+  AC_LIBOBJ([malloc])
+fi
+gl_STDLIB_MODULE_INDICATOR([malloc-posix])
+gl_MALLOCA
+gl_FUNC_MEMCHR
+if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
+  AC_LIBOBJ([memchr])
+  gl_PREREQ_MEMCHR
+fi
+gl_STRING_MODULE_INDICATOR([memchr])
+gl_MULTIARCH
+gl_FUNC_READ
+if test $REPLACE_READ = 1; then
+  AC_LIBOBJ([read])
+fi
+gl_UNISTD_MODULE_INDICATOR([read])
+gl_PREREQ_SAFE_READ
+gl_PREREQ_SAFE_WRITE
+gl_FUNC_SETENV
+if test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1; then
+  AC_LIBOBJ([setenv])
+fi
+gl_STDLIB_MODULE_INDICATOR([setenv])
+gl_SIGACTION
+if test $HAVE_SIGACTION = 0; then
+  AC_LIBOBJ([sigaction])
+  gl_PREREQ_SIGACTION
+fi
+gl_SIGNAL_MODULE_INDICATOR([sigaction])
+gl_SIGNAL_H
+gl_SIGNALBLOCKING
+if test $HAVE_POSIX_SIGNALBLOCKING = 0; then
+  AC_LIBOBJ([sigprocmask])
+  gl_PREREQ_SIGPROCMASK
+fi
+gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
+gl_SIZE_MAX
+gl_FUNC_SNPRINTF
+gl_STDIO_MODULE_INDICATOR([snprintf])
+gl_MODULE_INDICATOR([snprintf])
+gt_TYPE_SSIZE_T
+gl_STDARG_H
+AM_STDBOOL_H
+gl_STDDEF_H
+gl_STDINT_H
+gl_STDIO_H
+gl_STDLIB_H
+gl_FUNC_STRERROR
+if test $REPLACE_STRERROR = 1; then
+  AC_LIBOBJ([strerror])
+fi
+gl_MODULE_INDICATOR([strerror])
+gl_STRING_MODULE_INDICATOR([strerror])
+AC_REQUIRE([gl_HEADER_ERRNO_H])
+AC_REQUIRE([gl_FUNC_STRERROR_0])
+if test -n "$ERRNO_H" || test $REPLACE_STRERROR_0 = 1; then
+  AC_LIBOBJ([strerror-override])
+  gl_PREREQ_SYS_H_WINSOCK2
+fi
+gl_HEADER_STRING_H
+gl_FUNC_STRNDUP
+if test $HAVE_STRNDUP = 0 || test $REPLACE_STRNDUP = 1; then
+  AC_LIBOBJ([strndup])
+fi
+gl_STRING_MODULE_INDICATOR([strndup])
+gl_FUNC_STRNLEN
+if test $HAVE_DECL_STRNLEN = 0 || test $REPLACE_STRNLEN = 1; then
+  AC_LIBOBJ([strnlen])
+  gl_PREREQ_STRNLEN
+fi
+gl_STRING_MODULE_INDICATOR([strnlen])
+gl_FUNC_STRSIGNAL
+if test $HAVE_STRSIGNAL = 0 || test $REPLACE_STRSIGNAL = 1; then
+  AC_LIBOBJ([strsignal])
+  gl_PREREQ_STRSIGNAL
+fi
+gl_STRING_MODULE_INDICATOR([strsignal])
+gl_HEADER_SYS_SELECT
+AC_PROG_MKDIR_P
+gl_HEADER_SYS_STAT_H
+AC_PROG_MKDIR_P
+gl_HEADER_SYS_TIME_H
+AC_PROG_MKDIR_P
+gl_SYS_WAIT_H
+AC_PROG_MKDIR_P
+gl_THREADLIB
+gl_HEADER_TIME_H
+gl_TLS
+gl_UNISTD_H
+gl_FUNC_UNSETENV
+if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
+  AC_LIBOBJ([unsetenv])
+  gl_PREREQ_UNSETENV
+fi
+gl_STDLIB_MODULE_INDICATOR([unsetenv])
+gl_FUNC_VASNPRINTF
+gl_FUNC_VASPRINTF
+gl_STDIO_MODULE_INDICATOR([vasprintf])
+m4_ifdef([AM_XGETTEXT_OPTION],
+  [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
+   AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
+gl_FUNC_WAITPID
+if test $HAVE_WAITPID = 0; then
+  AC_LIBOBJ([waitpid])
+fi
+gl_SYS_WAIT_MODULE_INDICATOR([waitpid])
+gl_WCHAR_H
+gl_FUNC_WRITE
+if test $REPLACE_WRITE = 1; then
+  AC_LIBOBJ([write])
+fi
+gl_UNISTD_MODULE_INDICATOR([write])
+gl_XALLOC
+gl_XSIZE
+gl_XSTRNDUP
+gl_XVASPRINTF
+m4_ifdef([AM_XGETTEXT_OPTION],
+  [AM_][XGETTEXT_OPTION([--flag=xasprintf:1:c-format])])
   # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
@@ -411,11 +401,11 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # This macro records the list of files which have been installed by
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
-  build-aux/arg-nonnull.h
-  build-aux/c++defs.h
   build-aux/config.rpath
-  build-aux/warn-on-use.h
-  lib/alignof.h
+  build-aux/snippet/_Noreturn.h
+  build-aux/snippet/arg-nonnull.h
+  build-aux/snippet/c++defs.h
+  build-aux/snippet/warn-on-use.h
   lib/alloca.in.h
   lib/asnprintf.c
   lib/asprintf.c
@@ -431,6 +421,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/exitfail.c
   lib/exitfail.h
   lib/float+.h
+  lib/float.c
   lib/float.in.h
   lib/full-write.c
   lib/full-write.h
@@ -451,6 +442,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/read.c
   lib/safe-read.c
   lib/safe-read.h
   lib/safe-write.c
@@ -469,6 +461,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdint.in.h
   lib/stdio.in.h
   lib/stdlib.in.h
+  lib/strerror-override.c
+  lib/strerror-override.h
   lib/strerror.c
   lib/string.in.h
   lib/stripslash.c
@@ -476,7 +470,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strnlen.c
   lib/strsignal.c
   lib/sys_select.in.h
-  lib/sys_socket.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
   lib/sys_wait.in.h
@@ -491,6 +484,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/wchar.in.h
   lib/write.c
   lib/xalloc-die.c
+  lib/xalloc-oversized.h
   lib/xalloc.h
   lib/xasprintf.c
   lib/xmalloc.c
@@ -527,6 +521,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/multiarch.m4
   m4/onceonly.m4
   m4/printf.m4
+  m4/read.m4
   m4/safe-read.m4
   m4/safe-write.m4
   m4/setenv.m4
@@ -535,8 +530,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/signalblocking.m4
   m4/size_max.m4
   m4/snprintf.m4
-  m4/socklen.m4
-  m4/sockpfaf.m4
   m4/ssize_t.m4
   m4/stdarg.m4
   m4/stdbool.m4
