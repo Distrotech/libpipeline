@@ -9,6 +9,18 @@ and execve(2).
 
 Full programmers' documentation may be found using 'man libpipeline'.
 
+Installation
+------------
+
+If you need to install libpipeline starting from source code, then you will
+need these separate packages installed before configuring libpipeline in
+order to run its test suite:
+
+  pkg-config (http://www.freedesktop.org/wiki/Software/pkg-config)
+  check (http://check.sourceforge.net/)
+
+See the INSTALL file for general installation instructions.
+
 Building programs with libpipeline
 ----------------------------------
 

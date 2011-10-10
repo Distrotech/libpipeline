@@ -1,3 +1,8 @@
+Mon Oct 10 09:22:41 BST 2011  Colin Watson  <cjwatson@debian.org>
+
+	* README: Document test suite dependencies.  Suggested by Bruce
+	  Dubbs.
+
 Mon Sep 26 13:34:00 BST 2011  Colin Watson  <cjwatson@debian.org>
 
 	* man/libpipeline.3 (Reaping of child processes): Fix typo.
