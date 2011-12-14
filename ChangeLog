@@ -1,3 +1,7 @@
+Wed Dec 14 12:48:56 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Libtool 2.4.2.
+
 Mon Oct 10 09:22:41 BST 2011  Colin Watson  <cjwatson@debian.org>
 
 	* README: Document test suite dependencies.  Suggested by Bruce
