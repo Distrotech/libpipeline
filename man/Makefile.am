@@ -27,6 +27,7 @@ FUNCTIONS = \
 	pipecmd_new_args \
 	pipecmd_new_argstr \
 	pipecmd_new_function \
+	pipecmd_new_sequencev \
 	pipecmd_new_sequence \
 	pipecmd_new_passthrough \
 	pipecmd_dup \
@@ -49,23 +50,25 @@ FUNCTIONS = \
 	pipeline_new \
 	pipeline_new_commandv \
 	pipeline_new_commands \
+	pipeline_new_command_argv \
 	pipeline_new_command_args \
 	pipeline_join \
 	pipeline_connect \
 	pipeline_command \
+	pipeline_command_argv \
 	pipeline_command_args \
 	pipeline_command_argstr \
 	pipeline_commandv \
 	pipeline_commands \
-	pipeline_get_ncommands \
-	pipeline_get_command \
-	pipeline_set_command \
-	pipeline_get_pid \
 	pipeline_want_in \
 	pipeline_want_out \
 	pipeline_want_infile \
 	pipeline_want_outfile \
 	pipeline_ignore_signals \
+	pipeline_get_ncommands \
+	pipeline_get_command \
+	pipeline_set_command \
+	pipeline_get_pid \
 	pipeline_get_infile \
 	pipeline_get_outfile \
 	pipeline_dump \
@@ -73,7 +76,9 @@ FUNCTIONS = \
 	pipeline_free \
 	pipeline_install_post_fork \
 	pipeline_start \
+	pipeline_wait_all \
 	pipeline_wait \
+	pipeline_run \
 	pipeline_pump \
 	pipeline_read \
 	pipeline_peek \

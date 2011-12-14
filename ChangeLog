@@ -1,3 +1,9 @@
+Wed Dec 14 12:54:40 GMT 2011  Colin Watson  <cjwatson@debian.org>
+
+	* man/Makefile.am (FUNCTIONS): Add pipecmd_new_sequencev,
+	  pipeline_new_command_argv, pipeline_command_argv,
+	  pipeline_wait_all, and pipeline_run.
+
 Wed Dec 14 12:48:56 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	Upgrade to Libtool 2.4.2.
