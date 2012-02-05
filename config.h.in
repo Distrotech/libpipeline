@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if building universal (internal helper macro) */
+#undef AC_APPLE_UNIVERSAL_BUILD
+
 /* Define to the number of bits in type 'ptrdiff_t'. */
 #undef BITSIZEOF_PTRDIFF_T
 
@@ -26,6 +29,13 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Define as the bit index in the word where to find bit 0 of the exponent of
+   'double'. */
+#undef DBL_EXPBIT0_BIT
+
+/* Define as the word index where to find the exponent of 'double'. */
+#undef DBL_EXPBIT0_WORD
+
 /* Define to 1 if // is a file system root distinct from /. */
 #undef DOUBLE_SLASH_IS_DISTINCT_ROOT
 
@@ -49,6 +59,9 @@
 
 /* Define to 1 when the gnulib module memchr should be tested. */
 #undef GNULIB_TEST_MEMCHR
+
+/* Define to 1 when the gnulib module raise should be tested. */
+#undef GNULIB_TEST_RAISE
 
 /* Define to 1 when the gnulib module read should be tested. */
 #undef GNULIB_TEST_READ
@@ -189,11 +202,18 @@
 /* Define to 1 if you have the `mprotect' function. */
 #undef HAVE_MPROTECT
 
+/* Define to 1 on MSVC platforms that have the "invalid parameter handler"
+   concept. */
+#undef HAVE_MSVC_INVALID_PARAMETER_HANDLER
+
 /* Define if the <pthread.h> defines PTHREAD_MUTEX_RECURSIVE. */
 #undef HAVE_PTHREAD_MUTEX_RECURSIVE
 
 /* Define if the POSIX multithreading library has read/write locks. */
 #undef HAVE_PTHREAD_RWLOCK
+
+/* Define to 1 if you have the `raise' function. */
+#undef HAVE_RAISE
 
 /* Define to 1 if atoll is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_ATOLL
@@ -205,11 +225,17 @@
    macros. */
 #undef HAVE_RAW_DECL_CANONICALIZE_FILE_NAME
 
+/* Define to 1 if chdir is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_CHDIR
+
 /* Define to 1 if chown is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_CHOWN
 
 /* Define to 1 if dprintf is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_DPRINTF
+
+/* Define to 1 if dup is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_DUP
 
 /* Define to 1 if dup2 is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_DUP2
@@ -238,6 +264,9 @@
 /* Define to 1 if fchownat is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FCHOWNAT
 
+/* Define to 1 if fdatasync is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_FDATASYNC
+
 /* Define to 1 if ffsl is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FFSL
 
@@ -249,6 +278,9 @@
 
 /* Define to 1 if fseeko is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FSEEKO
+
+/* Define to 1 if fstat is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_FSTAT
 
 /* Define to 1 if fstatat is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_FSTATAT
@@ -313,8 +345,8 @@
 /* Define to 1 if group_member is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_GROUP_MEMBER
 
-/* Define to 1 if initstat_r is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_INITSTAT_R
+/* Define to 1 if initstate_r is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_INITSTATE_R
 
 /* Define to 1 if lchmod is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_LCHMOD
@@ -388,6 +420,9 @@
 /* Define to 1 if mkstemps is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_MKSTEMPS
 
+/* Define to 1 if pclose is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_PCLOSE
+
 /* Define to 1 if pipe is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PIPE
 
@@ -396,6 +431,9 @@
 
 /* Define to 1 if popen is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_POPEN
+
+/* Define to 1 if posix_openpt is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_POSIX_OPENPT
 
 /* Define to 1 if pread is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PREAD
@@ -408,6 +446,9 @@
 
 /* Define to 1 if ptsname is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PTSNAME
+
+/* Define to 1 if ptsname_r is declared even after undefining macros. */
+#undef HAVE_RAW_DECL_PTSNAME_R
 
 /* Define to 1 if pwrite is declared even after undefining macros. */
 #undef HAVE_RAW_DECL_PWRITE
@@ -826,6 +867,9 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
+/* Define to 1 if you have the `_set_invalid_parameter_handler' function. */
+#undef HAVE__SET_INVALID_PARAMETER_HANDLER
+
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
@@ -945,6 +989,18 @@
    'wint_t'. */
 #undef WINT_T_SUFFIX
 
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
+# endif
+#endif
+
 /* Define to 1 if on MINIX. */
 #undef _MINIX
 
@@ -953,7 +1009,7 @@
 # if (3 <= __GNUC__ || (__GNUC__ == 2 && 8 <= __GNUC_MINOR__) \
       || 0x5110 <= __SUNPRO_C)
 #  define _Noreturn __attribute__ ((__noreturn__))
-# elif 1200 <= _MSC_VER
+# elif defined _MSC_VER && 1200 <= _MSC_VER
 #  define _Noreturn __declspec (noreturn)
 # else
 #  define _Noreturn
@@ -1024,6 +1080,9 @@
 #if defined __APPLE__ && defined __MACH__ && __APPLE_CC__ >= 5465 && !defined __cplusplus && __STDC_VERSION__ >= 199901L && !defined __GNUC_STDC_INLINE__
 # define __GNUC_STDC_INLINE__ 1
 #endif
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef mode_t
 
 /* Define to the type of st_nlink in struct stat, or a supertype. */
 #undef nlink_t

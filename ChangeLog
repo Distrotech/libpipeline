@@ -1,3 +1,10 @@
+Sun Feb  5 02:33:14 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Automake 1.11.2 and Gnulib 20111211-stable.
+
+	* Makefile.am (EXTRA_DIST): Remove gnulib/m4/sockpfaf.m4, which was
+	  removed from this package some time ago.  Add gnulib/m4/math_h.m4.
+
 Wed Dec 14 12:54:40 GMT 2011  Colin Watson  <cjwatson@debian.org>
 
 	* man/Makefile.am (FUNCTIONS): Add pipecmd_new_sequencev,

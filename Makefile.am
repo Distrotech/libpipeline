@@ -36,7 +36,7 @@ EXTRA_DIST = \
 # These macro files are imported by gnulib-tool, but at present not used. We
 # include them in the distribution anyway for maximum consistency.
 EXTRA_DIST += \
-	gnulib/m4/sockpfaf.m4
+	gnulib/m4/math_h.m4
 
 # Note that autopoint installs into the first directory here. Yes, this
 # means that it installs into gnulib/m4, so we always run gnulib-tool after
