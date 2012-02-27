@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Colin Watson.
+ * Copyright (C) 2010, 2012 Colin Watson.
  *
  * This file is part of libpipeline.
  *
@@ -19,6 +19,7 @@
  * USA.
  */
 
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -74,11 +75,50 @@ START_TEST (test_exec_process)
 }
 END_TEST
 
+static void exit_helper (void *data)
+{
+	exit (*(int *) data);
+}
+
+START_TEST (test_exec_function)
+{
+	int i;
+
+	for (i = 0; i < 2; ++i) {
+		pipecmd *cmd;
+		pid_t pid;
+		int status;
+
+		cmd = pipecmd_new_function ("exit_helper", exit_helper, NULL,
+					    &i);
+
+		pid = fork ();
+		if (pid < 0) {
+			fail ("fork failed: %s", strerror (errno));
+			return;
+		}
+		if (pid == 0)
+			pipecmd_exec (cmd);
+
+		while (waitpid (pid, &status, 0) < 0) {
+			if (errno == EINTR)
+				continue;
+			fail ("waitpid failed: %s", strerror (errno));
+			return;
+		}
+
+		fail_unless (WIFEXITED (status));
+		fail_unless (WEXITSTATUS (status) == i);
+	}
+}
+END_TEST
+
 Suite *exec_suite (void)
 {
 	Suite *s = suite_create ("Exec");
 
 	TEST_CASE (s, exec, process);
+	TEST_CASE (s, exec, function);
 
 	return s;
 }

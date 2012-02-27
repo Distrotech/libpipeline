@@ -1,3 +1,9 @@
+Mon Feb 27 22:17:20 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	* tests/exec.c (exit_helper, test_exit_function): Add test that
+	  pipecmd_exec works with functions.
+	  (exec_suite): Call test_exit_function.
+
 Thu Feb  9 12:04:26 GMT 2012  Colin Watson  <cjwatson@debian.org>
 
 	Upgrade to Automake 1.11.3.
