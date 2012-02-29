@@ -40,17 +40,17 @@ AM_CFLAGS = @CHECK_CFLAGS@
 clean-local:
 	rm -f testtmp.*
 
-basic_SOURCES = basic.c common.h
+basic_SOURCES = basic.c common.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
 
-argstr_SOURCES = argstr.c common.h
+argstr_SOURCES = argstr.c common.c common.h
 argstr_LDADD = $(LIBS) @CHECK_LIBS@
 
-exec_SOURCES = exec.c common.h
+exec_SOURCES = exec.c common.c common.h
 exec_LDADD = $(LIBS) @CHECK_LIBS@
 
-inspect_SOURCES = inspect.c common.h
+inspect_SOURCES = inspect.c common.c common.h
 inspect_LDADD = $(LIBS) @CHECK_LIBS@
 
-redirect_SOURCES = redirect.c common.h
+redirect_SOURCES = redirect.c common.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@

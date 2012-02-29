@@ -1,3 +1,18 @@
+Wed Feb 29 18:19:08 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Create output files if they do
+	  not already exist, and truncate them if they do.
+	* lib/pipeline.h (pipeline_want_outfile): Document this.
+	* man/libpipeline.3 (Functions to build pipelines): Likewise.
+	* tests/common.c: New file.
+	* tests/common.h (TEST_CASE_WITH_FIXTURE): New macro.
+	  (temp_dir_setup, temp_dir_teardown): Add prototypes.
+	* tests/redirect.c (test_redirect_outfile): New test.
+	  (redirect_suite): Call test_redirect_outfile.
+	* tests/Makefile.am (basic_SOURCES, argstr_SOURCES, exec_SOURCES,
+	  inspect_SOURCES, redirect_SOURCES): Add common.c.
+	* NEWS: Document this.
+
 Mon Feb 27 22:17:20 GMT 2012  Colin Watson  <cjwatson@debian.org>
 
 	* tests/exec.c (exit_helper, test_exit_function): Add test that

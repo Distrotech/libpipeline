@@ -397,6 +397,10 @@ or
 .Fn pipeline_want_outfile
 respectively.
 .Pp
+The given files will be opened when the pipeline is started.
+If an output file does not already exist, it is created (with mode 0666
+modified in the usual way by umask); if it does exist, then it is truncated.
+.Pp
 .It Ft void Fn pipeline_ignore_signals "pipeline *p" "int ignore_signals"
 .Pp
 If

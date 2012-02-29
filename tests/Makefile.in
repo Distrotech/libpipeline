@@ -131,22 +131,22 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = basic$(EXEEXT) argstr$(EXEEXT) exec$(EXEEXT) \
 	inspect$(EXEEXT) redirect$(EXEEXT)
-am_argstr_OBJECTS = argstr.$(OBJEXT)
+am_argstr_OBJECTS = argstr.$(OBJEXT) common.$(OBJEXT)
 argstr_OBJECTS = $(am_argstr_OBJECTS)
 argstr_DEPENDENCIES = $(LIBS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
-am_basic_OBJECTS = basic.$(OBJEXT)
+am_basic_OBJECTS = basic.$(OBJEXT) common.$(OBJEXT)
 basic_OBJECTS = $(am_basic_OBJECTS)
 basic_DEPENDENCIES = $(LIBS)
-am_exec_OBJECTS = exec.$(OBJEXT)
+am_exec_OBJECTS = exec.$(OBJEXT) common.$(OBJEXT)
 exec_OBJECTS = $(am_exec_OBJECTS)
 exec_DEPENDENCIES = $(LIBS)
-am_inspect_OBJECTS = inspect.$(OBJEXT)
+am_inspect_OBJECTS = inspect.$(OBJEXT) common.$(OBJEXT)
 inspect_OBJECTS = $(am_inspect_OBJECTS)
 inspect_DEPENDENCIES = $(LIBS)
-am_redirect_OBJECTS = redirect.$(OBJEXT)
+am_redirect_OBJECTS = redirect.$(OBJEXT) common.$(OBJEXT)
 redirect_OBJECTS = $(am_redirect_OBJECTS)
 redirect_DEPENDENCIES = $(LIBS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -934,15 +934,15 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib
 
 AM_CFLAGS = @CHECK_CFLAGS@
-basic_SOURCES = basic.c common.h
+basic_SOURCES = basic.c common.c common.h
 basic_LDADD = $(LIBS) @CHECK_LIBS@
-argstr_SOURCES = argstr.c common.h
+argstr_SOURCES = argstr.c common.c common.h
 argstr_LDADD = $(LIBS) @CHECK_LIBS@
-exec_SOURCES = exec.c common.h
+exec_SOURCES = exec.c common.c common.h
 exec_LDADD = $(LIBS) @CHECK_LIBS@
-inspect_SOURCES = inspect.c common.h
+inspect_SOURCES = inspect.c common.c common.h
 inspect_LDADD = $(LIBS) @CHECK_LIBS@
-redirect_SOURCES = redirect.c common.h
+redirect_SOURCES = redirect.c common.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@
 all: all-am
 
@@ -1011,6 +1011,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/argstr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/basic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/redirect.Po@am__quote@

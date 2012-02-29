@@ -302,6 +302,11 @@ void pipeline_want_out (pipeline *p, int fd);
  * Calling these functions (even with NULL, which returns to the default of
  * leaving input and output as stdin and stdout) supersedes any previous
  * call to pipeline_want_in or pipeline_want_outfile respectively.
+ *
+ * The given files will be opened when the pipeline is started.  If an
+ * output file does not already exist, it is created (with mode 0666
+ * modified in the usual way by umask); if it does exist, then it is
+ * truncated.
  */
 void pipeline_want_infile (pipeline *p, const char *file);
 void pipeline_want_outfile (pipeline *p, const char *file);

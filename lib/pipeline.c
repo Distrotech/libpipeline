@@ -1419,7 +1419,8 @@ void pipeline_start (pipeline *p)
 			else if (p->redirect_out == REDIRECT_FILE_NAME) {
 				assert (p->want_outfile);
 				output_write = open (p->want_outfile,
-						     O_WRONLY);
+						     O_WRONLY | O_CREAT |
+						     O_TRUNC, 0666);
 				if (output_write < 0)
 					error (FATAL, errno, "can't open %s",
 					       p->want_outfile);

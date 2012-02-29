@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Colin Watson.
+ * Copyright (C) 2010, 2012 Colin Watson.
  *
  * This file is part of libpipeline.
  *
@@ -26,6 +26,7 @@
 #include <errno.h>
 
 #include "xalloc.h"
+#include "xvasprintf.h"
 
 #include "common.h"
 
@@ -58,11 +59,34 @@ START_TEST (test_redirect_files)
 }
 END_TEST
 
+START_TEST (test_redirect_outfile)
+{
+	pipeline *p;
+	char *outfile;
+	FILE *fh;
+	char line[5];
+
+	p = pipeline_new_command_args ("echo", "test", NULL);
+	outfile = xasprintf ("%s/test", temp_dir);
+	pipeline_want_outfile (p, outfile);
+	fail_unless (pipeline_run (p) == 0);
+	fh = fopen (outfile, "r");
+	fail_unless (fh != NULL);
+	fail_unless (fgets (line, 5, fh) != NULL);
+	fail_unless (!strcmp (line, "test"));
+
+	fclose (fh);
+	free (outfile);
+}
+END_TEST
+
 Suite *redirect_suite (void)
 {
 	Suite *s = suite_create ("Redirect");
 
 	TEST_CASE (s, redirect, files);
+	TEST_CASE_WITH_FIXTURE (s, redirect, files,
+				temp_dir_setup, temp_dir_teardown);
 
 	return s;
 }
