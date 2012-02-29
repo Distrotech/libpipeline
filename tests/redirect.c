@@ -85,7 +85,7 @@ Suite *redirect_suite (void)
 	Suite *s = suite_create ("Redirect");
 
 	TEST_CASE (s, redirect, files);
-	TEST_CASE_WITH_FIXTURE (s, redirect, files,
+	TEST_CASE_WITH_FIXTURE (s, redirect, outfile,
 				temp_dir_setup, temp_dir_teardown);
 
 	return s;
