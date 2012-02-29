@@ -28,4 +28,5 @@ tests/argstr
 tests/basic
 tests/exec
 tests/inspect
+tests/pump
 tests/redirect

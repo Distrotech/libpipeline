@@ -26,6 +26,7 @@ TESTS = \
 	argstr \
 	exec \
 	inspect \
+	pump \
 	redirect
 check_PROGRAMS = $(TESTS)
 
@@ -51,6 +52,9 @@ exec_LDADD = $(LIBS) @CHECK_LIBS@
 
 inspect_SOURCES = inspect.c common.c common.h
 inspect_LDADD = $(LIBS) @CHECK_LIBS@
+
+pump_SOURCES = pump.c common.c common.h
+pump_LDADD = $(LIBS) @CHECK_LIBS@
 
 redirect_SOURCES = redirect.c common.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@

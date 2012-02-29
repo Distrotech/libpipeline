@@ -1,3 +1,10 @@
+Wed Feb 29 18:26:22 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	* tests/Makefile.am (TESTS): Add pump.
+	  (pump_SOURCES, pump_LDADD): Add.
+	* tests/pump.c: New file.
+	* .bzrignore: Add tests/pump.
+
 Wed Feb 29 18:19:08 GMT 2012  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_start): Create output files if they do
