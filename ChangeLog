@@ -1,3 +1,7 @@
+Wed Feb 29 20:09:12 GMT 2012  Martin Pollard  <martin.pollard@sanger.ac.uk>
+
+	* lib/pipeline.h: Enclose in extern "C" { } when compiling as C++.
+
 Wed Feb 29 18:26:22 GMT 2012  Colin Watson  <cjwatson@debian.org>
 
 	* tests/Makefile.am (TESTS): Add pump.

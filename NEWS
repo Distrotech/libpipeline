@@ -6,6 +6,9 @@ Retry reads and writes on EINTR.
 Fix opening of output files requested by `pipeline_want_outfile'; these are
 now created if they do not already exist, and truncated if they do.
 
+<pipeline.h> is now wrapped in `extern "C"' when used in a C++ compilation
+unit.
+
 libpipeline 1.2.0 (18 March 2010)
 =================================
 

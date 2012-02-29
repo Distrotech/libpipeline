@@ -25,6 +25,10 @@
 #ifndef PIPELINE_H
 #define PIPELINE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <sys/types.h>
@@ -416,5 +420,9 @@ const char *pipeline_readline (pipeline *p);
  * starting position of the next read or peek is not affected by this call.
  */
 const char *pipeline_peekline (pipeline *p);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PIPELINE_H */
