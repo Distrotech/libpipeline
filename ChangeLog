@@ -1,3 +1,7 @@
+Thu Mar  1 22:51:30 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	* NEWS: Correct date of 1.2.0 release.
+
 Wed Feb 29 20:09:12 GMT 2012  Martin Pollard  <martin.pollard@sanger.ac.uk>
 
 	* lib/pipeline.h: Enclose in extern "C" { } when compiling as C++.
