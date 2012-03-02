@@ -1,5 +1,5 @@
-libpipeline 1.2.1
-=================
+libpipeline 1.2.1 (2 March 2012)
+================================
 
 Retry reads and writes on EINTR.
 
