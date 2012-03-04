@@ -1317,9 +1317,6 @@ void pipeline_start (pipeline *p)
 	/* Make sure our SIGCHLD handler is installed. */
 	pipeline_install_sigchld ();
 
-	/* Flush all pending output so that subprocesses don't inherit it. */
-	fflush (NULL);
-
 	assert (!p->pids);	/* pipeline not started already */
 	assert (!p->statuses);
 
@@ -1328,6 +1325,9 @@ void pipeline_start (pipeline *p)
 		debug ("Starting pipeline: ");
 		pipeline_dump (p, stderr);
 	}
+
+	/* Flush all pending output so that subprocesses don't inherit it. */
+	fflush (NULL);
 
 	if (p->ignore_signals && !ignored_signals++) {
 		struct sigaction sa;

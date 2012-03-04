@@ -1,3 +1,8 @@
+Sun Mar  4 17:43:21 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Flush stdio after emitting
+	  debugging output.
+
 Fri Mar  2 19:54:40 GMT 2012  Colin Watson  <cjwatson@debian.org>
 
 	* Version: 1.2.1.
