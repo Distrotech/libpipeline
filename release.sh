@@ -1,4 +1,5 @@
-#! /bin/sh -e
+#! /bin/sh
+set -e
 
 # Build automatically generated files
 ./autogen.sh
