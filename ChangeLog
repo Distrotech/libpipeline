@@ -1,3 +1,7 @@
+Mon Sep 17 22:27:47 BST 2012  Colin Watson  <cjwatson@debian.org>
+
+	* NEWS: Document changes since 1.2.1.
+
 Mon Sep 17 22:23:59 BST 2012  Colin Watson  <cjwatson@debian.org>
 
 	* autogen.sh: Use 'set -e' rather than '#! /bin/sh -e', to avoid

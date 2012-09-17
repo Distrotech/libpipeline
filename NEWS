@@ -1,3 +1,10 @@
+libpipeline 1.2.2
+=================
+
+Make pipeline_start flush stdio after emitting debugging output.
+
+Build fixes for glibc 2.16 and Automake 1.12.
+
 libpipeline 1.2.1 (2 March 2012)
 ================================
 
