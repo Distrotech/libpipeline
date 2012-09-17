@@ -1,3 +1,9 @@
+Mon Sep 17 22:54:12 BST 2012  Colin Watson  <cjwatson@debian.org>
+
+	* Version: 1.2.2.
+	* lib/Makefile.am (libpipeline_la_LDFLAGS): Bump -version-info to
+	  3:2:2.
+
 Mon Sep 17 22:52:58 BST 2012  Colin Watson  <cjwatson@debian.org>
 
 	* Makefile.am (EXTRA_DIST): Add gnulib/gets.patch.
