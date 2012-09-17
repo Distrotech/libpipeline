@@ -1,4 +1,5 @@
-#! /bin/sh -e
+#! /bin/sh
+set -e
 
 # Copyright (C) 2010 Colin Watson.
 #
