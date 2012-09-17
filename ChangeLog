@@ -1,3 +1,7 @@
+Mon Sep 17 22:52:58 BST 2012  Colin Watson  <cjwatson@debian.org>
+
+	* Makefile.am (EXTRA_DIST): Add gnulib/gets.patch.
+
 Mon Sep 17 22:31:18 BST 2012  Colin Watson  <cjwatson@debian.org>
 
 	* release.sh: Use 'set -e' rather than '#! /bin/sh -e', to avoid
