@@ -940,7 +940,6 @@ GNULIB_PERROR
 GNULIB_PCLOSE
 GNULIB_OBSTACK_PRINTF_POSIX
 GNULIB_OBSTACK_PRINTF
-GNULIB_GETS
 GNULIB_GETLINE
 GNULIB_GETDELIM
 GNULIB_GETCHAR
@@ -17637,7 +17636,6 @@ fi
   GNULIB_GETCHAR=0;
   GNULIB_GETDELIM=0;
   GNULIB_GETLINE=0;
-  GNULIB_GETS=0;
   GNULIB_OBSTACK_PRINTF=0;
   GNULIB_OBSTACK_PRINTF_POSIX=0;
   GNULIB_PCLOSE=0;
@@ -22131,7 +22129,6 @@ $as_echo "$gl_cv_next_stdio_h" >&6; }
   GNULIB_GETC=1
   GNULIB_GETCHAR=1
   GNULIB_FGETS=1
-  GNULIB_GETS=1
   GNULIB_FREAD=1
 
 
@@ -22149,7 +22146,7 @@ $as_echo "$gl_cv_next_stdio_h" >&6; }
 
 
 
-    for gl_func in dprintf fpurge fseeko ftello getdelim getline pclose popen renameat     snprintf tmpfile vdprintf vsnprintf; do
+    for gl_func in dprintf fpurge fseeko ftello getdelim getline gets pclose popen     renameat snprintf tmpfile vdprintf vsnprintf; do
     as_gl_Symbol=`$as_echo "gl_cv_have_raw_decl_$gl_func" | $as_tr_sh`
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $gl_func is declared without a macro" >&5
 $as_echo_n "checking whether $gl_func is declared without a macro... " >&6; }

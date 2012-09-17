@@ -1,3 +1,11 @@
+Mon Sep 17 22:05:04 BST 2012  Colin Watson  <cjwatson@debian.org>
+
+	Backport Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348 to
+	stop assuming gets.
+
+	* gnulib/gets.patch: New file.
+	* autogen.sh: Apply gnulib/gets.patch.
+
 Mon Sep 17 22:03:09 BST 2012  Colin Watson  <cjwatson@debian.org>
 
 	Upgrade to Autoconf 2.69, Automake 1.11.6, and Gnulib
