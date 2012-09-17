@@ -1,3 +1,8 @@
+Mon Sep 17 22:03:09 BST 2012  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Autoconf 2.69, Automake 1.11.6, and Gnulib
+	20120404-stable.
+
 Sun Mar  4 17:43:21 GMT 2012  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_start): Flush stdio after emitting
