@@ -1,3 +1,8 @@
+Mon Sep 17 22:21:44 BST 2012  Křištof Želechovski  <yecril71pl@gmail.com>
+
+	* configure.ac: Use AM_PROG_AR before LT_INIT, for compatibility
+	  with Automake 1.12.
+
 Mon Sep 17 22:05:04 BST 2012  Colin Watson  <cjwatson@debian.org>
 
 	Backport Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348 to

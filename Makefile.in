@@ -56,9 +56,9 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_noinst_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure COPYING \
-	ChangeLog INSTALL NEWS TODO tools/compile tools/config.guess \
-	tools/config.rpath tools/config.sub tools/depcomp \
-	tools/install-sh tools/ltmain.sh tools/missing
+	ChangeLog INSTALL NEWS TODO tools/ar-lib tools/compile \
+	tools/config.guess tools/config.rpath tools/config.sub \
+	tools/depcomp tools/install-sh tools/ltmain.sh tools/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-gcc-warning.m4 \
 	$(top_srcdir)/m4/pipeline-socketpair.m4 \

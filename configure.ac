@@ -30,6 +30,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([lib/pipeline.c])
 AC_GNU_SOURCE
+AM_PROG_AR
 LT_INIT([disable-static])
 
 AC_CONFIG_HEADER([config.h])
