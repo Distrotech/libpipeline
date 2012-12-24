@@ -1,3 +1,7 @@
+Mon Dec 24 02:23:37 GMT 2012  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_start): Remove redundant condition.
+
 Mon Sep 17 22:54:12 BST 2012  Colin Watson  <cjwatson@debian.org>
 
 	* Version: 1.2.2.

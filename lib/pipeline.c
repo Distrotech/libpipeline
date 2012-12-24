@@ -1413,7 +1413,7 @@ void pipeline_start (pipeline *p)
 				p->outfd = pdes[0];
 			output_read = pdes[0];
 			output_write = pdes[1];
-		} else if (i == p->ncommands - 1) {
+		} else {
 			if (p->redirect_out == REDIRECT_FD)
 				output_write = p->want_out;
 			else if (p->redirect_out == REDIRECT_FILE_NAME) {
