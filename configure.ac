@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 2010 Colin Watson.
+# Copyright (C) 2010, 2011, 2012, 2013 Colin Watson.
 #
 # This file is part of libpipeline.
 #
@@ -59,7 +59,6 @@ AM_CONDITIONAL([RUN_TESTS], [test "x$run_tests" = xyes])
 # Check for various header files and associated libraries.
 AC_ISC_POSIX
 gl_INIT
-AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([fcntl.h])
 
 # Checks for structures and compiler characteristics.
