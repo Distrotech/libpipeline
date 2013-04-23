@@ -29,4 +29,5 @@ tests/basic
 tests/exec
 tests/inspect
 tests/pump
+tests/reading_long_line
 tests/redirect

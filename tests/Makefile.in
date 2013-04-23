@@ -51,7 +51,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 TESTS = basic$(EXEEXT) argstr$(EXEEXT) exec$(EXEEXT) inspect$(EXEEXT) \
-	pump$(EXEEXT) redirect$(EXEEXT)
+	pump$(EXEEXT) redirect$(EXEEXT) reading_long_line$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -147,7 +147,8 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = basic$(EXEEXT) argstr$(EXEEXT) exec$(EXEEXT) \
-	inspect$(EXEEXT) pump$(EXEEXT) redirect$(EXEEXT)
+	inspect$(EXEEXT) pump$(EXEEXT) redirect$(EXEEXT) \
+	reading_long_line$(EXEEXT)
 am_argstr_OBJECTS = argstr.$(OBJEXT) common.$(OBJEXT)
 argstr_OBJECTS = $(am_argstr_OBJECTS)
 argstr_DEPENDENCIES = $(LIBS)
@@ -166,6 +167,10 @@ inspect_DEPENDENCIES = $(LIBS)
 am_pump_OBJECTS = pump.$(OBJEXT) common.$(OBJEXT)
 pump_OBJECTS = $(am_pump_OBJECTS)
 pump_DEPENDENCIES = $(LIBS)
+am_reading_long_line_OBJECTS = reading_long_line.$(OBJEXT) \
+	common.$(OBJEXT)
+reading_long_line_OBJECTS = $(am_reading_long_line_OBJECTS)
+reading_long_line_DEPENDENCIES = $(LIBS)
 am_redirect_OBJECTS = redirect.$(OBJEXT) common.$(OBJEXT)
 redirect_OBJECTS = $(am_redirect_OBJECTS)
 redirect_DEPENDENCIES = $(LIBS)
@@ -196,9 +201,11 @@ AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(argstr_SOURCES) $(basic_SOURCES) $(exec_SOURCES) \
-	$(inspect_SOURCES) $(pump_SOURCES) $(redirect_SOURCES)
+	$(inspect_SOURCES) $(pump_SOURCES) \
+	$(reading_long_line_SOURCES) $(redirect_SOURCES)
 DIST_SOURCES = $(argstr_SOURCES) $(basic_SOURCES) $(exec_SOURCES) \
-	$(inspect_SOURCES) $(pump_SOURCES) $(redirect_SOURCES)
+	$(inspect_SOURCES) $(pump_SOURCES) \
+	$(reading_long_line_SOURCES) $(redirect_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -979,6 +986,8 @@ pump_SOURCES = pump.c common.c common.h
 pump_LDADD = $(LIBS) @CHECK_LIBS@
 redirect_SOURCES = redirect.c common.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@
+reading_long_line_SOURCES = reading_long_line.c common.c common.h
+reading_long_line_LDADD = $(LIBS) @CHECK_LIBS@
 all: all-am
 
 .SUFFIXES:
@@ -1037,6 +1046,9 @@ inspect$(EXEEXT): $(inspect_OBJECTS) $(inspect_DEPENDENCIES) $(EXTRA_inspect_DEP
 pump$(EXEEXT): $(pump_OBJECTS) $(pump_DEPENDENCIES) $(EXTRA_pump_DEPENDENCIES) 
 	@rm -f pump$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(pump_OBJECTS) $(pump_LDADD) $(LIBS)
+reading_long_line$(EXEEXT): $(reading_long_line_OBJECTS) $(reading_long_line_DEPENDENCIES) $(EXTRA_reading_long_line_DEPENDENCIES) 
+	@rm -f reading_long_line$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(reading_long_line_OBJECTS) $(reading_long_line_LDADD) $(LIBS)
 redirect$(EXEEXT): $(redirect_OBJECTS) $(redirect_DEPENDENCIES) $(EXTRA_redirect_DEPENDENCIES) 
 	@rm -f redirect$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(redirect_OBJECTS) $(redirect_LDADD) $(LIBS)
@@ -1053,6 +1065,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inspect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pump.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reading_long_line.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/redirect.Po@am__quote@
 
 .c.o:

@@ -27,7 +27,8 @@ TESTS = \
 	exec \
 	inspect \
 	pump \
-	redirect
+	redirect \
+	reading_long_line
 check_PROGRAMS = $(TESTS)
 
 LIBS = ../gnulib/lib/libgnu.la $(LTLIBOBJS) $(top_builddir)/lib/libpipeline.la
@@ -58,3 +59,6 @@ pump_LDADD = $(LIBS) @CHECK_LIBS@
 
 redirect_SOURCES = redirect.c common.c common.h
 redirect_LDADD = $(LIBS) @CHECK_LIBS@
+
+reading_long_line_SOURCES = reading_long_line.c common.c common.h
+reading_long_line_LDADD = $(LIBS) @CHECK_LIBS@

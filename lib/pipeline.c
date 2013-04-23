@@ -2147,7 +2147,7 @@ static const char *get_line (pipeline *p, size_t *outlen)
 		if (!buffer || plen == 0)
 			return NULL;
 
-		end = memchr (buffer + block * i, '\n', plen);
+		end = memchr (buffer + block * i, '\n', plen - block * i);
 		if (!end && plen < block * (i + 1))
 			/* end of file, no newline found */
 			end = buffer + plen - 1;

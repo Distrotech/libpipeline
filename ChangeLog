@@ -1,3 +1,16 @@
+Tue Apr 23 07:50:45 BST 2013  Peter Schiffer  <pschiffe@redhat.com>
+                              Colin Watson  <cjwatson@debian.org>
+
+	Don't read uninitialised memory when testing for the end of long
+	lines (Fedora bug #876108).
+
+	* lib/pipeline.c (get_line): Fix incorrect memchr bounds.
+	* tests/Makefile.am (TESTS): Add reading_long_line.
+	  (reading_long_line_SOURCES, reading_long_line_LDADD): Add.
+	* tests/reading_long_line.c: New file.
+	* .bzrignore: Add tests/reading_long_line.
+	* NEWS: Document this.
+
 Mon Jan 21 11:42:09 GMT 2013  Colin Watson  <cjwatson@debian.org>
 
 	* configure.ac (AC_HEADER_SYS_WAIT): Remove; superseded by Gnulib.
