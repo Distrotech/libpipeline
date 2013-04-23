@@ -733,6 +733,11 @@ void pipecmd_exec (pipecmd *cmd)
 			struct pipecmd_sequence *cmds = &cmd->u.sequence;
 			struct sigaction sa;
 
+			/* Flush all pending output so that subprocesses
+			 * don't inherit it.
+			 */
+			fflush (NULL);
+
 			/* pipeline_start will have blocked SIGCHLD. We like
 			 * it that way. Lose the parent's signal handler,
 			 * though.

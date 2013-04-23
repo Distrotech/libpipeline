@@ -4,6 +4,8 @@ libpipeline 1.2.3
 Don't read uninitialised memory when testing for the end of long lines (over
 4096 bytes).
 
+Flush stdio before starting a sequence.
+
 libpipeline 1.2.2 (17 September 2012)
 =====================================
 

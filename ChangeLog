@@ -1,3 +1,9 @@
+Tue Apr 23 07:52:40 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipecmd_exec): Flush stdio before starting a
+	  sequence.
+	* NEWS: Document this.
+
 Tue Apr 23 07:50:45 BST 2013  Peter Schiffer  <pschiffe@redhat.com>
                               Colin Watson  <cjwatson@debian.org>
 
