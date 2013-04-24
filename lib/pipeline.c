@@ -255,6 +255,7 @@ pipecmd *pipecmd_new_argstr (const char *argstr)
 		 * work when being executed directly. To work around this,
 		 * we just drop "exec" if it appears at the start of argstr.
 		 */
+		free (arg);
 		arg = argstr_get_word (&argstr);
 		if (!arg)
 			error (FATAL, 0,

@@ -1,3 +1,15 @@
+Wed Apr 24 07:27:44 BST 2013  Peter Schiffer  <pschiffe@redhat.com>
+
+	* lib/pipeline.c (pipecmd_new_argstr): Fix memory leak when the
+	  first word of argstr is "exec".
+	* tests/argstr.c (test_argstr_exec): Free cmd at end.
+	* tests/basic.c (test_basic_wait_all): Free statuses at end.
+	  (test_basic_clearenv): Free p and p2 at end.
+	* tests/exec.c (test_exec_process, test_exec_function): Free cmd at
+	  end of loop.
+	* tests/redirect.c (test_redirect_files): Free p and template at
+	  end.
+
 Tue Apr 23 07:52:40 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipecmd_exec): Flush stdio before starting a

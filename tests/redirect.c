@@ -56,6 +56,9 @@ START_TEST (test_redirect_files)
 
 	fclose (fh);
 	unlink (template);
+
+	pipeline_free (p);
+	free (template);
 }
 END_TEST
 

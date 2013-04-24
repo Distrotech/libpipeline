@@ -71,6 +71,8 @@ START_TEST (test_exec_process)
 			fail_unless (WEXITSTATUS (status) == i);
 		else
 			fail_if (WEXITSTATUS (status) == 0);
+
+		pipecmd_free (cmd);
 	}
 }
 END_TEST
@@ -109,6 +111,8 @@ START_TEST (test_exec_function)
 
 		fail_unless (WIFEXITED (status));
 		fail_unless (WEXITSTATUS (status) == i);
+
+		pipecmd_free (cmd);
 	}
 }
 END_TEST

@@ -101,6 +101,7 @@ START_TEST (test_basic_wait_all)
 	fail_unless (statuses[1] == 3 * 256);
 	fail_unless (statuses[2] == 0);
 	pipeline_free (p);
+	free (statuses);
 }
 END_TEST
 
@@ -200,6 +201,8 @@ START_TEST (test_basic_clearenv)
 		     "clearenv+setenv+dup returned second line '%s', expected 'bar\n'",
 		     line2);
 	pipeline_wait (p2);
+	pipeline_free (p2);
+	pipeline_free (p);
 }
 END_TEST
 

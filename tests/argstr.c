@@ -62,6 +62,7 @@ START_TEST (test_argstr_exec)
 	fail_unless (cmd->u.process.argc == 2);
 	fail_unless (!strcmp (cmd->u.process.argv[0], "foo"));
 	fail_unless (!strcmp (cmd->u.process.argv[1], "bar"));
+	pipecmd_free (cmd);
 }
 END_TEST
 
