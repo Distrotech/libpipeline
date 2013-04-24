@@ -1666,6 +1666,21 @@ int pipeline_wait_all (pipeline *p, int **statuses, int *n_statuses)
 		if (active_pipelines[i] == p)
 			active_pipelines[i] = NULL;
 
+	/* It isn't normally safe to compactify active_pipelines as we go,
+	 * because it's used by a signal handler.  However, if it's entirely
+	 * empty, we can safely clean it up now.  This prevents the table
+	 * growing without bound, not to mention pacifying valgrind.
+	 */
+	for (i = 0; i < n_active_pipelines; ++i)
+		if (active_pipelines[i])
+			break;
+	if (i == n_active_pipelines) {
+		n_active_pipelines = 0;
+		max_active_pipelines = 0;
+		free (active_pipelines);
+		active_pipelines = NULL;
+	}
+
 	if (statuses && n_statuses) {
 		*statuses = xnmalloc (p->ncommands, sizeof **statuses);
 		*n_statuses = p->ncommands;

@@ -1,3 +1,8 @@
+Wed Apr 24 07:44:38 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (pipeline_wait_all): Free active_pipelines if it is
+	  entirely empty.
+
 Wed Apr 24 07:27:44 BST 2013  Peter Schiffer  <pschiffe@redhat.com>
 
 	* lib/pipeline.c (pipecmd_new_argstr): Fix memory leak when the
