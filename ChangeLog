@@ -1,3 +1,9 @@
+Wed Apr 24 07:48:26 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* Version: 1.2.3.
+	* lib/Makefile.am (libpipeline_la_LDFLAGS): Bump -version-info to
+	  3:3:2.
+
 Wed Apr 24 07:44:38 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (pipeline_wait_all): Free active_pipelines if it is

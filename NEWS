@@ -1,5 +1,5 @@
-libpipeline 1.2.3
-=================
+libpipeline 1.2.3 (24 April 2013)
+=================================
 
 Don't read uninitialised memory when testing for the end of long lines (over
 4096 bytes).
