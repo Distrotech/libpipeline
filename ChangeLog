@@ -1,3 +1,14 @@
+Thu May 30 13:28:08 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Automake 1.13.2 and Gnulib 20130529.
+
+	* .bzrignore: Add tests/*.log and tests/*.trs.
+	* autogen.sh: Drop gnulib/gets.patch backport.
+	* Makefile.am (EXTRA_DIST): Remove gnulib/gets.patch.
+	* gnulib/gets.patch: Remove.
+	* tests/argstr.c, tests/basic.c, tests/exec.c, tests/inspect.c,
+	  tests/reading_long_line.c, tests/redirect.c: Include config.h.
+
 Wed Apr 24 07:48:26 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* Version: 1.2.3.

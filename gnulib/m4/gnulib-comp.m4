@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002-2013 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,12 +50,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module exitfail:
   # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  # Code from module extern-inline:
   # Code from module float:
   # Code from module full-write:
   # Code from module gettext-h:
   # Code from module havelib:
   # Code from module include_next:
-  # Code from module inline:
   # Code from module intprops:
   # Code from module lib-ignore:
   # Code from module lock:
@@ -101,6 +101,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module sys_select:
   # Code from module sys_stat:
   # Code from module sys_time:
+  # Code from module sys_types:
   # Code from module sys_wait:
   # Code from module threadlib:
   gl_THREADLIB_EARLY
@@ -136,170 +137,173 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='gnulib/lib'
-gl_FUNC_ALLOCA
-gl_DIRNAME
-gl_MODULE_INDICATOR([dirname])
-gl_DIRNAME_LGPL
-gl_DOUBLE_SLASH_ROOT
-gl_ENVIRON
-gl_UNISTD_MODULE_INDICATOR([environ])
-gl_HEADER_ERRNO_H
-gl_ERROR
-if test $ac_cv_lib_error_at_line = no; then
-  AC_LIBOBJ([error])
-  gl_PREREQ_ERROR
-fi
-m4_ifdef([AM_XGETTEXT_OPTION],
-  [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
-   AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
-gl_FLOAT_H
-if test $REPLACE_FLOAT_LDBL = 1; then
-  AC_LIBOBJ([float])
-fi
-if test $REPLACE_ITOLD = 1; then
-  AC_LIBOBJ([itold])
-fi
-AC_SUBST([LIBINTL])
-AC_SUBST([LTLIBINTL])
-gl_INLINE
-gl_IGNORE_UNUSED_LIBRARIES
-gl_LOCK
-gl_FUNC_MALLOC_POSIX
-if test $REPLACE_MALLOC = 1; then
-  AC_LIBOBJ([malloc])
-fi
-gl_STDLIB_MODULE_INDICATOR([malloc-posix])
-gl_MALLOCA
-gl_FUNC_MEMCHR
-if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
-  AC_LIBOBJ([memchr])
-  gl_PREREQ_MEMCHR
-fi
-gl_STRING_MODULE_INDICATOR([memchr])
-gl_MSVC_INVAL
-if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
-  AC_LIBOBJ([msvc-inval])
-fi
-gl_MSVC_NOTHROW
-if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
-  AC_LIBOBJ([msvc-nothrow])
-fi
-gl_MULTIARCH
-gl_FUNC_RAISE
-if test $HAVE_RAISE = 0 || test $REPLACE_RAISE = 1; then
-  AC_LIBOBJ([raise])
-  gl_PREREQ_RAISE
-fi
-gl_SIGNAL_MODULE_INDICATOR([raise])
-gl_FUNC_READ
-if test $REPLACE_READ = 1; then
-  AC_LIBOBJ([read])
-  gl_PREREQ_READ
-fi
-gl_UNISTD_MODULE_INDICATOR([read])
-gl_PREREQ_SAFE_READ
-gl_PREREQ_SAFE_WRITE
-gl_FUNC_SETENV
-if test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1; then
-  AC_LIBOBJ([setenv])
-fi
-gl_STDLIB_MODULE_INDICATOR([setenv])
-gl_SIGACTION
-if test $HAVE_SIGACTION = 0; then
-  AC_LIBOBJ([sigaction])
-  gl_PREREQ_SIGACTION
-fi
-gl_SIGNAL_MODULE_INDICATOR([sigaction])
-gl_SIGNAL_H
-gl_SIGNALBLOCKING
-if test $HAVE_POSIX_SIGNALBLOCKING = 0; then
-  AC_LIBOBJ([sigprocmask])
-  gl_PREREQ_SIGPROCMASK
-fi
-gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
-gl_SIZE_MAX
-gl_FUNC_SNPRINTF
-gl_STDIO_MODULE_INDICATOR([snprintf])
-gl_MODULE_INDICATOR([snprintf])
-gt_TYPE_SSIZE_T
-gl_STDARG_H
-AM_STDBOOL_H
-gl_STDDEF_H
-gl_STDINT_H
-gl_STDIO_H
-gl_STDLIB_H
-gl_FUNC_STRERROR
-if test $REPLACE_STRERROR = 1; then
-  AC_LIBOBJ([strerror])
-fi
-gl_MODULE_INDICATOR([strerror])
-gl_STRING_MODULE_INDICATOR([strerror])
-AC_REQUIRE([gl_HEADER_ERRNO_H])
-AC_REQUIRE([gl_FUNC_STRERROR_0])
-if test -n "$ERRNO_H" || test $REPLACE_STRERROR_0 = 1; then
-  AC_LIBOBJ([strerror-override])
-  gl_PREREQ_SYS_H_WINSOCK2
-fi
-gl_HEADER_STRING_H
-gl_FUNC_STRNDUP
-if test $HAVE_STRNDUP = 0 || test $REPLACE_STRNDUP = 1; then
-  AC_LIBOBJ([strndup])
-fi
-gl_STRING_MODULE_INDICATOR([strndup])
-gl_FUNC_STRNLEN
-if test $HAVE_DECL_STRNLEN = 0 || test $REPLACE_STRNLEN = 1; then
-  AC_LIBOBJ([strnlen])
-  gl_PREREQ_STRNLEN
-fi
-gl_STRING_MODULE_INDICATOR([strnlen])
-gl_FUNC_STRSIGNAL
-if test $HAVE_STRSIGNAL = 0 || test $REPLACE_STRSIGNAL = 1; then
-  AC_LIBOBJ([strsignal])
-  gl_PREREQ_STRSIGNAL
-fi
-gl_STRING_MODULE_INDICATOR([strsignal])
-gl_HEADER_SYS_SELECT
-AC_PROG_MKDIR_P
-gl_HEADER_SYS_STAT_H
-AC_PROG_MKDIR_P
-gl_HEADER_SYS_TIME_H
-AC_PROG_MKDIR_P
-gl_SYS_WAIT_H
-AC_PROG_MKDIR_P
-gl_THREADLIB
-gl_HEADER_TIME_H
-gl_TLS
-gl_UNISTD_H
-gl_FUNC_UNSETENV
-if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
-  AC_LIBOBJ([unsetenv])
-  gl_PREREQ_UNSETENV
-fi
-gl_STDLIB_MODULE_INDICATOR([unsetenv])
-gl_FUNC_VASNPRINTF
-gl_FUNC_VASPRINTF
-gl_STDIO_MODULE_INDICATOR([vasprintf])
-m4_ifdef([AM_XGETTEXT_OPTION],
-  [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
-   AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
-gl_FUNC_WAITPID
-if test $HAVE_WAITPID = 0; then
-  AC_LIBOBJ([waitpid])
-fi
-gl_SYS_WAIT_MODULE_INDICATOR([waitpid])
-gl_WCHAR_H
-gl_FUNC_WRITE
-if test $REPLACE_WRITE = 1; then
-  AC_LIBOBJ([write])
-  gl_PREREQ_WRITE
-fi
-gl_UNISTD_MODULE_INDICATOR([write])
-gl_XALLOC
-gl_XSIZE
-gl_XSTRNDUP
-gl_XVASPRINTF
-m4_ifdef([AM_XGETTEXT_OPTION],
-  [AM_][XGETTEXT_OPTION([--flag=xasprintf:1:c-format])])
+  gl_FUNC_ALLOCA
+  gl_DIRNAME
+  gl_MODULE_INDICATOR([dirname])
+  gl_DIRNAME_LGPL
+  gl_DOUBLE_SLASH_ROOT
+  gl_ENVIRON
+  gl_UNISTD_MODULE_INDICATOR([environ])
+  gl_HEADER_ERRNO_H
+  gl_ERROR
+  if test $ac_cv_lib_error_at_line = no; then
+    AC_LIBOBJ([error])
+    gl_PREREQ_ERROR
+  fi
+  m4_ifdef([AM_XGETTEXT_OPTION],
+    [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
+     AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
+  AC_REQUIRE([gl_EXTERN_INLINE])
+  gl_FLOAT_H
+  if test $REPLACE_FLOAT_LDBL = 1; then
+    AC_LIBOBJ([float])
+  fi
+  if test $REPLACE_ITOLD = 1; then
+    AC_LIBOBJ([itold])
+  fi
+  AC_SUBST([LIBINTL])
+  AC_SUBST([LTLIBINTL])
+  gl_IGNORE_UNUSED_LIBRARIES
+  gl_LOCK
+  gl_MODULE_INDICATOR([lock])
+  gl_FUNC_MALLOC_POSIX
+  if test $REPLACE_MALLOC = 1; then
+    AC_LIBOBJ([malloc])
+  fi
+  gl_STDLIB_MODULE_INDICATOR([malloc-posix])
+  gl_MALLOCA
+  gl_FUNC_MEMCHR
+  if test $HAVE_MEMCHR = 0 || test $REPLACE_MEMCHR = 1; then
+    AC_LIBOBJ([memchr])
+    gl_PREREQ_MEMCHR
+  fi
+  gl_STRING_MODULE_INDICATOR([memchr])
+  gl_MSVC_INVAL
+  if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
+    AC_LIBOBJ([msvc-inval])
+  fi
+  gl_MSVC_NOTHROW
+  if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then
+    AC_LIBOBJ([msvc-nothrow])
+  fi
+  gl_MULTIARCH
+  gl_FUNC_RAISE
+  if test $HAVE_RAISE = 0 || test $REPLACE_RAISE = 1; then
+    AC_LIBOBJ([raise])
+    gl_PREREQ_RAISE
+  fi
+  gl_SIGNAL_MODULE_INDICATOR([raise])
+  gl_FUNC_READ
+  if test $REPLACE_READ = 1; then
+    AC_LIBOBJ([read])
+    gl_PREREQ_READ
+  fi
+  gl_UNISTD_MODULE_INDICATOR([read])
+  gl_PREREQ_SAFE_READ
+  gl_PREREQ_SAFE_WRITE
+  gl_FUNC_SETENV
+  if test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1; then
+    AC_LIBOBJ([setenv])
+  fi
+  gl_STDLIB_MODULE_INDICATOR([setenv])
+  gl_SIGACTION
+  if test $HAVE_SIGACTION = 0; then
+    AC_LIBOBJ([sigaction])
+    gl_PREREQ_SIGACTION
+  fi
+  gl_SIGNAL_MODULE_INDICATOR([sigaction])
+  gl_SIGNAL_H
+  gl_SIGNALBLOCKING
+  if test $HAVE_POSIX_SIGNALBLOCKING = 0; then
+    AC_LIBOBJ([sigprocmask])
+    gl_PREREQ_SIGPROCMASK
+  fi
+  gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
+  gl_SIZE_MAX
+  gl_FUNC_SNPRINTF
+  gl_STDIO_MODULE_INDICATOR([snprintf])
+  gl_MODULE_INDICATOR([snprintf])
+  gt_TYPE_SSIZE_T
+  gl_STDARG_H
+  AM_STDBOOL_H
+  gl_STDDEF_H
+  gl_STDINT_H
+  gl_STDIO_H
+  gl_STDLIB_H
+  gl_FUNC_STRERROR
+  if test $REPLACE_STRERROR = 1; then
+    AC_LIBOBJ([strerror])
+  fi
+  gl_MODULE_INDICATOR([strerror])
+  gl_STRING_MODULE_INDICATOR([strerror])
+  AC_REQUIRE([gl_HEADER_ERRNO_H])
+  AC_REQUIRE([gl_FUNC_STRERROR_0])
+  if test -n "$ERRNO_H" || test $REPLACE_STRERROR_0 = 1; then
+    AC_LIBOBJ([strerror-override])
+    gl_PREREQ_SYS_H_WINSOCK2
+  fi
+  gl_HEADER_STRING_H
+  gl_FUNC_STRNDUP
+  if test $HAVE_STRNDUP = 0 || test $REPLACE_STRNDUP = 1; then
+    AC_LIBOBJ([strndup])
+  fi
+  gl_STRING_MODULE_INDICATOR([strndup])
+  gl_FUNC_STRNLEN
+  if test $HAVE_DECL_STRNLEN = 0 || test $REPLACE_STRNLEN = 1; then
+    AC_LIBOBJ([strnlen])
+    gl_PREREQ_STRNLEN
+  fi
+  gl_STRING_MODULE_INDICATOR([strnlen])
+  gl_FUNC_STRSIGNAL
+  if test $HAVE_STRSIGNAL = 0 || test $REPLACE_STRSIGNAL = 1; then
+    AC_LIBOBJ([strsignal])
+    gl_PREREQ_STRSIGNAL
+  fi
+  gl_STRING_MODULE_INDICATOR([strsignal])
+  gl_HEADER_SYS_SELECT
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_STAT_H
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_TIME_H
+  AC_PROG_MKDIR_P
+  gl_SYS_TYPES_H
+  AC_PROG_MKDIR_P
+  gl_SYS_WAIT_H
+  AC_PROG_MKDIR_P
+  gl_THREADLIB
+  gl_HEADER_TIME_H
+  gl_TLS
+  gl_UNISTD_H
+  gl_FUNC_UNSETENV
+  if test $HAVE_UNSETENV = 0 || test $REPLACE_UNSETENV = 1; then
+    AC_LIBOBJ([unsetenv])
+    gl_PREREQ_UNSETENV
+  fi
+  gl_STDLIB_MODULE_INDICATOR([unsetenv])
+  gl_FUNC_VASNPRINTF
+  gl_FUNC_VASPRINTF
+  gl_STDIO_MODULE_INDICATOR([vasprintf])
+  m4_ifdef([AM_XGETTEXT_OPTION],
+    [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
+     AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
+  gl_FUNC_WAITPID
+  if test $HAVE_WAITPID = 0; then
+    AC_LIBOBJ([waitpid])
+  fi
+  gl_SYS_WAIT_MODULE_INDICATOR([waitpid])
+  gl_WCHAR_H
+  gl_FUNC_WRITE
+  if test $REPLACE_WRITE = 1; then
+    AC_LIBOBJ([write])
+    gl_PREREQ_WRITE
+  fi
+  gl_UNISTD_MODULE_INDICATOR([write])
+  gl_XALLOC
+  gl_XSIZE
+  gl_XSTRNDUP
+  gl_XVASPRINTF
+  m4_ifdef([AM_XGETTEXT_OPTION],
+    [AM_][XGETTEXT_OPTION([--flag=xasprintf:1:c-format])])
   # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
@@ -489,6 +493,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/safe-write.c
   lib/safe-write.h
   lib/setenv.c
+  lib/sig-handler.c
   lib/sig-handler.h
   lib/sigaction.c
   lib/siglist.h
@@ -513,8 +518,10 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sys_select.in.h
   lib/sys_stat.in.h
   lib/sys_time.in.h
+  lib/sys_types.in.h
   lib/sys_wait.in.h
   lib/time.in.h
+  lib/unistd.c
   lib/unistd.in.h
   lib/unsetenv.c
   lib/vasnprintf.c
@@ -529,6 +536,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xalloc.h
   lib/xasprintf.c
   lib/xmalloc.c
+  lib/xsize.c
   lib/xsize.h
   lib/xstrndup.c
   lib/xstrndup.h
@@ -544,10 +552,10 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/error.m4
   m4/exponentd.m4
   m4/extensions.m4
+  m4/extern-inline.m4
   m4/float_h.m4
   m4/gnulib-common.m4
   m4/include_next.m4
-  m4/inline.m4
   m4/intmax_t.m4
   m4/inttypes_h.m4
   m4/lib-ignore.m4
@@ -564,6 +572,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/msvc-inval.m4
   m4/msvc-nothrow.m4
   m4/multiarch.m4
+  m4/off_t.m4
   m4/onceonly.m4
   m4/printf.m4
   m4/raise.m4
@@ -593,6 +602,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4
   m4/sys_time_h.m4
+  m4/sys_types_h.m4
   m4/sys_wait_h.m4
   m4/threadlib.m4
   m4/time_h.m4

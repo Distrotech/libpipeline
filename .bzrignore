@@ -24,6 +24,8 @@ gnulib/lib/unistd.h
 gnulib/lib/warn-on-use.h
 gnulib/lib/wchar.h
 lib/libpipeline.pc
+tests/*.log
+tests/*.trs
 tests/argstr
 tests/basic
 tests/exec

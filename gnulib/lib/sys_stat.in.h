@@ -1,5 +1,5 @@
 /* Provide a more complete sys/stat header file.
-   Copyright (C) 2005-2012 Free Software Foundation, Inc.
+   Copyright (C) 2005-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,7 +35,8 @@
 
 #ifndef _@GUARD_PREFIX@_SYS_STAT_H
 
-/* Get nlink_t.  */
+/* Get nlink_t.
+   May also define off_t to a 64-bit type on native Windows.  */
 #include <sys/types.h>
 
 /* Get struct timespec.  */
@@ -64,6 +65,11 @@
 /* Native Windows platforms declare umask() in <io.h>.  */
 #if 0 && ((defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__)
 # include <io.h>
+#endif
+
+/* Large File Support on native Windows.  */
+#if @WINDOWS_64_BIT_ST_SIZE@
+# define stat _stati64
 #endif
 
 #ifndef S_IFIFO
@@ -142,6 +148,10 @@
 #  define S_ISMPB(m) 0
 #  define S_ISMPC(m) 0
 # endif
+#endif
+
+#ifndef S_ISMPX /* AIX */
+# define S_ISMPX(m) 0
 #endif
 
 #ifndef S_ISNAM /* Xenix */
@@ -335,6 +345,9 @@ _GL_CXXALIAS_RPL (fstat, int, (int fd, struct stat *buf));
 _GL_CXXALIAS_SYS (fstat, int, (int fd, struct stat *buf));
 # endif
 _GL_CXXALIASWARN (fstat);
+#elif @WINDOWS_64_BIT_ST_SIZE@
+/* Above, we define stat to _stati64.  */
+# define fstat _fstati64
 #elif defined GNULIB_POSIXCHECK
 # undef fstat
 # if HAVE_RAW_DECL_FSTAT
@@ -488,7 +501,7 @@ _GL_CXXALIAS_RPL (mkdir, int, (char const *name, mode_t mode));
 # if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
 
 #  if !GNULIB_defined_rpl_mkdir
-static inline int
+static int
 rpl_mkdir (char const *name, mode_t mode)
 {
   return _mkdir (name);
@@ -620,6 +633,28 @@ _GL_WARN_ON_USE (mknodat, "mknodat is not portable - "
        so we have to replace stat64() instead of stat(). */
 #   undef stat64
 #   define stat64(name, st) rpl_stat (name, st)
+#  elif @WINDOWS_64_BIT_ST_SIZE@
+    /* Above, we define stat to _stati64.  */
+#   if defined __MINGW32__ && defined _stati64
+#    ifndef _USE_32BIT_TIME_T
+      /* The system headers define _stati64 to _stat64.  */
+#     undef _stat64
+#     define _stat64(name, st) rpl_stat (name, st)
+#    endif
+#   elif defined _MSC_VER && defined _stati64
+#    ifdef _USE_32BIT_TIME_T
+      /* The system headers define _stati64 to _stat32i64.  */
+#     undef _stat32i64
+#     define _stat32i64(name, st) rpl_stat (name, st)
+#    else
+      /* The system headers define _stati64 to _stat64.  */
+#     undef _stat64
+#     define _stat64(name, st) rpl_stat (name, st)
+#    endif
+#   else
+#    undef _stati64
+#    define _stati64(name, st) rpl_stat (name, st)
+#   endif
 #  elif defined __MINGW32__ && defined stat
 #   ifdef _USE_32BIT_TIME_T
      /* The system headers define stat to _stat32i64.  */

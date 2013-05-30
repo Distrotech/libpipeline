@@ -23,6 +23,10 @@
  * Unit test for bug: https://bugzilla.redhat.com/show_bug.cgi?id=876108
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
 #include <string.h>
 #include <errno.h>
 #include "xvasprintf.h"
