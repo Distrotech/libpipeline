@@ -1,3 +1,10 @@
+Wed Jun  5 18:01:47 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.h (pipecmd_clearenv): Add a warning about use of this
+	  function.
+	* man/libpipeline.3 (Functions to build individual commands):
+	  Likewise.
+
 Wed Jun  5 10:31:01 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	Quieten warnings from compiling Gnulib.

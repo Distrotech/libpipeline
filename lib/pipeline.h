@@ -183,6 +183,9 @@ void pipecmd_unsetenv (pipecmd *cmd, const char *name);
 /* Clear the environment while running this command.  (Note that environment
  * operations work in sequence; pipecmd_clearenv followed by pipecmd_setenv
  * causes the command to have just a single environment variable set.)
+ * Beware that this may cause unexpected failures, for example if some of
+ * the contents of the environment are necessary to execute programs at all
+ * (say, PATH).
  */
 void pipecmd_clearenv (pipecmd *cmd);
 
