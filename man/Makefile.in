@@ -81,8 +81,7 @@ subdir = man
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(dist_man3_MANS)
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-gcc-warning.m4 \
-	$(top_srcdir)/m4/pipeline-socketpair.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-socketpair.m4 \
 	$(top_srcdir)/gnulib/m4/00gnulib.m4 \
 	$(top_srcdir)/gnulib/m4/alloca.m4 \
 	$(top_srcdir)/gnulib/m4/dirname.m4 \
@@ -158,6 +157,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/pipeline-gcc-warning.m4 \
 	$(top_srcdir)/gnulib/m4/vasprintf.m4 \
 	$(top_srcdir)/gnulib/m4/waitpid.m4 \
 	$(top_srcdir)/gnulib/m4/warn-on-use.m4 \
+	$(top_srcdir)/gnulib/m4/warnings.m4 \
 	$(top_srcdir)/gnulib/m4/wchar_h.m4 \
 	$(top_srcdir)/gnulib/m4/wchar_t.m4 \
 	$(top_srcdir)/gnulib/m4/wint_t.m4 \
@@ -924,6 +924,7 @@ UNDEFINE_STRTOK_R = @UNDEFINE_STRTOK_R@
 UNISTD_H_HAVE_WINSOCK2_H = @UNISTD_H_HAVE_WINSOCK2_H@
 UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS = @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 VERSION = @VERSION@
+WARN_CFLAGS = @WARN_CFLAGS@
 WCHAR_T_SUFFIX = @WCHAR_T_SUFFIX@
 WINDOWS_64_BIT_OFF_T = @WINDOWS_64_BIT_OFF_T@
 WINDOWS_64_BIT_ST_SIZE = @WINDOWS_64_BIT_ST_SIZE@

@@ -37,7 +37,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib \
 	-I$(top_srcdir)/lib
-AM_CFLAGS = @CHECK_CFLAGS@
+AM_CFLAGS = $(WARN_CFLAGS) @CHECK_CFLAGS@
 
 clean-local:
 	rm -f testtmp.*

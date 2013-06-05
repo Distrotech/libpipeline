@@ -21,6 +21,8 @@
 
 lib_LTLIBRARIES = libpipeline.la
 
+AM_CFLAGS = $(WARN_CFLAGS)
+
 libpipeline_la_CPPFLAGS = \
 	-I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/gnulib/lib

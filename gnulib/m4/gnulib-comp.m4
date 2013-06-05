@@ -113,6 +113,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module vasprintf:
   # Code from module verify:
   # Code from module waitpid:
+  # Code from module warnings:
   # Code from module wchar:
   # Code from module write:
   # Code from module xalloc:
@@ -612,6 +613,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/vasprintf.m4
   m4/waitpid.m4
   m4/warn-on-use.m4
+  m4/warnings.m4
   m4/wchar_h.m4
   m4/wchar_t.m4
   m4/wint_t.m4

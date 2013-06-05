@@ -1,3 +1,13 @@
+Wed Jun  5 10:31:01 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	Quieten warnings from compiling Gnulib.
+
+	* m4/pipeline-gcc-warning.m4: Remove.
+	* gnulib: Import warnings module.
+	* configure.ac: Replace PIPELINE_GCC_WARNING with gl_WARN_ADD.
+	* lib/Makefile.am (AM_CFLAGS): Add $(WARN_CFLAGS).
+	* tests/Makefile.am (AM_CFLAGS): Likewise.
+
 Wed Jun  5 10:16:59 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* tests/argstr.c, tests/basic.c, tests/exec.c, tests/inspect.c,

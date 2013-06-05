@@ -43,14 +43,14 @@ AC_PROG_CPP
 CFLAGS="$CFLAGS -Wall"
 if test "$GCC" = yes
 then
-	PIPELINE_GCC_WARNING([]) # -W
-	PIPELINE_GCC_WARNING([pointer-arith])
-	PIPELINE_GCC_WARNING([write-strings])
-	PIPELINE_GCC_WARNING([strict-prototypes])
-	PIPELINE_GCC_WARNING([shadow])
-	PIPELINE_GCC_WARNING([format-security])
-	PIPELINE_GCC_WARNING([redundant-decls])
-	PIPELINE_GCC_WARNING([no-missing-field-initializers])
+	gl_WARN_ADD([-W])
+	gl_WARN_ADD([-Wpointer-arith])
+	gl_WARN_ADD([-Wwrite-strings])
+	gl_WARN_ADD([-Wstrict-prototypes])
+	gl_WARN_ADD([-Wshadow])
+	gl_WARN_ADD([-Wformat-security])
+	gl_WARN_ADD([-Wredundant-decls])
+	gl_WARN_ADD([-Wno-missing-field-initializers])
 fi
 AC_PROG_LN_S
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [run_tests=yes], [run_tests=no])
