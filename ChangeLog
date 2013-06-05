@@ -1,3 +1,9 @@
+Wed Jun  5 10:16:59 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* tests/argstr.c, tests/basic.c, tests/exec.c, tests/inspect.c,
+	  tests/pump.c, tests/reading_long_line.c, tests/redirect.c: Define
+	  program_name (thanks, Fernando Lemos; see Savannah bug #36848).
+
 Wed Jun  5 10:12:29 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* Makefile.in (DIST_COMMON): Regenerate, adding tools/depcomp.

@@ -27,6 +27,8 @@
 
 #include "common.h"
 
+const char *program_name = "basic";
+
 START_TEST (test_basic_status)
 {
 	pipeline *p;

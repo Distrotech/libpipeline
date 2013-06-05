@@ -35,6 +35,8 @@
 /* Include private definitions so that we can inspect redirections. */
 #include "pipeline-private.h"
 
+const char *program_name = "pump";
+
 static void fail_unless_files_equal (const char *left, const char *right)
 {
 	pipeline *diff = pipeline_new_command_args

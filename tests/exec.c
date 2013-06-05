@@ -34,6 +34,8 @@
 
 #include "common.h"
 
+const char *program_name = "exec";
+
 START_TEST (test_exec_process)
 {
 	int i;

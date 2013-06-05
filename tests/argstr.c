@@ -30,6 +30,8 @@
 /* Include private definitions so that we can inspect arguments. */
 #include "pipeline-private.h"
 
+const char *program_name = "argstr";
+
 START_TEST (test_argstr_trivial)
 {
 	pipecmd *cmd;

@@ -34,6 +34,8 @@
 
 #include "common.h"
 
+const char *program_name = "redirect";
+
 START_TEST (test_redirect_files)
 {
 	char *template = xstrdup ("testtmp.XXXXXX");

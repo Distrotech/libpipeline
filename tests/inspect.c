@@ -31,6 +31,8 @@
 
 #include "common.h"
 
+const char *program_name = "inspect";
+
 START_TEST (test_inspect_command)
 {
 	pipecmd *cmd;
