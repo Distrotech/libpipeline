@@ -1,3 +1,7 @@
+Wed Jun  5 10:12:29 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* Makefile.in (DIST_COMMON): Regenerate, adding tools/depcomp.
+
 Thu May 30 13:28:08 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	Upgrade to Automake 1.13.2 and Gnulib 20130529.

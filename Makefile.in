@@ -85,7 +85,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/config.h.in $(dist_noinst_DATA) COPYING ChangeLog \
 	INSTALL NEWS README TODO tools/ar-lib tools/compile \
 	tools/config.guess tools/config.rpath tools/config.sub \
-	tools/install-sh tools/missing tools/ltmain.sh \
+	tools/depcomp tools/install-sh tools/missing tools/ltmain.sh \
 	$(top_srcdir)/tools/ar-lib $(top_srcdir)/tools/compile \
 	$(top_srcdir)/tools/config.guess \
 	$(top_srcdir)/tools/config.rpath \
