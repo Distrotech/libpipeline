@@ -1,3 +1,7 @@
+Wed Jun  5 20:18:23 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* aclocal.m4: Upgrade to Gettext 0.18.2.1.
+
 Wed Jun  5 20:12:11 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* tools/config.guess: Update to 2013-05-16.
