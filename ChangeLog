@@ -1,3 +1,8 @@
+Wed Jun  5 20:12:11 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* tools/config.guess: Update to 2013-05-16.
+	* tools/config.sub: Update to 2013-04-24.
+
 Wed Jun  5 18:01:47 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.h (pipecmd_clearenv): Add a warning about use of this
