@@ -75,6 +75,20 @@
 #   endif
 #endif
 
+#ifndef HAVE_CLEARENV
+int clearenv (void)
+{
+	/* According to:
+	 *   http://hg.dovecot.org/dovecot-2.0/file/74d9f61e224d/src/lib/env-util.c#l56
+	 * simply setting "environ = NULL" crashes some systems.  Creating a
+	 * new environment consisting of just a terminator is indeed
+	 * probably the best we can do.
+	 */
+	environ = XCALLOC (1, char *);
+	return 0;
+}
+#endif
+
 /* ---------------------------------------------------------------------- */
 
 /* Functions to build individual commands. */

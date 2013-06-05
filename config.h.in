@@ -125,6 +125,9 @@
 /* Define to 1 if you have the <bp-sym.h> header file. */
 #undef HAVE_BP_SYM_H
 
+/* Define to 1 if you have the `clearenv' function. */
+#undef HAVE_CLEARENV
+
 /* Define to 1 if you have the declaration of `setenv', and to 0 if you don't.
    */
 #undef HAVE_DECL_SETENV

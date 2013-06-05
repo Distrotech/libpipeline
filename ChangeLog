@@ -1,3 +1,14 @@
+Wed Jun  5 20:28:59 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	Provide a replacement clearenv for non-glibc systems that lack it
+	(Savannah bug #36848).
+
+	* gnulib: Import environ module.
+	* configure.ac: Check for clearenv.
+	* lib/pipeline.c [!HAVE_CLEARENV] (clearenv): New replacement
+	  function.
+	* lib/pipeline-private.h [!HAVE_CLEARENV] (clearenv): Add prototype.
+
 Wed Jun  5 20:18:23 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* aclocal.m4: Upgrade to Gettext 0.18.2.1.

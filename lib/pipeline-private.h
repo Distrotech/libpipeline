@@ -36,6 +36,10 @@ extern void init_debug (void);
 extern int debug_level;
 extern void debug (const char *message, ...) PIPELINE_ATTR_FORMAT_PRINTF(1, 2);
 
+#ifndef HAVE_CLEARENV
+extern int clearenv (void);
+#endif
+
 enum pipecmd_tag {
 	PIPECMD_PROCESS,
 	PIPECMD_FUNCTION,

@@ -60,6 +60,7 @@ AM_CONDITIONAL([RUN_TESTS], [test "x$run_tests" = xyes])
 AC_ISC_POSIX
 gl_INIT
 AC_CHECK_HEADERS([fcntl.h])
+AC_CHECK_FUNCS([clearenv])
 
 # Checks for structures and compiler characteristics.
 AC_C_CONST
