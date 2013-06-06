@@ -1,3 +1,7 @@
+Thu Jun  6 12:38:07 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* NEWS: Document changes since 1.2.3.
+
 Wed Jun  5 20:28:59 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	Provide a replacement clearenv for non-glibc systems that lack it
