@@ -1,5 +1,5 @@
-libpipeline 1.2.4
-=================
+libpipeline 1.2.4 (6 June 2013)
+===============================
 
 Provide a replacement clearenv function in order to support non-glibc
 systems.  Now tested on FreeBSD.
