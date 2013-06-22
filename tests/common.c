@@ -23,6 +23,10 @@
 #  include "config.h"
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include "xalloc.h"
 
 #include "common.h"
@@ -32,7 +36,8 @@ char *temp_dir;
 void temp_dir_setup (void)
 {
 	temp_dir = xstrdup ("libpipeline.XXXXXX");
-	mkdtemp (temp_dir);
+	if (mkdtemp (temp_dir) == NULL)
+		fail ("mkdtemp failed: %s", strerror (errno));
 }
 
 void temp_dir_teardown (void)
