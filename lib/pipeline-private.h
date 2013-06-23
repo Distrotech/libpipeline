@@ -112,7 +112,7 @@ struct pipeline {
 	 * that the files will be opened with the same privileges under
 	 * which the pipeline is being run.
 	 */
-	const char *want_infile, *want_outfile;
+	char *want_infile, *want_outfile;
 
 	/* See above. Default to -1. The caller should consider these
 	 * read-only.

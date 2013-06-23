@@ -1,3 +1,14 @@
+Sun Jun 23 12:44:09 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline-private.h (struct pipeline): Make want_infile and
+	  want_outfile non-const.
+	* lib/pipeline.c (pipeline_join): Take copies of p1->want_infile and
+	  p2->want_outfile.
+	  (pipeline_want_infile): Take a copy of file.
+	  (pipeline_want_outfile): Likewise.
+	  (pipeline_free): Free p->want_infile and p->want_outfile.
+	* NEWS: Document this.
+
 Sun Jun 23 12:40:32 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* lib/pipeline.c (argstr_get_word, pipeline_free): Remove

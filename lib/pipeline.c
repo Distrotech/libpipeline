@@ -960,10 +960,10 @@ pipeline *pipeline_join (pipeline *p1, pipeline *p2)
 	p->statuses = NULL;
 	p->redirect_in = p1->redirect_in;
 	p->want_in = p1->want_in;
-	p->want_infile = p1->want_infile;
+	p->want_infile = p1->want_infile ? xstrdup (p1->want_infile) : NULL;
 	p->redirect_out = p2->redirect_out;
 	p->want_out = p2->want_out;
-	p->want_outfile = p2->want_outfile;
+	p->want_outfile = p2->want_outfile ? xstrdup (p2->want_outfile) : NULL;
 	p->infd = p1->infd;
 	p->outfd = p2->outfd;
 	p->infile = p1->infile;
@@ -1117,14 +1117,14 @@ void pipeline_want_infile (pipeline *p, const char *file)
 {
 	p->redirect_in = (file != NULL) ? REDIRECT_FILE_NAME : REDIRECT_NONE;
 	p->want_in = 0;
-	p->want_infile = file;
+	p->want_infile = file ? xstrdup (file) : NULL;
 }
 
 void pipeline_want_outfile (pipeline *p, const char *file)
 {
 	p->redirect_out = (file != NULL) ? REDIRECT_FILE_NAME : REDIRECT_NONE;
 	p->want_out = 0;
-	p->want_outfile = file;
+	p->want_outfile = file ? xstrdup (file) : NULL;
 }
 
 void pipeline_ignore_signals (pipeline *p, int ignore_signals)
@@ -1202,6 +1202,8 @@ void pipeline_free (pipeline *p)
 	free (p->commands);
 	free (p->pids);
 	free (p->statuses);
+	free (p->want_infile);
+	free (p->want_outfile);
 	free (p->buffer);
 	free (p->line_cache);
 	free (p);
