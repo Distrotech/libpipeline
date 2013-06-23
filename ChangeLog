@@ -1,3 +1,8 @@
+Sun Jun 23 12:40:32 BST 2013  Colin Watson  <cjwatson@debian.org>
+
+	* lib/pipeline.c (argstr_get_word, pipeline_free): Remove
+	  unnecessary tests before freeing pointers.
+
 Sat Jun 22 17:12:03 BST 2013  Colin Watson  <cjwatson@debian.org>
 
 	* tests/common.c (temp_dir_setup): Fail the test if mkdtemp fails.

@@ -221,8 +221,7 @@ static char *argstr_get_word (const char **argstr)
 				backslashed[0] = *++*argstr;
 				if (!backslashed[0]) {
 					/* Unterminated quoting; give up. */
-					if (out)
-						free (out);
+					free (out);
 					return NULL;
 				}
 				backslashed[1] = '\0';
@@ -237,8 +236,7 @@ static char *argstr_get_word (const char **argstr)
 
 	if (quotemode != NONE) {
 		/* Unterminated quoting; give up. */
-		if (out)
-			free (out);
+		free (out);
 		return NULL;
 	}
 
@@ -1202,14 +1200,10 @@ void pipeline_free (pipeline *p)
 	for (i = 0; i < p->ncommands; ++i)
 		pipecmd_free (p->commands[i]);
 	free (p->commands);
-	if (p->pids)
-		free (p->pids);
-	if (p->statuses)
-		free (p->statuses);
-	if (p->buffer)
-		free (p->buffer);
-	if (p->line_cache)
-		free (p->line_cache);
+	free (p->pids);
+	free (p->statuses);
+	free (p->buffer);
+	free (p->line_cache);
 	free (p);
 }
 
